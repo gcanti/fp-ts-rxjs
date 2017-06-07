@@ -1,0 +1,51 @@
+{
+  "name": "fp-ts-rxjs",
+  "version": "0.0.1",
+  "description": "fp-ts bindings for RxJS",
+  "files": [
+    "lib"
+  ],
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "lint": "tslint src/**/*.ts test/**/*.ts",
+    "mocha": "mocha -r ts-node/register test/*.ts",
+    "prettier": "prettier --no-semi --single-quote --print-width 120 --parser typescript --list-different \"{src,test}/**/*.ts\"",
+    "test": "npm run prettier && npm run lint && npm run mocha",
+    "clean": "rm -rf lib/*",
+    "build": "npm run clean && tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gcanti/fp-ts-rxjs.git"
+  },
+  "author": "Giulio Canti <giulio.canti@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gcanti/fp-ts-rxjs/issues"
+  },
+  "homepage": "https://github.com/gcanti/fp-ts-rxjs",
+  "dependencies": {
+    "fp-ts": "^0.3.1",
+    "rxjs": "^5.4.0"
+  },
+  "devDependencies": {
+    "@types/mocha": "2.2.38",
+    "@types/node": "7.0.4",
+    "mocha": "3.2.0",
+    "prettier": "^1.4.2",
+    "ts-node": "2.0.0",
+    "tslint": "4.4.2",
+    "tslint-config-standard": "4.0.0",
+    "typescript": "2.3.3",
+    "typings-checker": "1.1.2"
+  },
+  "tags": [
+    "fp-ts",
+    "rxjs"
+  ],
+  "keywords": [
+    "fp-ts",
+    "rxjs"
+  ]
+}

@@ -1,2 +1,1 @@
-# fp-ts-rxjs
-rxjs bindings for fp-ts
+[fp-ts](https://github.com/gcanti/fp-ts) bindings for RxJS
