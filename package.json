@@ -1,10 +1,8 @@
 {
   "name": "fp-ts-rxjs",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "fp-ts bindings for RxJS",
-  "files": [
-    "lib"
-  ],
+  "files": ["lib"],
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "scripts": {
@@ -26,26 +24,19 @@
   },
   "homepage": "https://github.com/gcanti/fp-ts-rxjs",
   "dependencies": {
-    "fp-ts": "^0.3.1",
+    "fp-ts": "^0.4.0",
     "rxjs": "^5.4.0"
   },
   "devDependencies": {
     "@types/mocha": "2.2.38",
     "@types/node": "7.0.4",
     "mocha": "3.2.0",
-    "prettier": "^1.4.2",
-    "ts-node": "2.0.0",
+    "prettier": "1.5.2",
+    "ts-node": "3.2.0",
     "tslint": "4.4.2",
     "tslint-config-standard": "4.0.0",
-    "typescript": "2.3.3",
-    "typings-checker": "1.1.2"
+    "typescript": "2.4.1"
   },
-  "tags": [
-    "fp-ts",
-    "rxjs"
-  ],
-  "keywords": [
-    "fp-ts",
-    "rxjs"
-  ]
+  "tags": ["fp-ts", "rxjs"],
+  "keywords": ["fp-ts", "rxjs"]
 }
