@@ -9,9 +9,10 @@ import 'rxjs/add/observable/combineLatest'
 import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/mergeMap'
 
-declare module 'fp-ts/lib/HKT' {
-  interface HKT<A> {
-    Observable: Observable<A>
+declare module 'rxjs/Observable' {
+  interface Observable<T> {
+    _URI: URI
+    _A: T
   }
 }
 
@@ -51,7 +52,7 @@ export function zero<A>(): Observable<A> {
   return Observable.empty<A>()
 }
 
-const proof: Monoid<Observable<any>> & Monad<URI> & Alternative<URI> = {
+export const rxjs: Monoid<Observable<any>> & Monad<URI> & Alternative<URI> = {
   URI,
   concat,
   empty,
@@ -62,5 +63,3 @@ const proof: Monoid<Observable<any>> & Monad<URI> & Alternative<URI> = {
   zero,
   alt
 }
-// tslint:disable-next-line no-unused-expression
-proof
