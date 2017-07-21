@@ -1,6 +1,6 @@
 {
   "name": "fp-ts-rxjs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "fp-ts bindings for RxJS",
   "files": ["lib"],
   "main": "lib/index.js",
@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/gcanti/fp-ts-rxjs",
   "dependencies": {
-    "fp-ts": "^0.4.1",
+    "fp-ts": "^0.4.2",
     "rxjs": "^5.4.0"
   },
   "devDependencies": {
