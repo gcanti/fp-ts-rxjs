@@ -16,6 +16,12 @@ declare module 'rxjs/Observable' {
   }
 }
 
+declare module 'fp-ts/lib/HKT' {
+  interface URI2HKT<A> {
+    Observable: Observable<A>
+  }
+}
+
 export const URI = 'Observable'
 
 export type URI = typeof URI
