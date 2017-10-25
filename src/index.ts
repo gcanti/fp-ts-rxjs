@@ -39,7 +39,7 @@ export const ap = <A, B>(fab: Observable<(a: A) => B>, fa: Observable<A>): Obser
 
 export const chain = <A, B>(f: (a: A) => Observable<B>, fa: Observable<A>): Observable<B> => fa.flatMap(f)
 
-export const alt = <A>(x: Observable<A>) => (y: Observable<A>): Observable<A> => Observable.merge(x, y)
+export const alt = <A>(x: Observable<A>, y: Observable<A>): Observable<A> => Observable.merge(x, y)
 
 export const zero = <A>(): Observable<A> => Observable.empty<A>()
 
