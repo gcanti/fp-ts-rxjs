@@ -27,7 +27,7 @@
   "homepage": "https://github.com/gcanti/fp-ts-rxjs",
   "dependencies": {
     "fp-ts": "^1.0.1",
-    "rxjs": "^5.4.0"
+    "rxjs": "^6.0.0"
   },
   "devDependencies": {
     "@types/mocha": "2.2.38",
