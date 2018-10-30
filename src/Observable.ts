@@ -6,8 +6,8 @@ import { map as rxMap, mergeMap } from 'rxjs/operators'
 
 declare module 'rxjs/internal/Observable' {
   interface Observable<T> {
-    _URI: URI
-    _A: T
+    readonly _URI: URI
+    readonly _A: T
   }
 }
 
