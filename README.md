@@ -4,6 +4,7 @@
 
 - `Monad`
 - `Alternative`
+- `Filterable`
 
 # Example
 

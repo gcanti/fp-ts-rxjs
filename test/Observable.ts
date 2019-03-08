@@ -1,6 +1,9 @@
 import * as assert from 'assert'
 import { from } from 'rxjs'
 import { bufferTime } from 'rxjs/operators'
+import { fromPredicate as optionFromPredicate } from 'fp-ts/lib/Option'
+import { fromPredicate as eitherFromPredicate } from 'fp-ts/lib/Either'
+import { identity } from 'fp-ts/lib/function'
 
 import { observable } from '../src/Observable'
 
@@ -11,7 +14,7 @@ describe('Observable', () => {
       .pipe(bufferTime(10))
       .toPromise()
       .then(events => {
-        assert.deepEqual(events, [1])
+        assert.deepStrictEqual(events, [1])
       })
   })
 
@@ -23,7 +26,7 @@ describe('Observable', () => {
       .pipe(bufferTime(10))
       .toPromise()
       .then(events => {
-        assert.deepEqual(events, [2, 4, 6])
+        assert.deepStrictEqual(events, [2, 4, 6])
       })
   })
 
@@ -37,7 +40,7 @@ describe('Observable', () => {
       .pipe(bufferTime(10))
       .toPromise()
       .then(events => {
-        assert.deepEqual(events, [3, 6, 9])
+        assert.deepStrictEqual(events, [3, 6, 9])
       })
   })
 
@@ -48,7 +51,97 @@ describe('Observable', () => {
       .pipe(bufferTime(10))
       .toPromise()
       .then(events => {
-        assert.deepEqual(events, [1, 2, 2, 3, 3, 4])
+        assert.deepStrictEqual(events, [1, 2, 2, 3, 3, 4])
       })
+  })
+
+  it('filterMap', () => {
+    const fa = from([1, 2, 3])
+    const fb = observable.filterMap(fa, optionFromPredicate(n => n > 1))
+    return fb
+      .pipe(bufferTime(10))
+      .toPromise()
+      .then(events => {
+        assert.deepStrictEqual(events, [2, 3])
+      })
+  })
+
+  it('compact', () => {
+    const fa = from([1, 2, 3].map(optionFromPredicate(n => n > 1)))
+    const fb = observable.compact(fa)
+    return fb
+      .pipe(bufferTime(10))
+      .toPromise()
+      .then(events => {
+        assert.deepStrictEqual(events, [2, 3])
+      })
+  })
+
+  it('filter', () => {
+    const fa = from([1, 2, 3])
+    const fb = observable.filter(fa, n => n > 1)
+    return fb
+      .pipe(bufferTime(10))
+      .toPromise()
+      .then(events => {
+        assert.deepStrictEqual(events, [2, 3])
+      })
+  })
+
+  it('partitionMap', () => {
+    const fa = from([1, 2, 3])
+    const s = observable.partitionMap(fa, eitherFromPredicate(n => n > 1, identity))
+    return s.left
+      .pipe(bufferTime(10))
+      .toPromise()
+      .then(events => {
+        assert.deepStrictEqual(events, [1])
+      })
+      .then(() =>
+        s.right
+          .pipe(bufferTime(10))
+          .toPromise()
+          .then(events => {
+            assert.deepStrictEqual(events, [2, 3])
+          })
+      )
+  })
+
+  it('separate', () => {
+    const fa = from([1, 2, 3].map(eitherFromPredicate(n => n > 1, identity)))
+    const s = observable.separate(fa)
+    return s.left
+      .pipe(bufferTime(10))
+      .toPromise()
+      .then(events => {
+        assert.deepStrictEqual(events, [1])
+      })
+      .then(() =>
+        s.right
+          .pipe(bufferTime(10))
+          .toPromise()
+          .then(events => {
+            assert.deepStrictEqual(events, [2, 3])
+          })
+      )
+  })
+
+  it('partition', () => {
+    const fa = from([1, 2, 3])
+    const s = observable.partition(fa, n => n > 1)
+    return s.left
+      .pipe(bufferTime(10))
+      .toPromise()
+      .then(events => {
+        assert.deepStrictEqual(events, [1])
+      })
+      .then(() =>
+        s.right
+          .pipe(bufferTime(10))
+          .toPromise()
+          .then(events => {
+            assert.deepStrictEqual(events, [2, 3])
+          })
+      )
   })
 })
