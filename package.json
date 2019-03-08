@@ -1,6 +1,6 @@
 {
   "name": "fp-ts-rxjs",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "fp-ts bindings for RxJS",
   "files": [
     "lib"
@@ -11,9 +11,11 @@
     "lint": "tslint src/**/*.ts test/**/*.ts",
     "mocha": "TS_NODE_CACHE=false mocha -r ts-node/register test/*.ts",
     "prettier": "prettier --no-semi --single-quote --print-width 120 --parser typescript --list-different \"{src,test}/**/*.ts\"",
-    "test": "npm run prettier && npm run lint && npm run mocha",
+    "fix-prettier": "prettier --no-semi --single-quote --print-width 120 --parser typescript --write \"{src,test}/**/*.ts\"",
+    "test": "npm run prettier && npm run lint && npm run mocha && npm run docs",
     "clean": "rm -rf lib/*",
-    "build": "npm run clean && tsc"
+    "build": "npm run clean && tsc",
+    "docs": "docs-ts"
   },
   "repository": {
     "type": "git",
@@ -31,9 +33,10 @@
   "devDependencies": {
     "@types/mocha": "2.2.38",
     "@types/node": "7.0.4",
+    "docs-ts": "0.0.1",
     "fp-ts": "^1.14.3",
     "mocha": "^5.2.0",
-    "prettier": "^1.14.3",
+    "prettier": "^1.16.4",
     "ts-node": "3.2.0",
     "tslint": "4.4.2",
     "tslint-config-standard": "4.0.0",
