@@ -14,7 +14,7 @@ describe('Observable', () => {
       .pipe(bufferTime(10))
       .toPromise()
       .then(events => {
-        assert.deepEqual(events, [1])
+        assert.deepStrictEqual(events, [1])
       })
   })
 
@@ -26,7 +26,7 @@ describe('Observable', () => {
       .pipe(bufferTime(10))
       .toPromise()
       .then(events => {
-        assert.deepEqual(events, [2, 4, 6])
+        assert.deepStrictEqual(events, [2, 4, 6])
       })
   })
 
@@ -40,7 +40,7 @@ describe('Observable', () => {
       .pipe(bufferTime(10))
       .toPromise()
       .then(events => {
-        assert.deepEqual(events, [3, 6, 9])
+        assert.deepStrictEqual(events, [3, 6, 9])
       })
   })
 
@@ -51,7 +51,7 @@ describe('Observable', () => {
       .pipe(bufferTime(10))
       .toPromise()
       .then(events => {
-        assert.deepEqual(events, [1, 2, 2, 3, 3, 4])
+        assert.deepStrictEqual(events, [1, 2, 2, 3, 3, 4])
       })
   })
 
@@ -62,7 +62,7 @@ describe('Observable', () => {
       .pipe(bufferTime(10))
       .toPromise()
       .then(events => {
-        assert.deepEqual(events, [2, 3])
+        assert.deepStrictEqual(events, [2, 3])
       })
   })
 
@@ -73,7 +73,7 @@ describe('Observable', () => {
       .pipe(bufferTime(10))
       .toPromise()
       .then(events => {
-        assert.deepEqual(events, [2, 3])
+        assert.deepStrictEqual(events, [2, 3])
       })
   })
 
@@ -84,7 +84,7 @@ describe('Observable', () => {
       .pipe(bufferTime(10))
       .toPromise()
       .then(events => {
-        assert.deepEqual(events, [2, 3])
+        assert.deepStrictEqual(events, [2, 3])
       })
   })
 
@@ -95,14 +95,14 @@ describe('Observable', () => {
       .pipe(bufferTime(10))
       .toPromise()
       .then(events => {
-        assert.deepEqual(events, [1])
+        assert.deepStrictEqual(events, [1])
       })
       .then(() =>
         s.right
           .pipe(bufferTime(10))
           .toPromise()
           .then(events => {
-            assert.deepEqual(events, [2, 3])
+            assert.deepStrictEqual(events, [2, 3])
           })
       )
   })
@@ -114,14 +114,14 @@ describe('Observable', () => {
       .pipe(bufferTime(10))
       .toPromise()
       .then(events => {
-        assert.deepEqual(events, [1])
+        assert.deepStrictEqual(events, [1])
       })
       .then(() =>
         s.right
           .pipe(bufferTime(10))
           .toPromise()
           .then(events => {
-            assert.deepEqual(events, [2, 3])
+            assert.deepStrictEqual(events, [2, 3])
           })
       )
   })
@@ -133,14 +133,14 @@ describe('Observable', () => {
       .pipe(bufferTime(10))
       .toPromise()
       .then(events => {
-        assert.deepEqual(events, [1])
+        assert.deepStrictEqual(events, [1])
       })
       .then(() =>
         s.right
           .pipe(bufferTime(10))
           .toPromise()
           .then(events => {
-            assert.deepEqual(events, [2, 3])
+            assert.deepStrictEqual(events, [2, 3])
           })
       )
   })
