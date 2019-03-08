@@ -2,12 +2,12 @@ import { Alternative1 } from 'fp-ts/lib/Alternative'
 import { Monad1 } from 'fp-ts/lib/Monad'
 import { Monoid } from 'fp-ts/lib/Monoid'
 import { combineLatest, EMPTY, merge, Observable, of as rxOf } from 'rxjs'
-import { map as rxMap, mergeMap, filter as rxFilter } from 'rxjs/operators'
+import { map as rxMap, mergeMap } from 'rxjs/operators'
 import { Filterable1 } from 'fp-ts/lib/Filterable'
 import { Either, fromPredicate as eitherFromPredicate } from 'fp-ts/lib/Either'
 import { Separated } from 'fp-ts/lib/Compactable'
 import { Predicate, identity } from 'fp-ts/lib/function'
-import { Option, fromPredicate as optionFromPredicate, some, none, Some } from 'fp-ts/lib/Option'
+import { Option, fromPredicate as optionFromPredicate, some, none } from 'fp-ts/lib/Option'
 
 declare module 'rxjs/internal/Observable' {
   interface Observable<T> {
@@ -47,11 +47,7 @@ const alt = <A>(x: Observable<A>, y: Observable<A>): Observable<A> => merge(x, y
 const zero = <A>(): Observable<A> => EMPTY
 
 function filterMap<A, B>(fa: Observable<A>, f: (a: A) => Option<B>): Observable<B> {
-  return fa.pipe(
-    rxMap(f),
-    rxFilter((b): b is Some<B> => b.isSome()),
-    rxMap(v => v.value)
-  )
+  return fa.pipe(mergeMap(a => f(a).fold(zero(), of)))
 }
 
 const compact: <A>(fa: Observable<Option<A>>) => Observable<A> = fa => filterMap(fa, identity)
