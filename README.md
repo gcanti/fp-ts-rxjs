@@ -27,3 +27,7 @@ The stable version is tested against TypeScript 3.1.3
 | ------------ | ------------------ |
 | `rxjs@6`     | `fp-ts-rxjs@0.5.x` |
 | `rxjs@5`     | `fp-ts-rxjs@0.4.x` |
+
+# Documentation
+
+- [API Reference](https://gcanti.github.io/fp-ts-rxjs)
