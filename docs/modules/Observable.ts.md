@@ -23,6 +23,8 @@ parent: Modules
 export type URI = typeof URI
 ```
 
+Added in v0.6.0
+
 # URI (constant)
 
 **Signature**
@@ -30,6 +32,8 @@ export type URI = typeof URI
 ```ts
 export const URI = ...
 ```
+
+Added in v0.6.0
 
 # observable (constant)
 
@@ -39,10 +43,14 @@ export const URI = ...
 export const observable: Monad1<URI> & Alternative1<URI> & Filterable1<URI> = ...
 ```
 
+Added in v0.6.0
+
 # getMonoid (function)
 
 **Signature**
 
 ```ts
-export const getMonoid = <A = never>(): Monoid<Observable<A>> => ...
+export function getMonoid<A = never>(): Monoid<Observable<A>> { ... }
 ```
+
+Added in v0.6.0
