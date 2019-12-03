@@ -6,6 +6,7 @@
     "lib"
   ],
   "main": "lib/index.js",
+  "module": "es6/index.js",
   "typings": "lib/index.d.ts",
   "scripts": {
     "lint": "tslint -p tsconfig.tslint.json src/**/*.ts test/**/*.ts",
@@ -14,7 +15,7 @@
     "jest": "jest --ci",
     "test": "npm run prettier && npm run lint && npm run jest && npm run docs",
     "clean": "rm -rf lib/*",
-    "build": "npm run clean && tsc",
+    "build": "npm run clean && tsc && tsc -p ./tsconfig.es6.json",
     "prepublish": "npm run build",
     "docs": "docs-ts"
   },
