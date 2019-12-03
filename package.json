@@ -1,6 +1,6 @@
 {
   "name": "fp-ts-rxjs",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "fp-ts bindings for RxJS",
   "files": [
     "lib"
@@ -14,7 +14,7 @@
     "fix-prettier": "prettier --no-semi --single-quote --print-width 120 --parser typescript --write \"{src,test}/**/*.ts\"",
     "jest": "jest --ci",
     "test": "npm run prettier && npm run lint && npm run jest && npm run docs",
-    "clean": "rm -rf lib/*",
+    "clean": "rm -rf lib/* es6/*",
     "build": "npm run clean && tsc && tsc -p ./tsconfig.es6.json",
     "prepublish": "npm run build",
     "docs": "docs-ts"
