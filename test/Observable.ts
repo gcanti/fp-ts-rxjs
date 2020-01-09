@@ -57,7 +57,10 @@ describe('Observable', () => {
 
   it('filterMap', () => {
     const fa = from([1, 2, 3])
-    const fb = R.observable.filterMap(fa, O.fromPredicate(n => n > 1))
+    const fb = R.observable.filterMap(
+      fa,
+      O.fromPredicate(n => n > 1)
+    )
     return fb
       .pipe(bufferTime(10))
       .toPromise()
@@ -90,7 +93,10 @@ describe('Observable', () => {
 
   it('partitionMap', () => {
     const fa = from([1, 2, 3])
-    const s = R.observable.partitionMap(fa, E.fromPredicate(n => n > 1, identity))
+    const s = R.observable.partitionMap(
+      fa,
+      E.fromPredicate(n => n > 1, identity)
+    )
     return s.left
       .pipe(bufferTime(10))
       .toPromise()

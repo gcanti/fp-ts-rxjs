@@ -1,3 +1,6 @@
+/**
+ * @since 0.6.0
+ */
 import { Alternative1 } from 'fp-ts/lib/Alternative'
 import * as E from 'fp-ts/lib/Either'
 import { Filterable1 } from 'fp-ts/lib/Filterable'
@@ -94,18 +97,60 @@ const {
 } = pipeable(observable)
 
 export {
+  /**
+   * @since 0.6.0
+   */
   alt,
+  /**
+   * @since 0.6.0
+   */
   ap,
+  /**
+   * @since 0.6.0
+   */
   apFirst,
+  /**
+   * @since 0.6.0
+   */
   apSecond,
+  /**
+   * @since 0.6.0
+   */
   chain,
+  /**
+   * @since 0.6.0
+   */
   chainFirst,
+  /**
+   * @since 0.6.0
+   */
   compact,
+  /**
+   * @since 0.6.0
+   */
   filter,
+  /**
+   * @since 0.6.0
+   */
   filterMap,
+  /**
+   * @since 0.6.0
+   */
   flatten,
+  /**
+   * @since 0.6.0
+   */
   map,
+  /**
+   * @since 0.6.0
+   */
   partition,
+  /**
+   * @since 0.6.0
+   */
   partitionMap,
+  /**
+   * @since 0.6.0
+   */
   separate
 }
