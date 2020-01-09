@@ -1,6 +1,6 @@
 {
   "name": "fp-ts-rxjs",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "fp-ts bindings for RxJS",
   "files": [
     "lib",
@@ -10,15 +10,17 @@
   "module": "es6/index.js",
   "typings": "lib/index.d.ts",
   "scripts": {
-    "lint": "tslint -p tsconfig.tslint.json src/**/*.ts test/**/*.ts",
+    "lint": "tslint -p .",
     "prettier": "prettier --no-semi --single-quote --print-width 120 --parser typescript --list-different \"{src,test}/**/*.ts\"",
     "fix-prettier": "prettier --no-semi --single-quote --print-width 120 --parser typescript --write \"{src,test}/**/*.ts\"",
     "jest": "jest --ci",
     "test": "npm run prettier && npm run lint && npm run jest && npm run docs",
     "clean": "rm -rf lib/* es6/*",
-    "build": "npm run clean && tsc && tsc -p ./tsconfig.es6.json",
+    "prebuild": "npm run clean",
+    "build": "tsc -p ./tsconfig.build.json && tsc -p ./tsconfig.build-es6.json",
     "prepublish": "npm run build",
-    "docs": "docs-ts"
+    "docs": "docs-ts",
+    "postbuild": "import-path-rewrite"
   },
   "repository": {
     "type": "git",
@@ -37,11 +39,12 @@
   "devDependencies": {
     "@types/mocha": "2.2.38",
     "@types/node": "7.0.4",
-    "docs-ts": "^0.1.0",
+    "docs-ts": "^0.3.0",
     "fp-ts": "^2.0.1",
+    "import-path-rewrite": "github:gcanti/import-path-rewrite",
     "jest": "^24.8.0",
     "mocha": "^5.2.0",
-    "prettier": "^1.18.2",
+    "prettier": "^1.19.1",
     "rxjs": "^6.5.2",
     "ts-jest": "^24.0.2",
     "ts-node": "3.2.0",
