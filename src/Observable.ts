@@ -11,8 +11,8 @@ import * as O from 'fp-ts/lib/Option'
 import { pipe, pipeable } from 'fp-ts/lib/pipeable'
 import { combineLatest, EMPTY, merge, Observable, of, defer } from 'rxjs'
 import { map as rxMap, mergeMap } from 'rxjs/operators'
-import * as IO from 'fp-ts/lib/IO'
-import * as T from 'fp-ts/lib/Task'
+import { IO } from 'fp-ts/lib/IO'
+import { Task } from 'fp-ts/lib/Task'
 
 declare module 'fp-ts/lib/HKT' {
   interface URItoKind<A> {
@@ -44,26 +44,20 @@ export function getMonoid<A = never>(): Monoid<Observable<A>> {
  * @since 0.6.5
  */
 export function fromOption<A>(o: O.Option<A>): Observable<A> {
-  return pipe(
-    o,
-    O.fold(
-      () => EMPTY,
-      a => of(a)
-    )
-  )
+  return O.isNone(o) ? EMPTY : of(o.value)
 }
 
 /**
  * @since 0.6.5
  */
-export function fromIO<A>(io: IO.IO<A>): Observable<A> {
+export function fromIO<A>(io: IO<A>): Observable<A> {
   return defer(async () => io())
 }
 
 /**
  * @since 0.6.5
  */
-export function fromTask<A>(t: T.Task<A>): Observable<A> {
+export function fromTask<A>(t: Task<A>): Observable<A> {
   return defer(t)
 }
 

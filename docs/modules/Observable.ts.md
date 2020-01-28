@@ -71,7 +71,7 @@ Added in v0.6.0
 **Signature**
 
 ```ts
-export function fromIO<A>(io: IO.IO<A>): Observable<A> { ... }
+export function fromIO<A>(io: IO<A>): Observable<A> { ... }
 ```
 
 Added in v0.6.5
@@ -91,7 +91,7 @@ Added in v0.6.5
 **Signature**
 
 ```ts
-export function fromTask<A>(t: T.Task<A>): Observable<A> { ... }
+export function fromTask<A>(t: Task<A>): Observable<A> { ... }
 ```
 
 Added in v0.6.5
