@@ -15,6 +15,9 @@ Added in v0.6.0
 - [URI (type alias)](#uri-type-alias)
 - [URI (constant)](#uri-constant)
 - [observable (constant)](#observable-constant)
+- [fromIO (function)](#fromio-function)
+- [fromOption (function)](#fromoption-function)
+- [fromTask (function)](#fromtask-function)
 - [getMonoid (function)](#getmonoid-function)
 - [alt (export)](#alt-export)
 - [ap (export)](#ap-export)
@@ -62,6 +65,36 @@ export const observable: Monad1<URI> & Alternative1<URI> & Filterable1<URI> = ..
 ```
 
 Added in v0.6.0
+
+# fromIO (function)
+
+**Signature**
+
+```ts
+export function fromIO<A>(io: IO.IO<A>): Observable<A> { ... }
+```
+
+Added in v0.6.5
+
+# fromOption (function)
+
+**Signature**
+
+```ts
+export function fromOption<A>(o: O.Option<A>): Observable<A> { ... }
+```
+
+Added in v0.6.5
+
+# fromTask (function)
+
+**Signature**
+
+```ts
+export function fromTask<A>(t: T.Task<A>): Observable<A> { ... }
+```
+
+Added in v0.6.5
 
 # getMonoid (function)
 

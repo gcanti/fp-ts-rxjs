@@ -9,8 +9,10 @@ import { Monad1 } from 'fp-ts/lib/Monad'
 import { Monoid } from 'fp-ts/lib/Monoid'
 import * as O from 'fp-ts/lib/Option'
 import { pipe, pipeable } from 'fp-ts/lib/pipeable'
-import { combineLatest, EMPTY, merge, Observable, of } from 'rxjs'
+import { combineLatest, EMPTY, merge, Observable, of, defer } from 'rxjs'
 import { map as rxMap, mergeMap } from 'rxjs/operators'
+import * as IO from 'fp-ts/lib/IO'
+import * as T from 'fp-ts/lib/Task'
 
 declare module 'fp-ts/lib/HKT' {
   interface URItoKind<A> {
@@ -36,6 +38,33 @@ export function getMonoid<A = never>(): Monoid<Observable<A>> {
     concat: (x, y) => merge(x, y),
     empty: EMPTY
   }
+}
+
+/**
+ * @since 0.6.5
+ */
+export function fromOption<A>(o: O.Option<A>): Observable<A> {
+  return pipe(
+    o,
+    O.fold(
+      () => EMPTY,
+      a => of(a)
+    )
+  )
+}
+
+/**
+ * @since 0.6.5
+ */
+export function fromIO<A>(io: IO.IO<A>): Observable<A> {
+  return defer(async () => io())
+}
+
+/**
+ * @since 0.6.5
+ */
+export function fromTask<A>(t: T.Task<A>): Observable<A> {
+  return defer(t)
 }
 
 /**

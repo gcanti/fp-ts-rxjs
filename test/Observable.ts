@@ -3,6 +3,7 @@ import { from } from 'rxjs'
 import { bufferTime } from 'rxjs/operators'
 import * as O from 'fp-ts/lib/Option'
 import * as E from 'fp-ts/lib/Either'
+import * as T from 'fp-ts/lib/Task'
 import { identity } from 'fp-ts/lib/function'
 
 import { observable as R } from '../src'
@@ -173,5 +174,31 @@ describe('Observable', () => {
       .pipe(bufferTime(10))
       .toPromise()
     assert.deepStrictEqual(events, [1, 2])
+  })
+
+  it('fromOption', async () => {
+    const events = await R.fromOption(O.some(1))
+      .pipe(bufferTime(10))
+      .toPromise()
+    assert.deepStrictEqual(events, [1])
+
+    const noEvents = await R.fromOption(O.none)
+      .pipe(bufferTime(10))
+      .toPromise()
+    assert.deepStrictEqual(noEvents, [])
+  })
+
+  it('fromIO', async () => {
+    const events = await R.fromIO(() => 1)
+      .pipe(bufferTime(10))
+      .toPromise()
+    assert.deepStrictEqual(events, [1])
+  })
+
+  it('fromTask', async () => {
+    const events = await R.fromTask(T.of(1))
+      .pipe(bufferTime(10))
+      .toPromise()
+    assert.deepStrictEqual(events, [1])
   })
 })
