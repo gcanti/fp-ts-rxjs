@@ -7,6 +7,7 @@ import * as R from '../src/Observable'
 import * as T from 'fp-ts/lib/Task'
 import * as I from 'fp-ts/lib/IO'
 import { bufferTime } from 'rxjs/operators'
+import * as O from 'fp-ts/lib/Option'
 
 describe('ReaderObservable', () => {
   describe('Monad', () => {
@@ -73,6 +74,13 @@ describe('ReaderObservable', () => {
       .pipe(bufferTime(10))
       .toPromise()
     assert.deepStrictEqual(e, [4])
+  })
+
+  it('fromOption', async () => {
+    const a = await _.fromOption(O.some(1))({})
+      .pipe(bufferTime(10))
+      .toPromise()
+    assert.deepStrictEqual(a, [1])
   })
 
   it('fromTask', async () => {

@@ -26,6 +26,7 @@ Added in v0.6.6
 - [fromIO (function)](#fromio-function)
 - [fromIOK (function)](#fromiok-function)
 - [fromObservableK (function)](#fromobservablek-function)
+- [fromOption (function)](#fromoption-function)
 - [fromTask (function)](#fromtask-function)
 - [getMonoid (function)](#getmonoid-function)
 - [local (function)](#local-function)
@@ -185,6 +186,16 @@ export function fromObservableK<A extends Array<unknown>, B>(
 ```
 
 Added in v2.4.0
+
+# fromOption (function)
+
+**Signature**
+
+```ts
+export function fromOption<R, A>(o: Option<A>): ReaderObservable<R, A> { ... }
+```
+
+Added in v0.6.6
 
 # fromTask (function)
 

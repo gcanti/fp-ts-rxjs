@@ -11,6 +11,7 @@ import { Monoid } from 'fp-ts/lib/Monoid'
 import { getMonoid as getReaderMonoid, Reader } from 'fp-ts/lib/Reader'
 import { Task } from 'fp-ts/lib/Task'
 import { MonadObservable2 } from './MonadObservable'
+import { Option } from 'fp-ts/lib/Option'
 
 const T = getReaderM(R.observable)
 
@@ -53,6 +54,13 @@ export const fromObservable: <R, A>(ma: Observable<A>) => ReaderObservable<R, A>
  * @since 0.6.6
  */
 export const fromReader: <R, A = never>(ma: Reader<R, A>) => ReaderObservable<R, A> = T.fromReader
+
+/**
+ * @since 0.6.6
+ */
+export function fromOption<R, A>(o: Option<A>): ReaderObservable<R, A> {
+  return fromObservable(R.fromOption(o))
+}
 
 /**
  * @since 0.6.6
