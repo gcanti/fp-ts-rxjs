@@ -97,6 +97,11 @@ describe('ReaderObservable', () => {
     assert.deepStrictEqual(e, [1])
   })
 
+  it('toReaderTask', async () => {
+    const e = await _.toReaderTask(_.of(1))({})()
+    assert.deepStrictEqual(e, 1)
+  })
+
   it('getMonoid', async () => {
     const M = _.getMonoid()
     const e = await M.concat(

@@ -31,6 +31,7 @@ Added in v0.6.6
 - [getMonoid (function)](#getmonoid-function)
 - [local (function)](#local-function)
 - [run (function)](#run-function)
+- [toReaderTask (function)](#toreadertask-function)
 - [ap (export)](#ap-export)
 - [apFirst (export)](#apfirst-export)
 - [apSecond (export)](#apsecond-export)
@@ -233,6 +234,16 @@ Added in v0.6.6
 
 ```ts
 export function run<R, A>(ma: ReaderObservable<R, A>, r: R): Promise<A> { ... }
+```
+
+Added in v0.6.6
+
+# toReaderTask (function)
+
+**Signature**
+
+```ts
+export function toReaderTask<R, A>(ma: ReaderObservable<R, A>): ReaderTask<R, A> { ... }
 ```
 
 Added in v0.6.6

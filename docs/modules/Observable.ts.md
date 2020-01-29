@@ -20,6 +20,7 @@ Added in v0.6.0
 - [fromTask (function)](#fromtask-function)
 - [getMonoid (function)](#getmonoid-function)
 - [of (function)](#of-function)
+- [toTask (function)](#totask-function)
 - [alt (export)](#alt-export)
 - [ap (export)](#ap-export)
 - [apFirst (export)](#apfirst-export)
@@ -116,6 +117,16 @@ export function of<A>(a: A): Observable<A> { ... }
 ```
 
 Added in v0.6.6
+
+# toTask (function)
+
+**Signature**
+
+```ts
+export function toTask<A>(o: Observable<A>): Task<A> { ... }
+```
+
+Added in v0.6.5
 
 # alt (export)
 

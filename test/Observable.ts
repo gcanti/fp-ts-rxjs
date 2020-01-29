@@ -201,4 +201,9 @@ describe('Observable', () => {
       .toPromise()
     assert.deepStrictEqual(events, [1])
   })
+
+  it('toTask', async () => {
+    const t = await R.toTask(R.of(1))()
+    assert.deepStrictEqual(t, 1)
+  })
 })

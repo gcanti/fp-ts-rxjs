@@ -70,6 +70,13 @@ export function fromTask<A>(t: Task<A>): Observable<A> {
 }
 
 /**
+ * @since 0.6.5
+ */
+export function toTask<A>(o: Observable<A>): Task<A> {
+  return () => o.toPromise()
+}
+
+/**
  * @since 0.6.0
  */
 export const observable: Monad1<URI> & Alternative1<URI> & Filterable1<URI> & MonadObservable1<URI> = {
