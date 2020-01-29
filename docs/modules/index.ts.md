@@ -13,6 +13,7 @@ Added in v0.6.0
 <h2 class="text-delta">Table of contents</h2>
 
 - [observable (export)](#observable-export)
+- [readerObservable (export)](#readerobservable-export)
 
 ---
 
@@ -25,3 +26,13 @@ typeof observable
 ```
 
 Added in v0.6.0
+
+# readerObservable (export)
+
+**Signature**
+
+```ts
+typeof readerObservable
+```
+
+Added in v0.6.6

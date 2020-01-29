@@ -1,6 +1,6 @@
 ---
 title: Observable.ts
-nav_order: 2
+nav_order: 3
 parent: Modules
 ---
 
@@ -19,6 +19,7 @@ Added in v0.6.0
 - [fromOption (function)](#fromoption-function)
 - [fromTask (function)](#fromtask-function)
 - [getMonoid (function)](#getmonoid-function)
+- [of (function)](#of-function)
 - [alt (export)](#alt-export)
 - [ap (export)](#ap-export)
 - [apFirst (export)](#apfirst-export)
@@ -61,7 +62,7 @@ Added in v0.6.0
 **Signature**
 
 ```ts
-export const observable: Monad1<URI> & Alternative1<URI> & Filterable1<URI> = ...
+export const observable: Monad1<URI> & Alternative1<URI> & Filterable1<URI> & MonadObservable1<URI> = ...
 ```
 
 Added in v0.6.0
@@ -105,6 +106,16 @@ export function getMonoid<A = never>(): Monoid<Observable<A>> { ... }
 ```
 
 Added in v0.6.0
+
+# of (function)
+
+**Signature**
+
+```ts
+export function of<A>(a: A): Observable<A> { ... }
+```
+
+Added in v0.6.6
 
 # alt (export)
 
