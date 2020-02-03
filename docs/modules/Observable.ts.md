@@ -13,28 +13,28 @@ Added in v0.6.0
 <h2 class="text-delta">Table of contents</h2>
 
 - [URI (type alias)](#uri-type-alias)
-- [URI (constant)](#uri-constant)
-- [observable (constant)](#observable-constant)
-- [fromIO (function)](#fromio-function)
-- [fromOption (function)](#fromoption-function)
-- [fromTask (function)](#fromtask-function)
-- [getMonoid (function)](#getmonoid-function)
-- [of (function)](#of-function)
-- [toTask (function)](#totask-function)
-- [alt (export)](#alt-export)
-- [ap (export)](#ap-export)
-- [apFirst (export)](#apfirst-export)
-- [apSecond (export)](#apsecond-export)
-- [chain (export)](#chain-export)
-- [chainFirst (export)](#chainfirst-export)
-- [compact (export)](#compact-export)
-- [filter (export)](#filter-export)
-- [filterMap (export)](#filtermap-export)
-- [flatten (export)](#flatten-export)
-- [map (export)](#map-export)
-- [partition (export)](#partition-export)
-- [partitionMap (export)](#partitionmap-export)
-- [separate (export)](#separate-export)
+- [URI](#uri)
+- [alt](#alt)
+- [ap](#ap)
+- [apFirst](#apfirst)
+- [apSecond](#apsecond)
+- [chain](#chain)
+- [chainFirst](#chainfirst)
+- [compact](#compact)
+- [filter](#filter)
+- [filterMap](#filtermap)
+- [flatten](#flatten)
+- [fromIO](#fromio)
+- [fromOption](#fromoption)
+- [fromTask](#fromtask)
+- [getMonoid](#getmonoid)
+- [map](#map)
+- [observable](#observable)
+- [of](#of)
+- [partition](#partition)
+- [partitionMap](#partitionmap)
+- [separate](#separate)
+- [toTask](#totask)
 
 ---
 
@@ -48,7 +48,7 @@ export type URI = typeof URI
 
 Added in v0.6.0
 
-# URI (constant)
+# URI
 
 **Signature**
 
@@ -58,77 +58,7 @@ export const URI: "Observable" = ...
 
 Added in v0.6.0
 
-# observable (constant)
-
-**Signature**
-
-```ts
-export const observable: Monad1<URI> & Alternative1<URI> & Filterable1<URI> & MonadObservable1<URI> = ...
-```
-
-Added in v0.6.0
-
-# fromIO (function)
-
-**Signature**
-
-```ts
-export function fromIO<A>(io: IO<A>): Observable<A> { ... }
-```
-
-Added in v0.6.5
-
-# fromOption (function)
-
-**Signature**
-
-```ts
-export function fromOption<A>(o: O.Option<A>): Observable<A> { ... }
-```
-
-Added in v0.6.5
-
-# fromTask (function)
-
-**Signature**
-
-```ts
-export function fromTask<A>(t: Task<A>): Observable<A> { ... }
-```
-
-Added in v0.6.5
-
-# getMonoid (function)
-
-**Signature**
-
-```ts
-export function getMonoid<A = never>(): Monoid<Observable<A>> { ... }
-```
-
-Added in v0.6.0
-
-# of (function)
-
-**Signature**
-
-```ts
-export function of<A>(a: A): Observable<A> { ... }
-```
-
-Added in v0.6.6
-
-# toTask (function)
-
-**Signature**
-
-```ts
-export function toTask<A>(o: Observable<A>): Task<A> { ... }
-```
-
-Added in v0.6.5
-
-# alt (export)
+# alt
 
 **Signature**
 
@@ -138,7 +68,7 @@ Added in v0.6.5
 
 Added in v0.6.0
 
-# ap (export)
+# ap
 
 **Signature**
 
@@ -148,7 +78,7 @@ Added in v0.6.0
 
 Added in v0.6.0
 
-# apFirst (export)
+# apFirst
 
 **Signature**
 
@@ -158,7 +88,7 @@ Added in v0.6.0
 
 Added in v0.6.0
 
-# apSecond (export)
+# apSecond
 
 **Signature**
 
@@ -168,7 +98,7 @@ Added in v0.6.0
 
 Added in v0.6.0
 
-# chain (export)
+# chain
 
 **Signature**
 
@@ -178,7 +108,7 @@ Added in v0.6.0
 
 Added in v0.6.0
 
-# chainFirst (export)
+# chainFirst
 
 **Signature**
 
@@ -188,7 +118,7 @@ Added in v0.6.0
 
 Added in v0.6.0
 
-# compact (export)
+# compact
 
 **Signature**
 
@@ -198,7 +128,7 @@ Added in v0.6.0
 
 Added in v0.6.0
 
-# filter (export)
+# filter
 
 **Signature**
 
@@ -208,7 +138,7 @@ Added in v0.6.0
 
 Added in v0.6.0
 
-# filterMap (export)
+# filterMap
 
 **Signature**
 
@@ -218,7 +148,7 @@ Added in v0.6.0
 
 Added in v0.6.0
 
-# flatten (export)
+# flatten
 
 **Signature**
 
@@ -228,7 +158,47 @@ Added in v0.6.0
 
 Added in v0.6.0
 
-# map (export)
+# fromIO
+
+**Signature**
+
+```ts
+export function fromIO<A>(io: IO<A>): Observable<A> { ... }
+```
+
+Added in v0.6.5
+
+# fromOption
+
+**Signature**
+
+```ts
+export function fromOption<A>(o: O.Option<A>): Observable<A> { ... }
+```
+
+Added in v0.6.5
+
+# fromTask
+
+**Signature**
+
+```ts
+export function fromTask<A>(t: Task<A>): Observable<A> { ... }
+```
+
+Added in v0.6.5
+
+# getMonoid
+
+**Signature**
+
+```ts
+export function getMonoid<A = never>(): Monoid<Observable<A>> { ... }
+```
+
+Added in v0.6.0
+
+# map
 
 **Signature**
 
@@ -238,7 +208,27 @@ Added in v0.6.0
 
 Added in v0.6.0
 
-# partition (export)
+# observable
+
+**Signature**
+
+```ts
+export const observable: Monad1<URI> & Alternative1<URI> & Filterable1<URI> & MonadObservable1<URI> = ...
+```
+
+Added in v0.6.0
+
+# of
+
+**Signature**
+
+```ts
+export function of<A>(a: A): Observable<A> { ... }
+```
+
+Added in v0.6.6
+
+# partition
 
 **Signature**
 
@@ -248,7 +238,7 @@ Added in v0.6.0
 
 Added in v0.6.0
 
-# partitionMap (export)
+# partitionMap
 
 **Signature**
 
@@ -258,7 +248,7 @@ Added in v0.6.0
 
 Added in v0.6.0
 
-# separate (export)
+# separate
 
 **Signature**
 
@@ -267,3 +257,13 @@ Added in v0.6.0
 ```
 
 Added in v0.6.0
+
+# toTask
+
+**Signature**
+
+```ts
+export function toTask<A>(o: Observable<A>): Task<A> { ... }
+```
+
+Added in v0.6.5

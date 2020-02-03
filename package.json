@@ -1,6 +1,6 @@
 {
   "name": "fp-ts-rxjs",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "description": "fp-ts bindings for RxJS",
   "files": [
     "lib",
@@ -40,7 +40,7 @@
   "devDependencies": {
     "@types/mocha": "2.2.38",
     "@types/node": "7.0.4",
-    "docs-ts": "^0.3.0",
+    "docs-ts": "^0.3.4",
     "fp-ts": "^2.4.3",
     "import-path-rewrite": "github:gcanti/import-path-rewrite",
     "jest": "^24.8.0",
