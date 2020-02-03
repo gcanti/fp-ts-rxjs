@@ -9,10 +9,11 @@ import { Monad1 } from 'fp-ts/lib/Monad'
 import { Monoid } from 'fp-ts/lib/Monoid'
 import * as O from 'fp-ts/lib/Option'
 import { pipe, pipeable } from 'fp-ts/lib/pipeable'
-import { combineLatest, EMPTY, merge, Observable, of, defer } from 'rxjs'
+import { combineLatest, EMPTY, merge, Observable, of as rxOf, defer } from 'rxjs'
 import { map as rxMap, mergeMap } from 'rxjs/operators'
 import { IO } from 'fp-ts/lib/IO'
 import { Task } from 'fp-ts/lib/Task'
+import { MonadObservable1 } from './MonadObservable'
 
 declare module 'fp-ts/lib/HKT' {
   interface URItoKind<A> {
@@ -41,6 +42,13 @@ export function getMonoid<A = never>(): Monoid<Observable<A>> {
 }
 
 /**
+ * @since 0.6.6
+ */
+export function of<A>(a: A): Observable<A> {
+  return rxOf(a)
+}
+
+/**
  * @since 0.6.5
  */
 export function fromOption<A>(o: O.Option<A>): Observable<A> {
@@ -62,9 +70,16 @@ export function fromTask<A>(t: Task<A>): Observable<A> {
 }
 
 /**
+ * @since 0.6.5
+ */
+export function toTask<A>(o: Observable<A>): Task<A> {
+  return () => o.toPromise()
+}
+
+/**
  * @since 0.6.0
  */
-export const observable: Monad1<URI> & Alternative1<URI> & Filterable1<URI> = {
+export const observable: Monad1<URI> & Alternative1<URI> & Filterable1<URI> & MonadObservable1<URI> = {
   URI,
   map: (fa, f) => fa.pipe(rxMap(f)),
   of,
@@ -99,7 +114,10 @@ export const observable: Monad1<URI> & Alternative1<URI> & Filterable1<URI> = {
         )
       )
     ),
-  filter: <A>(fa: Observable<A>, p: Predicate<A>) => observable.filterMap(fa, O.fromPredicate(p))
+  filter: <A>(fa: Observable<A>, p: Predicate<A>) => observable.filterMap(fa, O.fromPredicate(p)),
+  fromIO,
+  fromTask,
+  fromObservable: identity
 }
 
 const {
