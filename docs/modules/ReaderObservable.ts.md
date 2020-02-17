@@ -15,6 +15,7 @@ Added in v0.6.6
 - [ReaderObservable (interface)](#readerobservable-interface)
 - [URI (type alias)](#uri-type-alias)
 - [URI](#uri)
+- [alt](#alt)
 - [ap](#ap)
 - [apFirst](#apfirst)
 - [apSecond](#apsecond)
@@ -24,6 +25,9 @@ Added in v0.6.6
 - [chainFirst](#chainfirst)
 - [chainIOK](#chainiok)
 - [chainTaskK](#chaintaskk)
+- [compact](#compact)
+- [filter](#filter)
+- [filterMap](#filtermap)
 - [flatten](#flatten)
 - [fromIO](#fromio)
 - [fromIOK](#fromiok)
@@ -36,8 +40,11 @@ Added in v0.6.6
 - [local](#local)
 - [map](#map)
 - [of](#of)
+- [partition](#partition)
+- [partitionMap](#partitionmap)
 - [readerObservable](#readerobservable)
 - [run](#run)
+- [separate](#separate)
 - [toReaderTask](#toreadertask)
 
 ---
@@ -73,6 +80,16 @@ export const URI: "ReaderObservable" = ...
 ```
 
 Added in v0.6.6
+
+# alt
+
+**Signature**
+
+```ts
+<E, A>(that: () => ReaderObservable<E, A>) => (fa: ReaderObservable<E, A>) => ReaderObservable<E, A>
+```
+
+Added in v0.6.7
 
 # ap
 
@@ -152,7 +169,7 @@ Added in v0.6.6
 export function chainIOK<A, B>(f: (a: A) => IO<B>): <R>(ma: ReaderObservable<R, A>) => ReaderObservable<R, B> { ... }
 ```
 
-Added in v2.4.0
+Added in v0.6.6
 
 # chainTaskK
 
@@ -164,7 +181,37 @@ export function chainTaskK<A, B>(
 ): <R>(ma: ReaderObservable<R, A>) => ReaderObservable<R, B> { ... }
 ```
 
-Added in v2.4.0
+Added in v0.6.6
+
+# compact
+
+**Signature**
+
+```ts
+<E, A>(fa: ReaderObservable<E, O.Option<A>>) => ReaderObservable<E, A>
+```
+
+Added in v0.6.7
+
+# filter
+
+**Signature**
+
+```ts
+{ <A, B>(refinement: Refinement<A, B>): <E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, B>; <A>(predicate: Predicate<A>): <E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, A>; }
+```
+
+Added in v0.6.7
+
+# filterMap
+
+**Signature**
+
+```ts
+<A, B>(f: (a: A) => O.Option<B>) => <E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, B>
+```
+
+Added in v0.6.7
 
 # flatten
 
@@ -194,7 +241,7 @@ Added in v0.6.6
 export function fromIOK<A extends Array<unknown>, B>(f: (...a: A) => IO<B>): <R>(...a: A) => ReaderObservable<R, B> { ... }
 ```
 
-Added in v2.4.0
+Added in v0.6.6
 
 # fromObservable
 
@@ -216,14 +263,14 @@ export function fromObservableK<A extends Array<unknown>, B>(
 ): <R>(...a: A) => ReaderObservable<R, B> { ... }
 ```
 
-Added in v2.4.0
+Added in v0.6.6
 
 # fromOption
 
 **Signature**
 
 ```ts
-export function fromOption<R, A>(o: Option<A>): ReaderObservable<R, A> { ... }
+export function fromOption<R, A>(o: O.Option<A>): ReaderObservable<R, A> { ... }
 ```
 
 Added in v0.6.6
@@ -288,12 +335,32 @@ export const of: <R, A>(a: A) => ReaderObservable<R, A> = ...
 
 Added in v0.6.6
 
+# partition
+
+**Signature**
+
+```ts
+{ <A, B>(refinement: Refinement<A, B>): <E>(fa: ReaderObservable<E, A>) => Separated<ReaderObservable<E, A>, ReaderObservable<E, B>>; <A>(predicate: Predicate<A>): <E>(fa: ReaderObservable<E, A>) => Separated<ReaderObservable<E, A>, ReaderObservable<E, A>>; }
+```
+
+Added in v0.6.7
+
+# partitionMap
+
+**Signature**
+
+```ts
+<A, B, C>(f: (a: A) => E.Either<B, C>) => <E>(fa: ReaderObservable<E, A>) => Separated<ReaderObservable<E, B>, ReaderObservable<E, C>>
+```
+
+Added in v0.6.7
+
 # readerObservable
 
 **Signature**
 
 ```ts
-export const readerObservable: Monad2<URI> & MonadObservable2<URI> = ...
+export const readerObservable: Monad2<URI> & Alternative2<URI> & Filterable2<URI> & MonadObservable2<URI> = ...
 ```
 
 Added in v0.6.6
@@ -307,6 +374,16 @@ export function run<R, A>(ma: ReaderObservable<R, A>, r: R): Promise<A> { ... }
 ```
 
 Added in v0.6.6
+
+# separate
+
+**Signature**
+
+```ts
+<E, A, B>(fa: ReaderObservable<E, E.Either<A, B>>) => Separated<ReaderObservable<E, A>, ReaderObservable<E, B>>
+```
+
+Added in v0.6.7
 
 # toReaderTask
 
