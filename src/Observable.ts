@@ -90,18 +90,8 @@ export const observable: Monad1<URI> & Alternative1<URI> & Filterable1<URI> & Mo
   compact: fa => observable.filterMap(fa, identity),
   separate: fa => observable.partitionMap(fa, identity),
   partitionMap: (fa, f) => ({
-    left: observable.filterMap(fa, a =>
-      pipe(
-        f(a),
-        E.fold(O.some, () => O.none)
-      )
-    ),
-    right: observable.filterMap(fa, a =>
-      pipe(
-        f(a),
-        E.fold(() => O.none, O.some)
-      )
-    )
+    left: observable.filterMap(fa, a => O.fromEither(E.swap(f(a)))),
+    right: observable.filterMap(fa, a => O.fromEither(f(a)))
   }),
   partition: <A>(fa: Observable<A>, p: Predicate<A>) => observable.partitionMap(fa, E.fromPredicate(p, identity)),
   filterMap: <A, B>(fa: Observable<A>, f: (a: A) => O.Option<B>) =>
