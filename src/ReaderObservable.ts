@@ -4,7 +4,7 @@
 import { Observable } from 'rxjs'
 import { getReaderM } from 'fp-ts/lib/ReaderT'
 import * as R from './Observable'
-import { pipeable, pipe } from 'fp-ts/lib/pipeable'
+import { pipeable } from 'fp-ts/lib/pipeable'
 import { IO } from 'fp-ts/lib/IO'
 import { Monad2 } from 'fp-ts/lib/Monad'
 import { Monoid } from 'fp-ts/lib/Monoid'
@@ -164,18 +164,8 @@ export const readerObservable: Monad2<URI> & Alternative2<URI> & Filterable2<URI
   compact: fa => readerObservable.filterMap(fa, identity),
   separate: fa => readerObservable.partitionMap(fa, identity),
   partitionMap: (fa, f) => ({
-    left: readerObservable.filterMap(fa, a =>
-      pipe(
-        f(a),
-        E.fold(O.some, () => O.none)
-      )
-    ),
-    right: readerObservable.filterMap(fa, a =>
-      pipe(
-        f(a),
-        E.fold(() => O.none, O.some)
-      )
-    )
+    left: readerObservable.filterMap(fa, a => O.fromEither(E.swap(f(a)))),
+    right: readerObservable.filterMap(fa, a => O.fromEither(f(a)))
   }),
   partition: <R, A>(fa: ReaderObservable<R, A>, p: Predicate<A>) =>
     readerObservable.partitionMap(fa, E.fromPredicate(p, identity)),

@@ -13,6 +13,12 @@
 **Note**: Gaps between patch versions are faulty/broken releases. **Note**: A feature tagged as Experimental is in a
 high state of flux, you're at risk of it changing without notice.
 
+# 0.6.7
+
+- **New Feature**
+  - `ReaderObservable`
+    - add `Alternative` and `Filterable` instances (@mlegenhausen)
+
 # 0.6.6
 
 - **New Feature**
