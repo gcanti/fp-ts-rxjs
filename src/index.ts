@@ -3,6 +3,8 @@
  */
 import * as observable from './Observable'
 import * as readerObservable from './ReaderObservable'
+import * as observableEither from './ObservableEither'
+
 export {
   /**
    * @since 0.6.0
@@ -11,5 +13,9 @@ export {
   /**
    * @since 0.6.6
    */
-  readerObservable
+  readerObservable,
+  /**
+   * @since 0.6.8
+   */
+  observableEither
 }

@@ -13,6 +13,7 @@ Added in v0.6.0
 <h2 class="text-delta">Table of contents</h2>
 
 - [observable](#observable)
+- [observableEither](#observableeither)
 - [readerObservable](#readerobservable)
 
 ---
@@ -26,6 +27,16 @@ typeof observable
 ```
 
 Added in v0.6.0
+
+# observableEither
+
+**Signature**
+
+```ts
+typeof observableEither
+```
+
+Added in v0.6.8
 
 # readerObservable
 
