@@ -35,6 +35,7 @@ Added in v0.6.6
 - [fromObservableK](#fromobservablek)
 - [fromOption](#fromoption)
 - [fromReader](#fromreader)
+- [fromReaderTask](#fromreadertask)
 - [fromTask](#fromtask)
 - [getMonoid](#getmonoid)
 - [local](#local)
@@ -284,6 +285,16 @@ export const fromReader: <R, A = never>(ma: Reader<R, A>) => ReaderObservable<R,
 ```
 
 Added in v0.6.6
+
+# fromReaderTask
+
+**Signature**
+
+```ts
+export function fromReaderTask<R, A>(ma: ReaderTask<R, A>): ReaderObservable<R, A> { ... }
+```
+
+Added in v0.6.9
 
 # fromTask
 

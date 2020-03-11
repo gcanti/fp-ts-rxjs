@@ -5,6 +5,7 @@ import { reader } from 'fp-ts/lib/Reader'
 import * as _ from '../src/ReaderObservable'
 import * as R from '../src/Observable'
 import * as T from 'fp-ts/lib/Task'
+import * as RT from 'fp-ts/lib/ReaderTask'
 import * as I from 'fp-ts/lib/IO'
 import { bufferTime } from 'rxjs/operators'
 import * as O from 'fp-ts/lib/Option'
@@ -88,6 +89,13 @@ describe('ReaderObservable', () => {
 
   it('fromTask', async () => {
     const e = await _.fromTask(T.of(1))({})
+      .pipe(bufferTime(10))
+      .toPromise()
+    assert.deepStrictEqual(e, [1])
+  })
+
+  it('fromReaderTask', async () => {
+    const e = await _.fromReaderTask(RT.of(1))({})
       .pipe(bufferTime(10))
       .toPromise()
     assert.deepStrictEqual(e, [1])
