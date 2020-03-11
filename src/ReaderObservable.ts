@@ -82,6 +82,13 @@ export function fromTask<R, A>(ma: Task<A>): ReaderObservable<R, A> {
 }
 
 /**
+ * @since 0.6.9
+ */
+export function fromReaderTask<R, A>(ma: ReaderTask<R, A>): ReaderObservable<R, A> {
+  return r => R.fromTask(ma(r))
+}
+
+/**
  * @since 0.6.6
  */
 export function toReaderTask<R, A>(ma: ReaderObservable<R, A>): ReaderTask<R, A> {
