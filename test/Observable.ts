@@ -4,7 +4,7 @@ import { bufferTime, subscribeOn } from 'rxjs/operators'
 import * as O from 'fp-ts/lib/Option'
 import * as E from 'fp-ts/lib/Either'
 import * as T from 'fp-ts/lib/Task'
-import { identity } from 'fp-ts/lib/function'
+import { constFalse, constTrue, identity } from 'fp-ts/lib/function'
 import * as laws from 'fp-ts-laws'
 
 import { observable as R } from '../src'
@@ -139,6 +139,25 @@ describe('Observable', () => {
             expectObservable(right).toBe(success['alt(ap(fab, fa), ap(gac, fa))'], result)
           })
         })
+      })
+    })
+    describe('Filterable', () => {
+      const p = (n: number) => n > 0
+      const q = (n: number) => n < 10
+      const v = from([-5, 5, 15])
+      it('distributivity', () => {
+        const left = R.observable.filter(v, x => p(x) && q(x))
+        const right = R.observable.filter(R.observable.filter(v, p), q)
+        assert.ok(liftE(eqNumber).equals(left, right))
+      })
+      it('identity', () => {
+        const left = R.observable.filter(v, constTrue)
+        assert.ok(liftE(eqNumber).equals(left, v))
+      })
+      it('annihilation', () => {
+        const left = R.observable.filter(from([1, 2, 3]), constFalse)
+        const right = R.observable.filter(from([-1,-2,-3]), constFalse)
+        assert.ok(liftE(eqNumber).equals(left, right))
       })
     })
   })
