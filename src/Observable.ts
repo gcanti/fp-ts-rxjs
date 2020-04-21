@@ -1,7 +1,6 @@
 /**
  * @since 0.6.0
  */
-import { Alternative1 } from 'fp-ts/lib/Alternative'
 import * as E from 'fp-ts/lib/Either'
 import { Filterable1 } from 'fp-ts/lib/Filterable'
 import { identity, Predicate } from 'fp-ts/lib/function'
@@ -14,6 +13,8 @@ import { map as rxMap, mergeMap } from 'rxjs/operators'
 import { IO } from 'fp-ts/lib/IO'
 import { Task } from 'fp-ts/lib/Task'
 import { MonadObservable1 } from './MonadObservable'
+import { Alt1 } from 'fp-ts/lib/Alt'
+import { Plus1 } from './Plus'
 
 declare module 'fp-ts/lib/HKT' {
   interface URItoKind<A> {
@@ -79,7 +80,7 @@ export function toTask<A>(o: Observable<A>): Task<A> {
 /**
  * @since 0.6.0
  */
-export const observable: Monad1<URI> & Alternative1<URI> & Filterable1<URI> & MonadObservable1<URI> = {
+export const observable: Monad1<URI> & Alt1<URI> & Plus1<URI> & Filterable1<URI> & MonadObservable1<URI> = {
   URI,
   map: (fa, f) => fa.pipe(rxMap(f)),
   of,

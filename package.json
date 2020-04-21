@@ -42,6 +42,7 @@
     "@types/node": "7.0.4",
     "docs-ts": "^0.3.4",
     "fp-ts": "^2.4.3",
+    "fp-ts-laws": "^0.2.1",
     "import-path-rewrite": "github:gcanti/import-path-rewrite",
     "jest": "^24.8.0",
     "mocha": "^5.2.0",
