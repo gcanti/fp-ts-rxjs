@@ -1,19 +1,20 @@
 /**
  * @since 0.6.0
  */
-import { Alternative1 } from 'fp-ts/lib/Alternative'
 import * as E from 'fp-ts/lib/Either'
 import { Filterable1 } from 'fp-ts/lib/Filterable'
 import { identity, Predicate } from 'fp-ts/lib/function'
 import { Monad1 } from 'fp-ts/lib/Monad'
 import { Monoid } from 'fp-ts/lib/Monoid'
 import * as O from 'fp-ts/lib/Option'
-import { pipe, pipeable } from 'fp-ts/lib/pipeable'
-import { combineLatest, EMPTY, merge, Observable, of as rxOf, defer } from 'rxjs'
-import { map as rxMap, mergeMap } from 'rxjs/operators'
+import { pipeable } from 'fp-ts/lib/pipeable'
+import { combineLatest, EMPTY, merge, Observable, of as rxOf, defer, Subscriber, Operator } from 'rxjs'
+import { map as rxMap, switchMap, filter as rxFilter } from 'rxjs/operators'
 import { IO } from 'fp-ts/lib/IO'
 import { Task } from 'fp-ts/lib/Task'
 import { MonadObservable1 } from './MonadObservable'
+import { Alt1 } from 'fp-ts/lib/Alt'
+import { Plus1 } from './Plus'
 
 declare module 'fp-ts/lib/HKT' {
   interface URItoKind<A> {
@@ -79,12 +80,12 @@ export function toTask<A>(o: Observable<A>): Task<A> {
 /**
  * @since 0.6.0
  */
-export const observable: Monad1<URI> & Alternative1<URI> & Filterable1<URI> & MonadObservable1<URI> = {
+export const observable: Monad1<URI> & Alt1<URI> & Plus1<URI> & Filterable1<URI> & MonadObservable1<URI> = {
   URI,
   map: (fa, f) => fa.pipe(rxMap(f)),
   of,
   ap: (fab, fa) => combineLatest([fab, fa]).pipe(rxMap(([f, a]) => f(a))),
-  chain: (fa, f) => fa.pipe(mergeMap(f)),
+  chain: (fa, f) => fa.pipe(switchMap(f)),
   zero: () => EMPTY,
   alt: (fx, f) => merge(fx, f()),
   compact: fa => observable.filterMap(fa, identity),
@@ -94,17 +95,8 @@ export const observable: Monad1<URI> & Alternative1<URI> & Filterable1<URI> & Mo
     right: observable.filterMap(fa, a => O.fromEither(f(a)))
   }),
   partition: <A>(fa: Observable<A>, p: Predicate<A>) => observable.partitionMap(fa, E.fromPredicate(p, identity)),
-  filterMap: <A, B>(fa: Observable<A>, f: (a: A) => O.Option<B>) =>
-    fa.pipe(
-      mergeMap(a =>
-        pipe(
-          f(a),
-          // tslint:disable-next-line: deprecation
-          O.fold<B, Observable<B>>(() => EMPTY, of)
-        )
-      )
-    ),
-  filter: <A>(fa: Observable<A>, p: Predicate<A>) => observable.filterMap(fa, O.fromPredicate(p)),
+  filterMap: (fa, f) => fa.lift(new FilterMapOperator(f)),
+  filter: <A>(fa: Observable<A>, p: Predicate<A>) => fa.pipe(rxFilter(p)),
   fromIO,
   fromTask,
   fromObservable: identity
@@ -184,4 +176,25 @@ export {
    * @since 0.6.0
    */
   separate
+}
+
+class FilterMapOperator<A, B> implements Operator<A, B> {
+  constructor(private readonly f: (a: A) => O.Option<B>) {}
+
+  call(subscriber: Subscriber<B>, source: Observable<A>) {
+    return source.subscribe(new FilterMapSubscriber(subscriber, this.f))
+  }
+}
+
+class FilterMapSubscriber<A, B> extends Subscriber<A> {
+  constructor(destination: Subscriber<B>, private readonly f: (a: A) => O.Option<B>) {
+    super(destination)
+  }
+
+  protected _next(value: A): void {
+    const b = this.f(value)
+    if (O.isSome(b) && this.destination && this.destination.next) {
+      this.destination.next(b.value)
+    }
+  }
 }
