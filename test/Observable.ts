@@ -76,7 +76,7 @@ describe('Observable', () => {
         const f = (n: number) => n + 1
         const g = (n: number) => n / 2
         const result = { b: f(a), c: g(a) }
-        const success = {
+        const test1 = {
           fa: '                             ------------a----------------|',
           fab: '                            ---f-------------------------|',
           gac: '                            ----------------g------------|',
@@ -90,7 +90,7 @@ describe('Observable', () => {
           'ap(gac, fa)': '                  ----------------c------------|',
           'alt(ap(fab, fa), ap(gac, fa))': '------------b---c------------|'
         }
-        const failure = {
+        const test2 = {
           fa: '                             ------------a----------------|',
           fab: '                            ---f-------------------------|',
           gac: '                            --------g--------------------|',
@@ -101,42 +101,41 @@ describe('Observable', () => {
 
           'RIGHT SIDE': '',
           'ap(fab, fa)': '                  ------------b----------------|',
-          'ap(gac, fa)': '                  ----------------c------------|',
-          'alt(ap(fab, fa), ap(gac, fa))': '------------b---c------------|'
+          'ap(gac, fa)': '                  ------------c----------------|',
+          'alt(ap(fab, fa), ap(gac, fa))': '------------(bc)-------------|'
         }
         it('left sides are not equal but they should be', () => {
-          assert.notDeepStrictEqual(success['ap(alt(fab, gac), fa)'], failure['ap(alt(fab, gac), fa)'])
+          assert.notDeepStrictEqual(test1['ap(alt(fab, gac), fa)'], test2['ap(alt(fab, gac), fa)'])
         })
-        it('right sides should be equal', () => {
-          assert.deepStrictEqual(success['alt(ap(fab, fa), ap(gac, fa))'], failure['alt(ap(fab, fa), ap(gac, fa))'])
+        it('right sides are not equal but they should be ', () => {
+          assert.notDeepStrictEqual(test1['alt(ap(fab, fa), ap(gac, fa))'], test2['alt(ap(fab, fa), ap(gac, fa))'])
         })
-        it('success', () => {
+        it('test1', () => {
           new TestScheduler(assert.deepStrictEqual).run(({ cold, expectObservable }) => {
-            const fa = cold(success.fa, { a })
-            const fab = cold(success.fab, { f })
-            const gac = cold(success.gac, { g })
+            const fa = cold(test1.fa, { a })
+            const fab = cold(test1.fab, { f })
+            const gac = cold(test1.gac, { g })
             const left = R.observable.ap(
               R.observable.alt(fab, () => gac),
               fa
             )
             const right = R.observable.alt(R.observable.ap(fab, fa), () => R.observable.ap(gac, fa))
-            expectObservable(left).toBe(success['ap(alt(fab, gac), fa)'], result)
-            expectObservable(right).toBe(success['alt(ap(fab, fa), ap(gac, fa))'], result)
+            expectObservable(left).toBe(test1['ap(alt(fab, gac), fa)'], result)
+            expectObservable(right).toBe(test1['alt(ap(fab, fa), ap(gac, fa))'], result)
           })
         })
-        it('failure', () => {
-          // use assert.notDeepStrictEqual as assert
-          new TestScheduler(assert.notDeepStrictEqual).run(({ cold, expectObservable }) => {
-            const fa = cold(failure.fa, { a })
-            const fab = cold(failure.fab, { f })
-            const gac = cold(failure.gac, { g })
+        it('test2', () => {
+          new TestScheduler(assert.deepStrictEqual).run(({ cold, expectObservable }) => {
+            const fa = cold(test2.fa, { a })
+            const fab = cold(test2.fab, { f })
+            const gac = cold(test2.gac, { g })
             const left = R.observable.ap(
               R.observable.alt(fab, () => gac),
               fa
             )
             const right = R.observable.alt(R.observable.ap(fab, fa), () => R.observable.ap(gac, fa))
-            expectObservable(left).toBe(success['ap(alt(fab, gac), fa)'], result)
-            expectObservable(right).toBe(success['alt(ap(fab, fa), ap(gac, fa))'], result)
+            expectObservable(left).toBe(test2['ap(alt(fab, gac), fa)'], result)
+            expectObservable(right).toBe(test2['alt(ap(fab, fa), ap(gac, fa))'], result)
           })
         })
       })
