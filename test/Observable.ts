@@ -123,6 +123,18 @@ describe('Observable', () => {
             expectObservable(left).toBe(test1['ap(alt(fab, gac), fa)'], result)
             expectObservable(right).toBe(test1['alt(ap(fab, fa), ap(gac, fa))'], result)
           })
+          new TestScheduler(assert.deepStrictEqual).run(({ cold, expectObservable }) => {
+            const fa = cold(test1.fa, { a })
+            const fab = cold(test1.fab, { f })
+            const gac = cold(test1.gac, { g })
+            const left = R.observable.ap(
+              R.observable.alt(fab, () => gac),
+              fa
+            )
+            const right = R.observable.alt(R.observable.ap(fab, fa), () => R.observable.ap(gac, fa))
+            expectObservable(left).toBe(test1['alt(ap(fab, fa), ap(gac, fa))'], result)
+            expectObservable(right).toBe(test1['ap(alt(fab, gac), fa)'], result)
+          })
         })
         it('test2', () => {
           new TestScheduler(assert.deepStrictEqual).run(({ cold, expectObservable }) => {
@@ -136,6 +148,18 @@ describe('Observable', () => {
             const right = R.observable.alt(R.observable.ap(fab, fa), () => R.observable.ap(gac, fa))
             expectObservable(left).toBe(test2['ap(alt(fab, gac), fa)'], result)
             expectObservable(right).toBe(test2['alt(ap(fab, fa), ap(gac, fa))'], result)
+          })
+          new TestScheduler(assert.notDeepStrictEqual).run(({ cold, expectObservable }) => {
+            const fa = cold(test2.fa, { a })
+            const fab = cold(test2.fab, { f })
+            const gac = cold(test2.gac, { g })
+            const left = R.observable.ap(
+              R.observable.alt(fab, () => gac),
+              fa
+            )
+            const right = R.observable.alt(R.observable.ap(fab, fa), () => R.observable.ap(gac, fa))
+            expectObservable(left).toBe(test2['alt(ap(fab, fa), ap(gac, fa))'], result)
+            expectObservable(right).toBe(test2['ap(alt(fab, gac), fa)'], result)
           })
         })
       })
