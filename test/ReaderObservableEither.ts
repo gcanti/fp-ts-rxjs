@@ -6,7 +6,7 @@ import { bufferTime } from 'rxjs/operators'
 import { observable as OB, observableEither as OBE, readerObservableEither as ROBE } from '../src'
 
 // test helper to dry up LOC.
-const buffer = flow(R.map(bufferTime(10)), R.map(OB.toTask))
+export const buffer = flow(R.map(bufferTime(10)), R.map(OB.toTask))
 
 describe('ReaderObservable', () => {
   it('map', async () => {
