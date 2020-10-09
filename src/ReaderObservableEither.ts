@@ -116,7 +116,7 @@ export function throwError<R, E, A>(e: E): ReaderObservableEither<R, E, A> {
 /**
  * @since 0.6.10
  */
-export const ReaderObservableEither: MonadObservable3<URI> & MonadThrow3<URI> & Bifunctor3<URI> = {
+export const readerObservableEither: MonadObservable3<URI> & MonadThrow3<URI> & Bifunctor3<URI> = {
   URI,
   ap: M.ap,
   map: M.map,
@@ -144,4 +144,4 @@ export const {
   fromPredicate,
   map,
   mapLeft
-} = pipeable(ReaderObservableEither)
+} = pipeable(readerObservableEither)
