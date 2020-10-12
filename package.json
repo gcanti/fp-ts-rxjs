@@ -34,7 +34,7 @@
   },
   "homepage": "https://github.com/gcanti/fp-ts-rxjs",
   "peerDependencies": {
-    "fp-ts": "^2.4.3",
+    "fp-ts": "^2.4.4",
     "rxjs": "^6.0.0"
   },
   "devDependencies": {
