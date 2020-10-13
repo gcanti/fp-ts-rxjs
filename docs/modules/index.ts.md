@@ -15,6 +15,8 @@ Added in v0.6.0
 - [observable](#observable)
 - [observableEither](#observableeither)
 - [readerObservable](#readerobservable)
+- [readerObservableEither](#readerobservableeither)
+- [stateReaderObservableEither](#statereaderobservableeither)
 
 ---
 
@@ -47,3 +49,23 @@ typeof readerObservable
 ```
 
 Added in v0.6.6
+
+# readerObservableEither
+
+**Signature**
+
+```ts
+typeof readerObservableEither
+```
+
+Added in v0.6.10
+
+# stateReaderObservableEither
+
+**Signature**
+
+```ts
+typeof stateReaderObservableEither
+```
+
+Added in v0.6.10

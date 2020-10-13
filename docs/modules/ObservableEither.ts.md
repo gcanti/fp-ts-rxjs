@@ -78,7 +78,7 @@ Added in v0.6.8
 **Signature**
 
 ```ts
-<E, A>(that: () => ObservableEither<E, A>) => (fa: ObservableEither<E, A>) => ObservableEither<E, A>
+<E, A>(that: Lazy<ObservableEither<E, A>>) => (fa: ObservableEither<E, A>) => ObservableEither<E, A>
 ```
 
 Added in v0.6.8

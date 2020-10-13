@@ -20,6 +20,7 @@ Added in v0.6.6
 - [MonadObservable2C (interface)](#monadobservable2c-interface)
 - [MonadObservable3 (interface)](#monadobservable3-interface)
 - [MonadObservable3C (interface)](#monadobservable3c-interface)
+- [MonadObservable4 (interface)](#monadobservable4-interface)
 
 ---
 
@@ -93,4 +94,16 @@ export interface MonadObservable3C<M extends URIS3, E> extends MonadTask3C<M, E>
 }
 ```
 
-Added in v2.2.0
+Added in v0.6.6
+
+# MonadObservable4 (interface)
+
+**Signature**
+
+```ts
+export interface MonadObservable4<M extends URIS4> extends MonadTask4<M> {
+  readonly fromObservable: <S, R, E, A>(fa: Observable<A>) => Kind4<M, S, R, E, A>
+}
+```
+
+Added in v0.6.7

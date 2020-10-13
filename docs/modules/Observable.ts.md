@@ -63,7 +63,7 @@ Added in v0.6.0
 **Signature**
 
 ```ts
-<A>(that: () => Observable<A>) => (fa: Observable<A>) => Observable<A>
+<A>(that: Lazy<Observable<A>>) => (fa: Observable<A>) => Observable<A>
 ```
 
 Added in v0.6.0

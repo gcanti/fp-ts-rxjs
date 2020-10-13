@@ -87,7 +87,7 @@ Added in v0.6.6
 **Signature**
 
 ```ts
-<E, A>(that: () => ReaderObservable<E, A>) => (fa: ReaderObservable<E, A>) => ReaderObservable<E, A>
+<E, A>(that: Lazy<ReaderObservable<E, A>>) => (fa: ReaderObservable<E, A>) => ReaderObservable<E, A>
 ```
 
 Added in v0.6.7

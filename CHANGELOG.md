@@ -13,6 +13,13 @@
 **Note**: Gaps between patch versions are faulty/broken releases. **Note**: A feature tagged as Experimental is in a
 high state of flux, you're at risk of it changing without notice.
 
+# 0.6.10
+
+- **New Feature**
+  - add `ReaderObservableEither` module, #34 (@waynevanson )
+  - add `StateReaderObservableEither` module, #34 (@waynevanson )
+  - add `MonadObservable4` interface, #34 (@waynevanson )
+
 # 0.6.9
 
 - **Polish**
