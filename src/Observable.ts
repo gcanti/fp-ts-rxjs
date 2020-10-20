@@ -185,3 +185,27 @@ export {
    */
   separate
 }
+
+/**
+ * @category Do
+ * @since 0.6.11
+ */
+export function bindTo<K extends string, A>(name: K): (fa: Observable<A>) => Observable<{ [P in K]: A }> {
+  return map(a => ({ [name]: a } as { [P in K]: A }))
+}
+
+/**
+ * @category Do
+ * @since 0.6.11
+ */
+export function bind<K extends string, A, B>(
+  name: Exclude<K, keyof A>,
+  f: (a: A) => Observable<B>
+): (fa: Observable<A>) => Observable<{ [P in keyof A | K]: P extends keyof A ? A[P] : B }> {
+  return chain(a =>
+    pipe(
+      f(a),
+      map(b => ({ ...a, [name]: b } as any))
+    )
+  )
+}

@@ -298,4 +298,16 @@ describe('ReaderObservable', () => {
     const x = await _.run(pipe(_.of('a'), _.chainTaskK(f)), undefined)
     assert.deepStrictEqual(x, 1)
   })
+
+  it('do notation', async () => {
+    const t = await pipe(
+      _.of(1),
+      _.bindTo('a'),
+      _.bind('b', () => _.of('b'))
+    )(undefined)
+      .pipe(bufferTime(10))
+      .toPromise()
+
+    assert.deepStrictEqual(t, [{ a: 1, b: 'b' }])
+  })
 })

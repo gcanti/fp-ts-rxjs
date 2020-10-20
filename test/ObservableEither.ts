@@ -255,4 +255,16 @@ describe('ObservableEither', () => {
       assert.deepStrictEqual(e1, e2)
     })
   })
+
+  it('do notation', async () => {
+    const t = await pipe(
+      _.right(1),
+      _.bindTo('a'),
+      _.bind('b', () => _.right('b'))
+    )
+      .pipe(bufferTime(10))
+      .toPromise()
+
+    assert.deepStrictEqual(t, [E.right({ a: 1, b: 'b' })])
+  })
 })

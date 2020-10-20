@@ -125,4 +125,17 @@ describe('ReaderObservable', () => {
     const x = await robe({})()
     assert.deepStrictEqual(x, [E.right(1)])
   })
+
+  // robe should expose right
+  it('do notation', async () => {
+    const t = await pipe(
+      ROBE.of(1),
+      ROBE.bindTo('a'),
+      ROBE.bind('b', () => ROBE.of('b'))
+    )(undefined)
+      .pipe(bufferTime(10))
+      .toPromise()
+
+    assert.deepStrictEqual(t, [E.right({ a: 1, b: 'b' })])
+  })
 })

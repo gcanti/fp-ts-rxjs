@@ -217,3 +217,37 @@ export {
    */
   mapLeft
 }
+
+// DO SYNTAX
+
+/**
+ * @category Do
+ * @since 0.6.11
+ */
+export function bindTo<K extends string>(
+  name: K
+): <S, R, E, A>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, { [P in K]: A }> {
+  return fa =>
+    pipe(
+      fa,
+      map(value => ({ [name]: value } as any))
+    )
+}
+
+/**
+ * @category Do
+ * @since 0.6.11
+ */
+export function bind<K extends string, S, R, E, A, B>(
+  name: Exclude<K, keyof A>,
+  f: (a: A) => StateReaderObservableEither<S, R, E, B>
+): (
+  fa: StateReaderObservableEither<S, R, E, A>
+) => StateReaderObservableEither<S, R, E, { [P in keyof A | K]: P extends keyof A ? A[P] : B }> {
+  return chain(a =>
+    pipe(
+      f(a),
+      map(b => ({ ...a, [name]: b } as any))
+    )
+  )
+}

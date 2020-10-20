@@ -7,7 +7,7 @@ import { MonadObservable3 } from './MonadObservable'
 import { MonadThrow3 } from 'fp-ts/lib/MonadThrow'
 import { Bifunctor3 } from 'fp-ts/lib/Bifunctor'
 import { getReaderM } from 'fp-ts/lib/ReaderT'
-import { pipeable } from 'fp-ts/lib/pipeable'
+import { pipe, pipeable } from 'fp-ts/lib/pipeable'
 import { Observable } from 'rxjs'
 
 /**
@@ -193,4 +193,34 @@ export {
    * @since 0.6.10
    */
   mapLeft
+}
+
+// DO
+
+/**
+ * @category Do
+ * @since 0.6.11
+ */
+export function bindTo<K extends string, R, E, A>(
+  name: K
+): (fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, { [P in K]: A }> {
+  return map(a => ({ [name]: a } as { [P in K]: A }))
+}
+
+/**
+ * @category Do
+ * @since 0.6.11
+ */
+export function bind<K extends string, R, E, A, B>(
+  name: Exclude<K, keyof A>,
+  f: (a: A) => ReaderObservableEither<R, E, B>
+): (
+  fa: ReaderObservableEither<R, E, A>
+) => ReaderObservableEither<R, E, { [P in keyof A | K]: P extends keyof A ? A[P] : B }> {
+  return chain(a =>
+    pipe(
+      f(a),
+      map(b => ({ ...a, [name]: b } as any))
+    )
+  )
 }
