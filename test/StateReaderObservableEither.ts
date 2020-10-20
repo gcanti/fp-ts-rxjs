@@ -82,4 +82,17 @@ describe('stateReaderObservableEither', () => {
     const x = await srobe(2)()
     assert.deepStrictEqual(x, [E.right(1)])
   })
+
+  // should expose of
+  it('do notation', async () => {
+    const srobe = pipe(
+      SROBE.right(1),
+      SROBE.bindTo('a'),
+      SROBE.bind('b', () => SROBE.right('b')),
+      buffer
+    )
+
+    const x = await srobe('state')('reader')()
+    assert.deepStrictEqual(x, [E.right([{ a: 1, b: 'b' }, 'state'])])
+  })
 })

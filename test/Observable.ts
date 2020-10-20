@@ -7,6 +7,7 @@ import * as T from 'fp-ts/lib/Task'
 import { identity } from 'fp-ts/lib/function'
 
 import { observable as R } from '../src'
+import { pipe } from 'fp-ts/lib/pipeable'
 
 describe('Observable', () => {
   it('of', () => {
@@ -205,5 +206,17 @@ describe('Observable', () => {
   it('toTask', async () => {
     const t = await R.toTask(R.of(1))()
     assert.deepStrictEqual(t, 1)
+  })
+
+  it('do notation', async () => {
+    const t = await pipe(
+      R.of(1),
+      R.bindTo('a'),
+      R.bind('b', () => R.of('b'))
+    )
+      .pipe(bufferTime(10))
+      .toPromise()
+
+    assert.deepStrictEqual(t, [{ a: 1, b: 'b' }])
   })
 })

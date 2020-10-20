@@ -4,7 +4,7 @@
 import { Observable } from 'rxjs'
 import { getReaderM } from 'fp-ts/lib/ReaderT'
 import * as R from './Observable'
-import { pipeable } from 'fp-ts/lib/pipeable'
+import { pipe, pipeable } from 'fp-ts/lib/pipeable'
 import { IO } from 'fp-ts/lib/IO'
 import { Monad2 } from 'fp-ts/lib/Monad'
 import { Monoid } from 'fp-ts/lib/Monoid'
@@ -257,4 +257,30 @@ export {
    * @since 0.6.7
    */
   separate
+}
+
+/**
+ * @category Do
+ * @since 0.6.11
+ */
+export function bindTo<K extends string, R, A>(
+  name: K
+): (fa: ReaderObservable<R, A>) => ReaderObservable<R, { [P in K]: A }> {
+  return map(a => ({ [name]: a } as { [P in K]: A }))
+}
+
+/**
+ * @category Do
+ * @since 0.6.11
+ */
+export function bind<K extends string, R, A, B>(
+  name: Exclude<K, keyof A>,
+  f: (a: A) => ReaderObservable<R, B>
+): (fa: ReaderObservable<R, A>) => ReaderObservable<R, { [P in keyof A | K]: P extends keyof A ? A[P] : B }> {
+  return chain(a =>
+    pipe(
+      f(a),
+      map(b => ({ ...a, [name]: b } as any))
+    )
+  )
 }

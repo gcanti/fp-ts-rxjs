@@ -14,7 +14,7 @@ import { MonadObservable2 } from './MonadObservable'
 import { Observable } from 'rxjs'
 import { Task } from 'fp-ts/lib/Task'
 import { getEitherM } from 'fp-ts/lib/EitherT'
-import { pipeable } from 'fp-ts/lib/pipeable'
+import { pipe, pipeable } from 'fp-ts/lib/pipeable'
 
 const T = getEitherM(R.observable)
 
@@ -190,4 +190,30 @@ export {
    * @since 0.6.8
    */
   mapLeft
+}
+
+/**
+ * @category Do
+ * @since 0.6.11
+ */
+export function bindTo<K extends string, E, A>(
+  name: K
+): (fa: ObservableEither<E, A>) => ObservableEither<E, { [P in K]: A }> {
+  return map(a => ({ [name]: a } as { [P in K]: A }))
+}
+
+/**
+ * @category Do
+ * @since 0.6.11
+ */
+export function bind<K extends string, E, A, B>(
+  name: Exclude<K, keyof A>,
+  f: (a: A) => ObservableEither<E, B>
+): (fa: ObservableEither<E, A>) => ObservableEither<E, { [P in keyof A | K]: P extends keyof A ? A[P] : B }> {
+  return chain(a =>
+    pipe(
+      f(a),
+      map(b => ({ ...a, [name]: b } as any))
+    )
+  )
 }
