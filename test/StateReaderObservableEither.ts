@@ -26,6 +26,18 @@ describe('stateReaderObservableEither', () => {
     assert.deepStrictEqual(x, [E.left(3)])
   })
 
+  test('chain', async () => {
+    const fa = SROBE.right<number, number, number, number>(3)
+    const fab = SROBE.right<number, number, number, number>(6)
+    const srobe = pipe(
+      fa,
+      SROBE.chain(() => fab),
+      buffer
+    )
+    const x = await srobe(1)(2)()
+    assert.deepStrictEqual(x, [E.right([6, 1])])
+  })
+
   test('throwError', async () => {
     const srobe = pipe(SROBE.throwError<number, number, number, number>(3), buffer)
     const x = await srobe(1)(2)()
