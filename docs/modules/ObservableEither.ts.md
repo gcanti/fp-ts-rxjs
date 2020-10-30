@@ -20,6 +20,8 @@ Added in v0.6.8
 - [apFirst](#apfirst)
 - [apSecond](#apsecond)
 - [bimap](#bimap)
+- [bind](#bind)
+- [bindTo](#bindto)
 - [chain](#chain)
 - [chainFirst](#chainfirst)
 - [flatten](#flatten)
@@ -122,6 +124,31 @@ Added in v0.6.8
 ```
 
 Added in v0.6.8
+
+# bind
+
+**Signature**
+
+```ts
+export function bind<K extends string, E, A, B>(
+  name: Exclude<K, keyof A>,
+  f: (a: A) => ObservableEither<E, B>
+): (fa: ObservableEither<E, A>) => ObservableEither<E, { [P in keyof A | K]: P extends keyof A ? A[P] : B }> { ... }
+```
+
+Added in v0.6.11
+
+# bindTo
+
+**Signature**
+
+```ts
+export function bindTo<K extends string, E, A>(
+  name: K
+): (fa: ObservableEither<E, A>) => ObservableEither<E, { [P in K]: A }> { ... }
+```
+
+Added in v0.6.11
 
 # chain
 

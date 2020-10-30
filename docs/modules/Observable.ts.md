@@ -18,6 +18,8 @@ Added in v0.6.0
 - [ap](#ap)
 - [apFirst](#apfirst)
 - [apSecond](#apsecond)
+- [bind](#bind)
+- [bindTo](#bindto)
 - [chain](#chain)
 - [chainFirst](#chainfirst)
 - [compact](#compact)
@@ -97,6 +99,29 @@ Added in v0.6.0
 ```
 
 Added in v0.6.0
+
+# bind
+
+**Signature**
+
+```ts
+export function bind<K extends string, A, B>(
+  name: Exclude<K, keyof A>,
+  f: (a: A) => Observable<B>
+): (fa: Observable<A>) => Observable<{ [P in keyof A | K]: P extends keyof A ? A[P] : B }> { ... }
+```
+
+Added in v0.6.11
+
+# bindTo
+
+**Signature**
+
+```ts
+export function bindTo<K extends string, A>(name: K): (fa: Observable<A>) => Observable<{ [P in K]: A }> { ... }
+```
+
+Added in v0.6.11
 
 # chain
 

@@ -19,6 +19,8 @@ Added in v0.6.10
 - [apFirst](#apfirst)
 - [apSecond](#apsecond)
 - [bimap](#bimap)
+- [bind](#bind)
+- [bindTo](#bindto)
 - [chain](#chain)
 - [chainFirst](#chainfirst)
 - [evaluate](#evaluate)
@@ -116,6 +118,33 @@ Added in v0.6.10
 ```
 
 Added in v0.6.10
+
+# bind
+
+**Signature**
+
+```ts
+export function bind<K extends string, S, R, E, A, B>(
+  name: Exclude<K, keyof A>,
+  f: (a: A) => StateReaderObservableEither<S, R, E, B>
+): (
+  fa: StateReaderObservableEither<S, R, E, A>
+) => StateReaderObservableEither<S, R, E, { [P in keyof A | K]: P extends keyof A ? A[P] : B }> { ... }
+```
+
+Added in v0.6.11
+
+# bindTo
+
+**Signature**
+
+```ts
+export function bindTo<K extends string>(
+  name: K
+): <S, R, E, A>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, { [P in K]: A }> { ... }
+```
+
+Added in v0.6.11
 
 # chain
 

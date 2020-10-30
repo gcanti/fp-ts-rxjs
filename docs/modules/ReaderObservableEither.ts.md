@@ -21,6 +21,8 @@ Added in v0.6.10
 - [ask](#ask)
 - [asks](#asks)
 - [bimap](#bimap)
+- [bind](#bind)
+- [bindTo](#bindto)
 - [chain](#chain)
 - [chainFirst](#chainfirst)
 - [filterOrElse](#filterorelse)
@@ -133,6 +135,33 @@ Added in v0.6.10
 ```
 
 Added in v0.6.10
+
+# bind
+
+**Signature**
+
+```ts
+export function bind<K extends string, R, E, A, B>(
+  name: Exclude<K, keyof A>,
+  f: (a: A) => ReaderObservableEither<R, E, B>
+): (
+  fa: ReaderObservableEither<R, E, A>
+) => ReaderObservableEither<R, E, { [P in keyof A | K]: P extends keyof A ? A[P] : B }> { ... }
+```
+
+Added in v0.6.11
+
+# bindTo
+
+**Signature**
+
+```ts
+export function bindTo<K extends string, R, E, A>(
+  name: K
+): (fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, { [P in K]: A }> { ... }
+```
+
+Added in v0.6.11
 
 # chain
 

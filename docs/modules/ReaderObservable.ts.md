@@ -21,6 +21,8 @@ Added in v0.6.6
 - [apSecond](#apsecond)
 - [ask](#ask)
 - [asks](#asks)
+- [bind](#bind)
+- [bindTo](#bindto)
 - [chain](#chain)
 - [chainFirst](#chainfirst)
 - [chainIOK](#chainiok)
@@ -141,6 +143,31 @@ export const asks: <R, A = never>(f: (r: R) => A) => ReaderObservable<R, A> = ..
 ```
 
 Added in v0.6.6
+
+# bind
+
+**Signature**
+
+```ts
+export function bind<K extends string, R, A, B>(
+  name: Exclude<K, keyof A>,
+  f: (a: A) => ReaderObservable<R, B>
+): (fa: ReaderObservable<R, A>) => ReaderObservable<R, { [P in keyof A | K]: P extends keyof A ? A[P] : B }> { ... }
+```
+
+Added in v0.6.11
+
+# bindTo
+
+**Signature**
+
+```ts
+export function bindTo<K extends string, R, A>(
+  name: K
+): (fa: ReaderObservable<R, A>) => ReaderObservable<R, { [P in K]: A }> { ... }
+```
+
+Added in v0.6.11
 
 # chain
 
