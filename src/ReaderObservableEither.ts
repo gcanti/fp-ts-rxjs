@@ -107,6 +107,15 @@ export function throwError<R, E, A>(e: E): ReaderObservableEither<R, E, A> {
   return () => OBE.left<E, A>(e)
 }
 
+
+/**
+ * @since 0.6.8
+ */
+export const chainW = <A, R2, E2, B>(
+  f: (a: A) => ReaderObservableEither<R2, E2, B>
+) => <R1, E1>(ma: ReaderObservableEither<R1, E2, A>): ReaderObservableEither<R1 & R2, E1 | E2, B> =>
+  chain(f)(ma as any) as any
+
 /**
  * @since 0.6.10
  */

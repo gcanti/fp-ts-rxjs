@@ -128,6 +128,14 @@ export function fromObservable<S, R, E, A>(observable: Observable<A>): StateRead
 }
 
 /**
+ * @since 0.6.8
+ */
+export const chainW = <A, S, R2, E2, B>(
+  f: (a: A) => StateReaderObservableEither<S, R2, E2, B>
+) => <R1, E1>(ma: StateReaderObservableEither<S, R1, E2, A>): StateReaderObservableEither<S, R1 & R2, E1 | E2, B> =>
+  chain(f)(ma as any) as any
+
+/**
  * @since 0.6.10
  */
 export const stateReaderObservableEither: MonadObservable4<URI> & Bifunctor4<URI> & MonadThrow4<URI> = {

@@ -132,6 +132,14 @@ export const swap: <E, A>(ma: ObservableEither<E, A>) => ObservableEither<A, E> 
 /**
  * @since 0.6.8
  */
+export const chainW = <A, E2, B>(
+  f: (a: A) => ObservableEither<E2, B>
+) => <E1>(ma: ObservableEither<E1, A>): ObservableEither<E2 | E1, B> =>
+  T.chain(ma as any, f)
+
+/**
+ * @since 0.6.8
+ */
 export const observableEither: Monad2<URI> & Bifunctor2<URI> & Alt2<URI> & MonadObservable2<URI> & MonadThrow2<URI> = {
   URI,
   map: T.map,
