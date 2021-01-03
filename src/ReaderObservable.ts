@@ -216,6 +216,15 @@ export const chain: <R, A, B>(
   f: (a: A) => ReaderObservable<R, B>
 ) => (ma: ReaderObservable<R, A>) => ReaderObservable<R, B> = chainW
 
+
+/**
+ * @since 0.6.8
+ */
+export const chainW = <A, R2, B>(
+  f: (a: A) => ReaderObservable<R2, B>
+) => <R1>(ma: ReaderObservable<R1, A>): ReaderObservable<R1 & R2, B> =>
+  chain(f)(ma as any) as any
+
 /**
  * Derivable from `Monad`.
  *

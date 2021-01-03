@@ -353,6 +353,15 @@ export const Applicative: Applicative3<URI> = {
   of
 }
 
+
+/**
+ * @since 0.6.8
+ */
+export const chainW = <A, R2, E2, B>(
+  f: (a: A) => ReaderObservableEither<R2, E2, B>
+) => <R1, E1>(ma: ReaderObservableEither<R1, E2, A>): ReaderObservableEither<R1 & R2, E1 | E2, B> =>
+  chain(f)(ma as any) as any
+
 /**
  * @category instances
  * @since 0.6.12
