@@ -59,7 +59,7 @@ export function fromOption<A>(o: O.Option<A>): Observable<A> {
  * @since 0.6.5
  */
 export function fromIO<A>(io: IO<A>): Observable<A> {
-  return defer(async () => io())
+  return defer(() => rxOf(io()))
 }
 
 /**
