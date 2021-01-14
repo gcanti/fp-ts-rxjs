@@ -34,14 +34,14 @@
   },
   "homepage": "https://github.com/gcanti/fp-ts-rxjs",
   "peerDependencies": {
-    "fp-ts": "^2.4.4",
+    "fp-ts": "^2.7.0",
     "rxjs": "^6.0.0"
   },
   "devDependencies": {
     "@types/mocha": "2.2.38",
     "@types/node": "7.0.4",
     "docs-ts": "^0.3.4",
-    "fp-ts": "^2.4.4",
+    "fp-ts": "^2.9.3",
     "import-path-rewrite": "github:gcanti/import-path-rewrite",
     "jest": "^24.8.0",
     "mocha": "^5.2.0",
