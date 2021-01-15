@@ -325,6 +325,7 @@ export const fromPredicate: {
 export const fromIO: MonadTask2<URI>['fromIO'] = rightIO
 
 /**
+ * @category MonadThrow
  * @since 0.6.12
  */
 export const throwError: MonadThrow2<URI>['throwError'] = left
@@ -357,7 +358,7 @@ export type URI = typeof URI
 
 declare module 'fp-ts/lib/HKT' {
   interface URItoKind2<E, A> {
-    ObservableEither: ObservableEither<E, A>
+    readonly [URI]: ObservableEither<E, A>
   }
 }
 
