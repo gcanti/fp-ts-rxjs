@@ -17,6 +17,7 @@ high state of flux, you're at risk of it changing without notice.
 
 - **New Feature**
   - add `ObservableThese`, #44 (@siuvdlec)
+  - expose `fp-ts-rxjs` modules without lib/es6 prefix, closes #40 (@gcanti)
 - **Polish**
   - export `MonadObservable` from `index.ts` (@canti)
 - **Internal**
