@@ -12,6 +12,8 @@ Added in v0.6.10
 
 <h2 class="text-delta">Table of contents</h2>
 
+- [Applicative](#applicative)
+  - [of](#of)
 - [Apply](#apply)
   - [ap](#ap)
 - [Bifunctor](#bifunctor)
@@ -21,27 +23,36 @@ Added in v0.6.10
   - [map](#map)
 - [Monad](#monad)
   - [chain](#chain)
+- [MonadThrow](#monadthrow)
+  - [throwError](#throwerror)
 - [combinators](#combinators)
   - [apFirst](#apfirst)
   - [apSecond](#apsecond)
   - [chainFirst](#chainfirst)
   - [flatten](#flatten)
-- [utils](#utils)
-  - [Applicative](#applicative)
+  - [local](#local)
+- [constructors](#constructors)
+  - [ask](#ask)
+  - [asks](#asks)
+  - [fromObservableEither](#fromobservableeither)
+  - [fromReader](#fromreader)
+- [instances](#instances)
+  - [Applicative](#applicative-1)
   - [Apply](#apply-1)
   - [Bifunctor](#bifunctor-1)
-  - [Do](#do)
   - [Functor](#functor-1)
   - [Monad](#monad-1)
   - [MonadIO](#monadio)
   - [MonadObservable](#monadobservable)
   - [MonadTask](#monadtask)
-  - [MonadThrow](#monadthrow)
-  - [ReaderObservableEither (interface)](#readerobservableeither-interface)
+  - [MonadThrow](#monadthrow-1)
   - [URI](#uri)
   - [URI (type alias)](#uri-type-alias)
-  - [ask](#ask)
-  - [asks](#asks)
+  - [~~readerObservableEither~~](#readerobservableeither)
+- [model](#model)
+  - [ReaderObservableEither (interface)](#readerobservableeither-interface)
+- [utils](#utils)
+  - [Do](#do)
   - [bind](#bind)
   - [bindTo](#bindto)
   - [bindW](#bindw)
@@ -49,17 +60,23 @@ Added in v0.6.10
   - [fromEither](#fromeither)
   - [fromIO](#fromio)
   - [fromObservable](#fromobservable)
-  - [fromObservableEither](#fromobservableeither)
   - [fromOption](#fromoption)
   - [fromPredicate](#frompredicate)
-  - [fromReader](#fromreader)
   - [fromTask](#fromtask)
-  - [local](#local)
-  - [of](#of)
-  - [throwError](#throwerror)
-  - [~~readerObservableEither~~](#readerobservableeither)
 
 ---
+
+# Applicative
+
+## of
+
+**Signature**
+
+```ts
+export declare function of<R, E, A>(a: A): ReaderObservableEither<R, E, A>
+```
+
+Added in v0.6.10
 
 # Apply
 
@@ -135,6 +152,18 @@ export declare const chain: <R, E, A, B>(
 
 Added in v0.6.10
 
+# MonadThrow
+
+## throwError
+
+**Signature**
+
+```ts
+export declare function throwError<R, E, A = never>(e: E): ReaderObservableEither<R, E, A>
+```
+
+Added in v0.6.10
+
 # combinators
 
 ## apFirst
@@ -200,7 +229,61 @@ export declare const flatten: <R, E, A>(
 
 Added in v0.6.10
 
-# utils
+## local
+
+**Signature**
+
+```ts
+export declare function local<R, Q>(
+  f: (d: Q) => R
+): <E, A>(ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<Q, E, A>
+```
+
+Added in v0.6.10
+
+# constructors
+
+## ask
+
+**Signature**
+
+```ts
+export declare function ask<R, E>(): ReaderObservableEither<R, E, R>
+```
+
+Added in v0.6.10
+
+## asks
+
+**Signature**
+
+```ts
+export declare function asks<R, E, A>(f: (r: R) => A): ReaderObservableEither<R, E, A>
+```
+
+Added in v0.6.10
+
+## fromObservableEither
+
+**Signature**
+
+```ts
+export declare function fromObservableEither<R, E, A>(ma: OBE.ObservableEither<E, A>): ReaderObservableEither<R, E, A>
+```
+
+Added in v0.6.10
+
+## fromReader
+
+**Signature**
+
+```ts
+export declare function fromReader<R, E, A>(ma: R.Reader<R, A>): ReaderObservableEither<R, E, A>
+```
+
+Added in v0.6.10
+
+# instances
 
 ## Applicative
 
@@ -228,16 +311,6 @@ Added in v0.6.12
 
 ```ts
 export declare const Bifunctor: Bifunctor3<'ReaderObservableEither'>
-```
-
-Added in v0.6.12
-
-## Do
-
-**Signature**
-
-```ts
-export declare const Do: ReaderObservableEither<unknown, never, {}>
 ```
 
 Added in v0.6.12
@@ -302,18 +375,6 @@ export declare const MonadThrow: MonadThrow3<'ReaderObservableEither'>
 
 Added in v0.6.12
 
-## ReaderObservableEither (interface)
-
-**Signature**
-
-```ts
-export interface ReaderObservableEither<R, E, A> {
-  (r: R): OBE.ObservableEither<E, A>
-}
-```
-
-Added in v0.6.10
-
 ## URI
 
 **Signature**
@@ -334,25 +395,43 @@ export type URI = typeof URI
 
 Added in v0.6.10
 
-## ask
+## ~~readerObservableEither~~
 
 **Signature**
 
 ```ts
-export declare function ask<R, E>(): ReaderObservableEither<R, E, R>
+export declare const readerObservableEither: MonadObservable3<'ReaderObservableEither'> &
+  MonadThrow3<'ReaderObservableEither'> &
+  Bifunctor3<'ReaderObservableEither'>
 ```
 
 Added in v0.6.10
 
-## asks
+# model
+
+## ReaderObservableEither (interface)
 
 **Signature**
 
 ```ts
-export declare function asks<R, E, A>(f: (r: R) => A): ReaderObservableEither<R, E, A>
+export interface ReaderObservableEither<R, E, A> {
+  (r: R): OBE.ObservableEither<E, A>
+}
 ```
 
 Added in v0.6.10
+
+# utils
+
+## Do
+
+**Signature**
+
+```ts
+export declare const Do: ReaderObservableEither<unknown, never, {}>
+```
+
+Added in v0.6.12
 
 ## bind
 
@@ -447,16 +526,6 @@ export declare function fromObservable<R, E, A>(a: Observable<A>): ReaderObserva
 
 Added in v0.6.10
 
-## fromObservableEither
-
-**Signature**
-
-```ts
-export declare function fromObservableEither<R, E, A>(ma: OBE.ObservableEither<E, A>): ReaderObservableEither<R, E, A>
-```
-
-Added in v0.6.10
-
 ## fromOption
 
 Derivable from `MonadThrow`.
@@ -484,66 +553,12 @@ export declare const fromPredicate: {
 
 Added in v0.6.10
 
-## fromReader
-
-**Signature**
-
-```ts
-export declare function fromReader<R, E, A>(ma: R.Reader<R, A>): ReaderObservableEither<R, E, A>
-```
-
-Added in v0.6.10
-
 ## fromTask
 
 **Signature**
 
 ```ts
 export declare function fromTask<R, E, A>(a: T.Task<A>): ReaderObservableEither<R, E, A>
-```
-
-Added in v0.6.10
-
-## local
-
-**Signature**
-
-```ts
-export declare function local<R, Q>(
-  f: (d: Q) => R
-): <E, A>(ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<Q, E, A>
-```
-
-Added in v0.6.10
-
-## of
-
-**Signature**
-
-```ts
-export declare function of<R, E, A>(a: A): ReaderObservableEither<R, E, A>
-```
-
-Added in v0.6.10
-
-## throwError
-
-**Signature**
-
-```ts
-export declare function throwError<R, E, A = never>(e: E): ReaderObservableEither<R, E, A>
-```
-
-Added in v0.6.10
-
-## ~~readerObservableEither~~
-
-**Signature**
-
-```ts
-export declare const readerObservableEither: MonadObservable3<'ReaderObservableEither'> &
-  MonadThrow3<'ReaderObservableEither'> &
-  Bifunctor3<'ReaderObservableEither'>
 ```
 
 Added in v0.6.10

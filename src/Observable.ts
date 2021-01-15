@@ -256,7 +256,7 @@ export type URI = typeof URI
 
 declare module 'fp-ts/lib/HKT' {
   interface URItoKind<A> {
-    Observable: Observable<A>
+    readonly [URI]: Observable<A>
   }
 }
 

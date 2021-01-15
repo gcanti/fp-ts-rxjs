@@ -12,108 +12,55 @@ Added in v0.6.12
 
 <h2 class="text-delta">Table of contents</h2>
 
-- [instances](#instances)
-  - [Bifunctor](#bifunctor)
-  - [getApplicative](#getapplicative)
-  - [getMonad](#getmonad)
-- [utils](#utils)
-  - [Functor](#functor)
-  - [ObservableThese (interface)](#observablethese-interface)
-  - [URI](#uri)
-  - [URI (type alias)](#uri-type-alias)
+- [Applicative](#applicative)
+  - [of](#of)
+- [Bifunctor](#bifunctor)
   - [bimap](#bimap)
+  - [mapLeft](#mapleft)
+- [Functor](#functor)
+  - [map](#map)
+- [combinators](#combinators)
+  - [swap](#swap)
+- [constructors](#constructors)
   - [both](#both)
-  - [fold](#fold)
   - [fromIOEither](#fromioeither)
   - [fromTask](#fromtask)
   - [fromTaskThese](#fromtaskthese)
   - [left](#left)
   - [leftIO](#leftio)
   - [leftObservable](#leftobservable)
-  - [map](#map)
-  - [mapLeft](#mapleft)
-  - [of](#of)
   - [right](#right)
   - [rightIO](#rightio)
   - [rightObservable](#rightobservable)
-  - [swap](#swap)
+- [destructors](#destructors)
+  - [fold](#fold)
+- [instances](#instances)
+  - [Bifunctor](#bifunctor-1)
+  - [getApplicative](#getapplicative)
+  - [getMonad](#getmonad)
+- [model](#model)
+  - [ObservableThese (interface)](#observablethese-interface)
+- [utils](#utils)
+  - [Functor](#functor-1)
+  - [URI](#uri)
+  - [URI (type alias)](#uri-type-alias)
   - [toTaskThese](#totaskthese)
 
 ---
 
-# instances
+# Applicative
 
-## Bifunctor
-
-**Signature**
-
-```ts
-export declare const Bifunctor: Bifunctor2<'ObservableThese'>
-```
-
-Added in v0.6.12
-
-## getApplicative
+## of
 
 **Signature**
 
 ```ts
-export declare function getApplicative<E>(A: Apply1<R.URI>, SE: Semigroup<E>): Applicative2C<URI, E>
+export declare const of: <E, A>(a: A) => ObservableThese<E, A>
 ```
 
 Added in v0.6.12
 
-## getMonad
-
-**Signature**
-
-```ts
-export declare function getMonad<E>(SE: Semigroup<E>): Monad2C<URI, E>
-```
-
-Added in v0.6.12
-
-# utils
-
-## Functor
-
-**Signature**
-
-```ts
-export declare const Functor: Functor2<'ObservableThese'>
-```
-
-Added in v0.6.12
-
-## ObservableThese (interface)
-
-**Signature**
-
-```ts
-export interface ObservableThese<E, A> extends Observable<TH.These<E, A>> {}
-```
-
-Added in v0.6.12
-
-## URI
-
-**Signature**
-
-```ts
-export declare const URI: 'ObservableThese'
-```
-
-Added in v0.6.12
-
-## URI (type alias)
-
-**Signature**
-
-```ts
-export type URI = typeof URI
-```
-
-Added in v0.6.12
+# Bifunctor
 
 ## bimap
 
@@ -128,26 +75,51 @@ export declare const bimap: <E, G, A, B>(
 
 Added in v0.6.12
 
+## mapLeft
+
+**Signature**
+
+```ts
+export declare const mapLeft: <E, G>(f: (e: E) => G) => <A>(fa: ObservableThese<E, A>) => ObservableThese<G, A>
+```
+
+Added in v0.6.12
+
+# Functor
+
+## map
+
+`map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+use the type constructor `F` to represent some computational context.
+
+**Signature**
+
+```ts
+export declare const map: <A, B>(f: (a: A) => B) => <E>(fa: ObservableThese<E, A>) => ObservableThese<E, B>
+```
+
+Added in v0.6.12
+
+# combinators
+
+## swap
+
+**Signature**
+
+```ts
+export declare const swap: <E, A>(ma: ObservableThese<E, A>) => ObservableThese<A, E>
+```
+
+Added in v0.6.12
+
+# constructors
+
 ## both
 
 **Signature**
 
 ```ts
 export declare const both: <E = never, A = never>(e: E, a: A) => ObservableThese<E, A>
-```
-
-Added in v0.6.12
-
-## fold
-
-**Signature**
-
-```ts
-export declare function fold<E, A, B>(
-  onLeft: (e: E) => Observable<B>,
-  onRight: (a: A) => Observable<B>,
-  onBoth: (e: E, a: A) => Observable<B>
-): (ma: ObservableThese<E, A>) => Observable<B>
 ```
 
 Added in v0.6.12
@@ -212,36 +184,6 @@ export declare const leftObservable: <E = never, A = never>(ma: Observable<E>) =
 
 Added in v0.6.12
 
-## map
-
-**Signature**
-
-```ts
-export declare const map: <A, B>(f: (a: A) => B) => <E>(fa: ObservableThese<E, A>) => ObservableThese<E, B>
-```
-
-Added in v0.6.12
-
-## mapLeft
-
-**Signature**
-
-```ts
-export declare const mapLeft: <E, G>(f: (e: E) => G) => <A>(fa: ObservableThese<E, A>) => ObservableThese<G, A>
-```
-
-Added in v0.6.12
-
-## of
-
-**Signature**
-
-```ts
-export declare const of: <E, A>(a: A) => ObservableThese<E, A>
-```
-
-Added in v0.6.12
-
 ## right
 
 **Signature**
@@ -272,12 +214,94 @@ export declare const rightObservable: <E = never, A = never>(ma: Observable<A>) 
 
 Added in v0.6.12
 
-## swap
+# destructors
+
+## fold
 
 **Signature**
 
 ```ts
-export declare const swap: <E, A>(ma: ObservableThese<E, A>) => ObservableThese<A, E>
+export declare function fold<E, A, B>(
+  onLeft: (e: E) => Observable<B>,
+  onRight: (a: A) => Observable<B>,
+  onBoth: (e: E, a: A) => Observable<B>
+): (ma: ObservableThese<E, A>) => Observable<B>
+```
+
+Added in v0.6.12
+
+# instances
+
+## Bifunctor
+
+**Signature**
+
+```ts
+export declare const Bifunctor: Bifunctor2<'ObservableThese'>
+```
+
+Added in v0.6.12
+
+## getApplicative
+
+**Signature**
+
+```ts
+export declare function getApplicative<E>(A: Apply1<R.URI>, SE: Semigroup<E>): Applicative2C<URI, E>
+```
+
+Added in v0.6.12
+
+## getMonad
+
+**Signature**
+
+```ts
+export declare function getMonad<E>(SE: Semigroup<E>): Monad2C<URI, E>
+```
+
+Added in v0.6.12
+
+# model
+
+## ObservableThese (interface)
+
+**Signature**
+
+```ts
+export interface ObservableThese<E, A> extends Observable<TH.These<E, A>> {}
+```
+
+Added in v0.6.12
+
+# utils
+
+## Functor
+
+**Signature**
+
+```ts
+export declare const Functor: Functor2<'ObservableThese'>
+```
+
+Added in v0.6.12
+
+## URI
+
+**Signature**
+
+```ts
+export declare const URI: 'ObservableThese'
+```
+
+Added in v0.6.12
+
+## URI (type alias)
+
+**Signature**
+
+```ts
+export type URI = typeof URI
 ```
 
 Added in v0.6.12

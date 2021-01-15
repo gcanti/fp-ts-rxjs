@@ -14,6 +14,8 @@ Added in v0.6.6
 
 - [Alt](#alt)
   - [alt](#alt)
+- [Applicative](#applicative)
+  - [of](#of)
 - [Apply](#apply)
   - [ap](#ap)
 - [Compactable](#compactable)
@@ -32,45 +34,47 @@ Added in v0.6.6
   - [apFirst](#apfirst)
   - [apSecond](#apsecond)
   - [chainFirst](#chainfirst)
+  - [chainIOK](#chainiok)
+  - [chainTaskK](#chaintaskk)
   - [flatten](#flatten)
-- [utils](#utils)
+  - [fromIOK](#fromiok)
+  - [fromObservableK](#fromobservablek)
+  - [local](#local)
+- [constructors](#constructors)
+  - [ask](#ask)
+  - [asks](#asks)
+  - [fromIO](#fromio)
+  - [fromObservable](#fromobservable)
+  - [fromOption](#fromoption)
+  - [fromReader](#fromreader)
+  - [fromReaderTask](#fromreadertask)
+  - [fromTask](#fromtask)
+- [instances](#instances)
   - [Alt](#alt-1)
   - [Alternative](#alternative)
-  - [Applicative](#applicative)
+  - [Applicative](#applicative-1)
   - [Apply](#apply-1)
   - [Compactable](#compactable-1)
-  - [Do](#do)
   - [Filterable](#filterable-1)
   - [Functor](#functor-1)
   - [Monad](#monad-1)
   - [MonadIO](#monadio)
   - [MonadObservable](#monadobservable)
   - [MonadTask](#monadtask)
-  - [ReaderObservable (interface)](#readerobservable-interface)
   - [URI](#uri)
   - [URI (type alias)](#uri-type-alias)
-  - [ask](#ask)
-  - [asks](#asks)
+  - [getMonoid](#getmonoid)
+  - [~~readerObservable~~](#readerobservable)
+- [model](#model)
+  - [ReaderObservable (interface)](#readerobservable-interface)
+- [utils](#utils)
+  - [Do](#do)
   - [bind](#bind)
   - [bindTo](#bindto)
   - [bindW](#bindw)
-  - [chainIOK](#chainiok)
-  - [chainTaskK](#chaintaskk)
-  - [fromIO](#fromio)
-  - [fromIOK](#fromiok)
-  - [fromObservable](#fromobservable)
-  - [fromObservableK](#fromobservablek)
-  - [fromOption](#fromoption)
-  - [fromReader](#fromreader)
-  - [fromReaderTask](#fromreadertask)
-  - [fromTask](#fromtask)
-  - [getMonoid](#getmonoid)
-  - [local](#local)
-  - [of](#of)
   - [run](#run)
   - [toReaderTask](#toreadertask)
   - [zero](#zero)
-  - [~~readerObservable~~](#readerobservable)
 
 ---
 
@@ -90,6 +94,18 @@ export declare const alt: <E, A>(
 ```
 
 Added in v0.6.7
+
+# Applicative
+
+## of
+
+**Signature**
+
+```ts
+export declare const of: <R, A>(a: A) => ReaderObservable<R, A>
+```
+
+Added in v0.6.6
 
 # Apply
 
@@ -267,6 +283,28 @@ export declare const chainFirst: <E, A, B>(
 
 Added in v0.6.6
 
+## chainIOK
+
+**Signature**
+
+```ts
+export declare function chainIOK<A, B>(f: (a: A) => IO<B>): <R>(ma: ReaderObservable<R, A>) => ReaderObservable<R, B>
+```
+
+Added in v0.6.6
+
+## chainTaskK
+
+**Signature**
+
+```ts
+export declare function chainTaskK<A, B>(
+  f: (a: A) => Observable<B>
+): <R>(ma: ReaderObservable<R, A>) => ReaderObservable<R, B>
+```
+
+Added in v0.6.6
+
 ## flatten
 
 Derivable from `Monad`.
@@ -279,7 +317,123 @@ export declare const flatten: <E, A>(mma: ReaderObservable<E, ReaderObservable<E
 
 Added in v0.6.6
 
-# utils
+## fromIOK
+
+**Signature**
+
+```ts
+export declare function fromIOK<A extends Array<unknown>, B>(
+  f: (...a: A) => IO<B>
+): <R>(...a: A) => ReaderObservable<R, B>
+```
+
+Added in v0.6.6
+
+## fromObservableK
+
+**Signature**
+
+```ts
+export declare function fromObservableK<A extends Array<unknown>, B>(
+  f: (...a: A) => Observable<B>
+): <R>(...a: A) => ReaderObservable<R, B>
+```
+
+Added in v0.6.6
+
+## local
+
+**Signature**
+
+```ts
+export declare function local<Q, R>(f: (f: Q) => R): <A>(ma: ReaderObservable<R, A>) => ReaderObservable<Q, A>
+```
+
+Added in v0.6.6
+
+# constructors
+
+## ask
+
+**Signature**
+
+```ts
+export declare const ask: <R>() => ReaderObservable<R, R>
+```
+
+Added in v0.6.6
+
+## asks
+
+**Signature**
+
+```ts
+export declare const asks: <R, A = never>(f: (r: R) => A) => ReaderObservable<R, A>
+```
+
+Added in v0.6.6
+
+## fromIO
+
+**Signature**
+
+```ts
+export declare function fromIO<R, A>(ma: IO<A>): ReaderObservable<R, A>
+```
+
+Added in v0.6.6
+
+## fromObservable
+
+**Signature**
+
+```ts
+export declare const fromObservable: <R, A>(ma: Observable<A>) => ReaderObservable<R, A>
+```
+
+Added in v0.6.6
+
+## fromOption
+
+**Signature**
+
+```ts
+export declare function fromOption<R, A>(o: O.Option<A>): ReaderObservable<R, A>
+```
+
+Added in v0.6.6
+
+## fromReader
+
+**Signature**
+
+```ts
+export declare const fromReader: <R, A = never>(ma: Reader<R, A>) => ReaderObservable<R, A>
+```
+
+Added in v0.6.6
+
+## fromReaderTask
+
+**Signature**
+
+```ts
+export declare function fromReaderTask<R, A>(ma: ReaderTask<R, A>): ReaderObservable<R, A>
+```
+
+Added in v0.6.9
+
+## fromTask
+
+**Signature**
+
+```ts
+export declare function fromTask<R, A>(ma: Task<A>): ReaderObservable<R, A>
+```
+
+Added in v0.6.6
+
+# instances
 
 ## Alt
 
@@ -327,16 +481,6 @@ Added in v0.6.12
 
 ```ts
 export declare const Compactable: Compactable2<'ReaderObservable'>
-```
-
-Added in v0.6.12
-
-## Do
-
-**Signature**
-
-```ts
-export declare const Do: ReaderObservable<unknown, {}>
 ```
 
 Added in v0.6.12
@@ -401,18 +545,6 @@ export declare const MonadTask: MonadTask2<'ReaderObservable'>
 
 Added in v0.6.12
 
-## ReaderObservable (interface)
-
-**Signature**
-
-```ts
-export interface ReaderObservable<R, A> {
-  (r: R): Observable<A>
-}
-```
-
-Added in v0.6.6
-
 ## URI
 
 **Signature**
@@ -433,25 +565,54 @@ export type URI = typeof URI
 
 Added in v0.6.6
 
-## ask
+## getMonoid
 
 **Signature**
 
 ```ts
-export declare const ask: <R>() => ReaderObservable<R, R>
+export declare function getMonoid<R, A>(): Monoid<ReaderObservable<R, A>>
 ```
 
 Added in v0.6.6
 
-## asks
+## ~~readerObservable~~
 
 **Signature**
 
 ```ts
-export declare const asks: <R, A = never>(f: (r: R) => A) => ReaderObservable<R, A>
+export declare const readerObservable: Monad2<'ReaderObservable'> &
+  Alternative2<'ReaderObservable'> &
+  Filterable2<'ReaderObservable'> &
+  MonadObservable2<'ReaderObservable'>
 ```
 
 Added in v0.6.6
+
+# model
+
+## ReaderObservable (interface)
+
+**Signature**
+
+```ts
+export interface ReaderObservable<R, A> {
+  (r: R): Observable<A>
+}
+```
+
+Added in v0.6.6
+
+# utils
+
+## Do
+
+**Signature**
+
+```ts
+export declare const Do: ReaderObservable<unknown, {}>
+```
+
+Added in v0.6.12
 
 ## bind
 
@@ -493,142 +654,6 @@ export declare const bindW: <K extends string, R2, A, B>(
 
 Added in v0.6.12
 
-## chainIOK
-
-**Signature**
-
-```ts
-export declare function chainIOK<A, B>(f: (a: A) => IO<B>): <R>(ma: ReaderObservable<R, A>) => ReaderObservable<R, B>
-```
-
-Added in v0.6.6
-
-## chainTaskK
-
-**Signature**
-
-```ts
-export declare function chainTaskK<A, B>(
-  f: (a: A) => Observable<B>
-): <R>(ma: ReaderObservable<R, A>) => ReaderObservable<R, B>
-```
-
-Added in v0.6.6
-
-## fromIO
-
-**Signature**
-
-```ts
-export declare function fromIO<R, A>(ma: IO<A>): ReaderObservable<R, A>
-```
-
-Added in v0.6.6
-
-## fromIOK
-
-**Signature**
-
-```ts
-export declare function fromIOK<A extends Array<unknown>, B>(
-  f: (...a: A) => IO<B>
-): <R>(...a: A) => ReaderObservable<R, B>
-```
-
-Added in v0.6.6
-
-## fromObservable
-
-**Signature**
-
-```ts
-export declare const fromObservable: <R, A>(ma: Observable<A>) => ReaderObservable<R, A>
-```
-
-Added in v0.6.6
-
-## fromObservableK
-
-**Signature**
-
-```ts
-export declare function fromObservableK<A extends Array<unknown>, B>(
-  f: (...a: A) => Observable<B>
-): <R>(...a: A) => ReaderObservable<R, B>
-```
-
-Added in v0.6.6
-
-## fromOption
-
-**Signature**
-
-```ts
-export declare function fromOption<R, A>(o: O.Option<A>): ReaderObservable<R, A>
-```
-
-Added in v0.6.6
-
-## fromReader
-
-**Signature**
-
-```ts
-export declare const fromReader: <R, A = never>(ma: Reader<R, A>) => ReaderObservable<R, A>
-```
-
-Added in v0.6.6
-
-## fromReaderTask
-
-**Signature**
-
-```ts
-export declare function fromReaderTask<R, A>(ma: ReaderTask<R, A>): ReaderObservable<R, A>
-```
-
-Added in v0.6.9
-
-## fromTask
-
-**Signature**
-
-```ts
-export declare function fromTask<R, A>(ma: Task<A>): ReaderObservable<R, A>
-```
-
-Added in v0.6.6
-
-## getMonoid
-
-**Signature**
-
-```ts
-export declare function getMonoid<R, A>(): Monoid<ReaderObservable<R, A>>
-```
-
-Added in v0.6.6
-
-## local
-
-**Signature**
-
-```ts
-export declare function local<Q, R>(f: (f: Q) => R): <A>(ma: ReaderObservable<R, A>) => ReaderObservable<Q, A>
-```
-
-Added in v0.6.6
-
-## of
-
-**Signature**
-
-```ts
-export declare const of: <R, A>(a: A) => ReaderObservable<R, A>
-```
-
-Added in v0.6.6
-
 ## run
 
 **Signature**
@@ -658,16 +683,3 @@ export declare const zero: <E, A>() => ReaderObservable<E, A>
 ```
 
 Added in v0.6.12
-
-## ~~readerObservable~~
-
-**Signature**
-
-```ts
-export declare const readerObservable: Monad2<'ReaderObservable'> &
-  Alternative2<'ReaderObservable'> &
-  Filterable2<'ReaderObservable'> &
-  MonadObservable2<'ReaderObservable'>
-```
-
-Added in v0.6.6

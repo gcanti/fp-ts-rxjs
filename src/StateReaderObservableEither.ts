@@ -21,54 +21,26 @@ import { MonadObservable4 } from './MonadObservable'
 import * as OB from './Observable'
 import * as ROBE from './ReaderObservableEither'
 
-/**
- * @since 0.6.10
- */
-export const URI = 'StateReaderObservableEither'
+const M = getStateM(ROBE.Monad)
+
+// -------------------------------------------------------------------------------------
+// model
+// -------------------------------------------------------------------------------------
 
 /**
- * @since 0.6.10
- */
-export type URI = typeof URI
-
-/**
+ * @category model
  * @since 0.6.10
  */
 export interface StateReaderObservableEither<S, R, E, A> {
   (s: S): ROBE.ReaderObservableEither<R, E, [A, S]>
 }
 
-declare module 'fp-ts/lib/HKT' {
-  export interface URItoKind4<S, R, E, A> {
-    readonly [URI]: StateReaderObservableEither<S, R, E, A>
-  }
-}
-
-const M = getStateM(ROBE.Monad)
+// -------------------------------------------------------------------------------------
+// constructors
+// -------------------------------------------------------------------------------------
 
 /**
- * @since 0.6.10
- */
-
-/**
- * @since 0.6.10
- */
-export function evaluate<S>(
-  s: S
-): <R, E, A>(fa: StateReaderObservableEither<S, R, E, A>) => ROBE.ReaderObservableEither<R, E, A> {
-  return fa => M.evalState(fa, s)
-}
-
-/**
- * @since 0.6.10
- */
-export function execute<S>(
-  s: S
-): <R, E, A>(fa: StateReaderObservableEither<S, R, E, A>) => ROBE.ReaderObservableEither<R, E, S> {
-  return fa => M.execState(fa, s)
-}
-
-/**
+ * @category constructors
  * @since 0.6.10
  */
 export const fromReaderObservableEither: <S, R, E, A>(
@@ -76,43 +48,43 @@ export const fromReaderObservableEither: <S, R, E, A>(
 ) => StateReaderObservableEither<S, R, E, A> = M.fromM
 
 /**
+ * @category constructors
  * @since 0.6.10
  */
 export const get: <R, E, S>() => StateReaderObservableEither<S, R, E, S> = M.get
 
 /**
+ * @category constructors
  * @since 0.6.10
  */
 export const gets: <S, R, E, A>(f: (s: S) => A) => StateReaderObservableEither<S, R, E, A> = M.gets
 
 /**
+ * @category constructors
  * @since 0.6.10
  */
 export const modify: <R, E, S>(f: (s: S) => S) => StateReaderObservableEither<S, R, E, void> = M.modify
 
 /**
+ * @category constructors
  * @since 0.6.10
  */
 export const put: <R, E, S>(s: S) => StateReaderObservableEither<S, R, E, void> = M.put
 
 /**
+ * @category constructors
  * @since 0.6.10
  */
 export const right: <S, R, E = never, A = never>(a: A) => StateReaderObservableEither<S, R, E, A> = M.of
 
 /**
+ * @category constructors
  * @since 0.6.10
  */
 export const left: <S, R, E = never, A = never>(e: E) => StateReaderObservableEither<S, R, E, A> = throwError
 
 /**
- * @since 0.6.10
- */
-export function throwError<S, R, E, A>(e: E): StateReaderObservableEither<S, R, E, A> {
-  return () => ROBE.throwError(e)
-}
-
-/**
+ * @category constructors
  * @since 0.6.10
  */
 export function fromIO<S, R, E, A>(io: IO.IO<A>): StateReaderObservableEither<S, R, E, A> {
@@ -120,6 +92,7 @@ export function fromIO<S, R, E, A>(io: IO.IO<A>): StateReaderObservableEither<S,
 }
 
 /**
+ * @category constructors
  * @since 0.6.10
  */
 export function fromTask<S, R, E, A>(task: T.Task<A>): StateReaderObservableEither<S, R, E, A> {
@@ -127,6 +100,7 @@ export function fromTask<S, R, E, A>(task: T.Task<A>): StateReaderObservableEith
 }
 
 /**
+ * @category constructors
  * @since 0.6.10
  */
 export function fromObservable<S, R, E, A>(observable: Observable<A>): StateReaderObservableEither<S, R, E, A> {
@@ -140,6 +114,14 @@ export function fromObservable<S, R, E, A>(observable: Observable<A>): StateRead
 // -------------------------------------------------------------------------------------
 // type class members
 // -------------------------------------------------------------------------------------
+
+/**
+ * @category MonadThrow
+ * @since 0.6.10
+ */
+export function throwError<S, R, E, A>(e: E): StateReaderObservableEither<S, R, E, A> {
+  return () => ROBE.throwError(e)
+}
 
 /**
  * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
@@ -318,6 +300,22 @@ const bimap_: Bifunctor4<URI>['bimap'] = (fea, f, g) => pipe(fea, bimap(f, g))
 const mapLeft_: Bifunctor4<URI>['mapLeft'] = (fea, f) => pipe(fea, mapLeft(f))
 
 /**
+ * @since 0.6.10
+ */
+export const URI = 'StateReaderObservableEither'
+
+/**
+ * @since 0.6.10
+ */
+export type URI = typeof URI
+
+declare module 'fp-ts/lib/HKT' {
+  export interface URItoKind4<S, R, E, A> {
+    readonly [URI]: StateReaderObservableEither<S, R, E, A>
+  }
+}
+
+/**
  * @since 0.6.12
  */
 export const Functor: Functor4<URI> = {
@@ -481,3 +479,21 @@ export const bindW: <K extends string, S, R2, E2, A, B>(
   E1 | E2,
   { [P in keyof A | K]: P extends keyof A ? A[P] : B }
 > = bind as any
+
+/**
+ * @since 0.6.10
+ */
+export function evaluate<S>(
+  s: S
+): <R, E, A>(fa: StateReaderObservableEither<S, R, E, A>) => ROBE.ReaderObservableEither<R, E, A> {
+  return fa => M.evalState(fa, s)
+}
+
+/**
+ * @since 0.6.10
+ */
+export function execute<S>(
+  s: S
+): <R, E, A>(fa: StateReaderObservableEither<S, R, E, A>) => ROBE.ReaderObservableEither<R, E, S> {
+  return fa => M.execState(fa, s)
+}

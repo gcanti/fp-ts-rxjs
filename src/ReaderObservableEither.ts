@@ -21,32 +21,26 @@ import { Observable } from 'rxjs'
 import { MonadObservable3 } from './MonadObservable'
 import * as OBE from './ObservableEither'
 
-/**
- * @since 0.6.10
- */
-export const URI = 'ReaderObservableEither'
+const M = getReaderM(OBE.Monad)
+
+// -------------------------------------------------------------------------------------
+// model
+// -------------------------------------------------------------------------------------
 
 /**
- * @since 0.6.10
- */
-export type URI = typeof URI
-
-/**
+ * @category model
  * @since 0.6.10
  */
 export interface ReaderObservableEither<R, E, A> {
   (r: R): OBE.ObservableEither<E, A>
 }
 
-declare module 'fp-ts/lib/HKT' {
-  export interface URItoKind3<R, E, A> {
-    readonly [URI]: ReaderObservableEither<R, E, A>
-  }
-}
-
-const M = getReaderM(OBE.Monad)
+// -------------------------------------------------------------------------------------
+// constructors
+// -------------------------------------------------------------------------------------
 
 /**
+ * @category constructors
  * @since 0.6.10
  */
 export function ask<R, E>(): ReaderObservableEither<R, E, R> {
@@ -54,6 +48,7 @@ export function ask<R, E>(): ReaderObservableEither<R, E, R> {
 }
 
 /**
+ * @category constructors
  * @since 0.6.10
  */
 export function asks<R, E, A>(f: (r: R) => A): ReaderObservableEither<R, E, A> {
@@ -61,6 +56,7 @@ export function asks<R, E, A>(f: (r: R) => A): ReaderObservableEither<R, E, A> {
 }
 
 /**
+ * @category constructors
  * @since 0.6.10
  */
 export function fromObservableEither<R, E, A>(ma: OBE.ObservableEither<E, A>): ReaderObservableEither<R, E, A> {
@@ -68,26 +64,11 @@ export function fromObservableEither<R, E, A>(ma: OBE.ObservableEither<E, A>): R
 }
 
 /**
+ * @category constructors
  * @since 0.6.10
  */
 export function fromReader<R, E, A>(ma: R.Reader<R, A>): ReaderObservableEither<R, E, A> {
   return M.fromReader(ma)
-}
-
-/**
- * @since 0.6.10
- */
-export function local<R, Q>(
-  f: (d: Q) => R
-): <E, A>(ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<Q, E, A> {
-  return ma => M.local(ma, f)
-}
-
-/**
- * @since 0.6.10
- */
-export function of<R, E, A>(a: A): ReaderObservableEither<R, E, A> {
-  return M.of(a)
 }
 
 /**
@@ -111,16 +92,31 @@ export function fromObservable<R, E, A>(a: Observable<A>): ReaderObservableEithe
   return () => OBE.rightObservable(a)
 }
 
+// -------------------------------------------------------------------------------------
+// combinators
+// -------------------------------------------------------------------------------------
+
 /**
+ * @category combinators
  * @since 0.6.10
  */
-export function throwError<R, E, A = never>(e: E): ReaderObservableEither<R, E, A> {
-  return () => OBE.left<E, A>(e)
+export function local<R, Q>(
+  f: (d: Q) => R
+): <E, A>(ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<Q, E, A> {
+  return ma => M.local(ma, f)
 }
 
 // -------------------------------------------------------------------------------------
 // type class members
 // -------------------------------------------------------------------------------------
+
+/**
+ * @category MonadThrow
+ * @since 0.6.10
+ */
+export function throwError<R, E, A = never>(e: E): ReaderObservableEither<R, E, A> {
+  return () => OBE.left<E, A>(e)
+}
 
 /**
  * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
@@ -174,6 +170,14 @@ export const apSecond = <R, E, B>(
     map(() => (b: B) => b),
     ap(fb)
   )
+
+/**
+ * @category Applicative
+ * @since 0.6.10
+ */
+export function of<R, E, A>(a: A): ReaderObservableEither<R, E, A> {
+  return M.of(a)
+}
 
 /**
  * @category Bifunctor
@@ -288,6 +292,25 @@ const bimap_: Bifunctor3<URI>['bimap'] = (fea, f, g) => pipe(fea, bimap(f, g))
 const mapLeft_: Bifunctor3<URI>['mapLeft'] = (fea, f) => pipe(fea, mapLeft(f))
 
 /**
+ * @category instances
+ * @since 0.6.10
+ */
+export const URI = 'ReaderObservableEither'
+
+/**
+ * @category instances
+ * @since 0.6.10
+ */
+export type URI = typeof URI
+
+declare module 'fp-ts/lib/HKT' {
+  export interface URItoKind3<R, E, A> {
+    readonly [URI]: ReaderObservableEither<R, E, A>
+  }
+}
+
+/**
+ * @category instances
  * @since 0.6.12
  */
 export const Functor: Functor3<URI> = {
@@ -296,6 +319,7 @@ export const Functor: Functor3<URI> = {
 }
 
 /**
+ * @category instances
  * @since 0.6.12
  */
 export const Apply: Apply3<URI> = {
@@ -305,6 +329,7 @@ export const Apply: Apply3<URI> = {
 }
 
 /**
+ * @category instances
  * @since 0.6.12
  */
 export const Applicative: Applicative3<URI> = {
@@ -315,6 +340,7 @@ export const Applicative: Applicative3<URI> = {
 }
 
 /**
+ * @category instances
  * @since 0.6.12
  */
 export const Monad: Monad3<URI> = {
@@ -326,6 +352,7 @@ export const Monad: Monad3<URI> = {
 }
 
 /**
+ * @category instances
  * @since 0.6.12
  */
 export const Bifunctor: Bifunctor3<URI> = {
@@ -335,6 +362,7 @@ export const Bifunctor: Bifunctor3<URI> = {
 }
 
 /**
+ * @category instances
  * @since 0.6.12
  */
 export const MonadIO: MonadIO3<URI> = {
@@ -347,6 +375,7 @@ export const MonadIO: MonadIO3<URI> = {
 }
 
 /**
+ * @category instances
  * @since 0.6.12
  */
 export const MonadTask: MonadTask3<URI> = {
@@ -360,6 +389,7 @@ export const MonadTask: MonadTask3<URI> = {
 }
 
 /**
+ * @category instances
  * @since 0.6.12
  */
 export const MonadObservable: MonadObservable3<URI> = {
@@ -374,6 +404,7 @@ export const MonadObservable: MonadObservable3<URI> = {
 }
 
 /**
+ * @category instances
  * @since 0.6.12
  */
 export const MonadThrow: MonadThrow3<URI> = {
@@ -386,6 +417,7 @@ export const MonadThrow: MonadThrow3<URI> = {
 }
 
 /**
+ * @category instances
  * @since 0.6.10
  * @deprecated
  */

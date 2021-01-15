@@ -23,6 +23,8 @@ Added in v0.6.8
   - [map](#map)
 - [Monad](#monad)
   - [chain](#chain)
+- [MonadThrow](#monadthrow)
+  - [throwError](#throwerror)
 - [combinators](#combinators)
   - [apFirst](#apfirst)
   - [apSecond](#apsecond)
@@ -53,7 +55,7 @@ Added in v0.6.8
   - [MonadIO](#monadio)
   - [MonadObservable](#monadobservable)
   - [MonadTask](#monadtask)
-  - [MonadThrow](#monadthrow)
+  - [MonadThrow](#monadthrow-1)
   - [URI](#uri)
   - [URI (type alias)](#uri-type-alias)
   - [fromObservable](#fromobservable)
@@ -71,7 +73,6 @@ Added in v0.6.8
   - [fromOption](#fromoption)
   - [fromPredicate](#frompredicate)
   - [of](#of)
-  - [throwError](#throwerror)
   - [toTaskEither](#totaskeither)
 
 ---
@@ -162,6 +163,18 @@ export declare const chain: <E, A, B>(
 ```
 
 Added in v0.6.8
+
+# MonadThrow
+
+## throwError
+
+**Signature**
+
+```ts
+export declare const throwError: <E, A>(e: E) => ObservableEither<E, A>
+```
+
+Added in v0.6.12
 
 # combinators
 
@@ -647,16 +660,6 @@ Added in v0.6.10
 
 ```ts
 export declare const of: <E, A>(a: A) => ObservableEither<E, A>
-```
-
-Added in v0.6.12
-
-## throwError
-
-**Signature**
-
-```ts
-export declare const throwError: <E, A>(e: E) => ObservableEither<E, A>
 ```
 
 Added in v0.6.12

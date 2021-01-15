@@ -19,6 +19,154 @@ import * as R from './Observable'
 
 const T = getTheseM(R.Monad)
 
+// -------------------------------------------------------------------------------------
+// model
+// -------------------------------------------------------------------------------------
+
+/**
+ * @category model
+ * @since 0.6.12
+ */
+export interface ObservableThese<E, A> extends Observable<TH.These<E, A>> {}
+
+// -------------------------------------------------------------------------------------
+// constructors
+// -------------------------------------------------------------------------------------
+
+/**
+ * @category constructors
+ * @since 0.6.12
+ */
+export const left: <E = never, A = never>(e: E) => ObservableThese<E, A> = T.left
+
+/**
+ * @category constructors
+ * @since 0.6.12
+ */
+export const both: <E = never, A = never>(e: E, a: A) => ObservableThese<E, A> = T.both
+
+/**
+ * @category constructors
+ * @since 0.6.12
+ */
+export const right: <E = never, A = never>(a: A) => ObservableThese<E, A> = T.right
+
+/**
+ * @category constructors
+ * @since 0.6.12
+ */
+export const rightObservable: <E = never, A = never>(ma: Observable<A>) => ObservableThese<E, A> = T.rightM
+
+/**
+ * @category constructors
+ * @since 0.6.12
+ */
+export const leftObservable: <E = never, A = never>(ma: Observable<E>) => ObservableThese<E, A> = T.leftM
+
+/**
+ * @category constructors
+ * @since 0.6.12
+ */
+export const fromIOEither: <E, A>(fa: IOEither<E, A>) => ObservableThese<E, A> = R.fromIO
+
+/**
+ * @category constructors
+ * @since 0.6.12
+ */
+export function rightIO<E, A>(ma: IO<A>): ObservableThese<E, A> {
+  return rightObservable(R.fromIO(ma))
+}
+
+/**
+ * @category constructors
+ * @since 0.6.12
+ */
+export function leftIO<E, A>(me: IO<E>): ObservableThese<E, A> {
+  return leftObservable(R.fromIO(me))
+}
+
+/**
+ * @category constructors
+ * @since 0.6.12
+ */
+export function fromTaskThese<E, A>(t: TT.TaskThese<E, A>): ObservableThese<E, A> {
+  return R.fromTask(t)
+}
+
+/**
+ * @category constructors
+ * @since 0.6.12
+ */
+export function fromTask<E, A>(ma: Task<A>): ObservableThese<E, A> {
+  return rightObservable(R.fromTask(ma))
+}
+
+// -------------------------------------------------------------------------------------
+// destructors
+// -------------------------------------------------------------------------------------
+
+/**
+ * @category destructors
+ * @since 0.6.12
+ */
+export function fold<E, A, B>(
+  onLeft: (e: E) => Observable<B>,
+  onRight: (a: A) => Observable<B>,
+  onBoth: (e: E, a: A) => Observable<B>
+): (ma: ObservableThese<E, A>) => Observable<B> {
+  return ma => T.fold(ma, onLeft, onRight, onBoth)
+}
+
+// -------------------------------------------------------------------------------------
+// combinators
+// -------------------------------------------------------------------------------------
+
+/**
+ * @category combinators
+ * @since 0.6.12
+ */
+export const swap: <E, A>(ma: ObservableThese<E, A>) => ObservableThese<A, E> = T.swap
+
+// -------------------------------------------------------------------------------------
+// type class members
+// -------------------------------------------------------------------------------------
+
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 0.6.12
+ */
+export const map: <A, B>(f: (a: A) => B) => <E>(fa: ObservableThese<E, A>) => ObservableThese<E, B> = f => fa =>
+  T.map(fa, f)
+
+/**
+ * @category Bifunctor
+ * @since 0.6.12
+ */
+export const bimap: <E, G, A, B>(
+  f: (e: E) => G,
+  g: (a: A) => B
+) => (fa: ObservableThese<E, A>) => ObservableThese<G, B> = (f, g) => fa => T.bimap(fa, f, g)
+
+/**
+ * @category Bifunctor
+ * @since 0.6.12
+ */
+export const mapLeft: <E, G>(f: (e: E) => G) => <A>(fa: ObservableThese<E, A>) => ObservableThese<G, A> = f => fa =>
+  T.mapLeft(fa, f)
+
+/**
+ * @category Applicative
+ * @since 0.6.12
+ */
+export const of: Applicative2<URI>['of'] = right
+
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+
 /**
  * @since 0.6.12
  */
@@ -34,97 +182,6 @@ declare module 'fp-ts/lib/HKT' {
     readonly [URI]: ObservableThese<E, A>
   }
 }
-
-/**
- * @since 0.6.12
- */
-export interface ObservableThese<E, A> extends Observable<TH.These<E, A>> {}
-
-/**
- * @since 0.6.12
- */
-export const left: <E = never, A = never>(e: E) => ObservableThese<E, A> = T.left
-
-/**
- * @since 0.6.12
- */
-export const both: <E = never, A = never>(e: E, a: A) => ObservableThese<E, A> = T.both
-
-/**
- * @since 0.6.12
- */
-export const right: <E = never, A = never>(a: A) => ObservableThese<E, A> = T.right
-
-/**
- * @since 0.6.12
- */
-export const of: Applicative2<URI>['of'] = right
-
-/**
- * @since 0.6.12
- */
-export const rightObservable: <E = never, A = never>(ma: Observable<A>) => ObservableThese<E, A> = T.rightM
-
-/**
- * @since 0.6.12
- */
-export const leftObservable: <E = never, A = never>(ma: Observable<E>) => ObservableThese<E, A> = T.leftM
-
-/**
- * @since 0.6.12
- */
-export const fromIOEither: <E, A>(fa: IOEither<E, A>) => ObservableThese<E, A> = R.fromIO
-
-/**
- * @since 0.6.12
- */
-export function rightIO<E, A>(ma: IO<A>): ObservableThese<E, A> {
-  return rightObservable(R.fromIO(ma))
-}
-
-/**
- * @since 0.6.12
- */
-export function leftIO<E, A>(me: IO<E>): ObservableThese<E, A> {
-  return leftObservable(R.fromIO(me))
-}
-
-/**
- * @since 0.6.12
- */
-export function fromTaskThese<E, A>(t: TT.TaskThese<E, A>): ObservableThese<E, A> {
-  return R.fromTask(t)
-}
-
-/**
- * @since 0.6.12
- */
-export function toTaskThese<E, A>(o: ObservableThese<E, A>): TT.TaskThese<E, A> {
-  return () => o.toPromise()
-}
-
-/**
- * @since 0.6.12
- */
-export function fromTask<E, A>(ma: Task<A>): ObservableThese<E, A> {
-  return rightObservable(R.fromTask(ma))
-}
-
-/**
- * @since 0.6.12
- */
-export function fold<E, A, B>(
-  onLeft: (e: E) => Observable<B>,
-  onRight: (a: A) => Observable<B>,
-  onBoth: (e: E, a: A) => Observable<B>
-): (ma: ObservableThese<E, A>) => Observable<B> {
-  return ma => T.fold(ma, onLeft, onRight, onBoth)
-}
-
-/**
- * @since 0.6.12
- */
-export const swap: <E, A>(ma: ObservableThese<E, A>) => ObservableThese<A, E> = T.swap
 
 /**
  * @category instances
@@ -199,22 +256,13 @@ export const Bifunctor: Bifunctor2<URI> = {
   mapLeft: T.mapLeft
 }
 
-/**
- * @since 0.6.12
- */
-export const map: <A, B>(f: (a: A) => B) => <E>(fa: ObservableThese<E, A>) => ObservableThese<E, B> = f => fa =>
-  T.map(fa, f)
+// -------------------------------------------------------------------------------------
+// utils
+// -------------------------------------------------------------------------------------
 
 /**
  * @since 0.6.12
  */
-export const bimap: <E, G, A, B>(
-  f: (e: E) => G,
-  g: (a: A) => B
-) => (fa: ObservableThese<E, A>) => ObservableThese<G, B> = (f, g) => fa => T.bimap(fa, f, g)
-
-/**
- * @since 0.6.12
- */
-export const mapLeft: <E, G>(f: (e: E) => G) => <A>(fa: ObservableThese<E, A>) => ObservableThese<G, A> = f => fa =>
-  T.mapLeft(fa, f)
+export function toTaskThese<E, A>(o: ObservableThese<E, A>): TT.TaskThese<E, A> {
+  return () => o.toPromise()
+}

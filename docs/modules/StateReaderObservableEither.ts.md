@@ -21,11 +21,26 @@ Added in v0.6.10
   - [map](#map)
 - [Monad](#monad)
   - [chain](#chain)
+- [MonadThrow](#monadthrow)
+  - [throwError](#throwerror)
 - [combinators](#combinators)
   - [apFirst](#apfirst)
   - [apSecond](#apsecond)
   - [chainFirst](#chainfirst)
   - [flatten](#flatten)
+- [constructors](#constructors)
+  - [fromIO](#fromio)
+  - [fromObservable](#fromobservable)
+  - [fromReaderObservableEither](#fromreaderobservableeither)
+  - [fromTask](#fromtask)
+  - [get](#get)
+  - [gets](#gets)
+  - [left](#left)
+  - [modify](#modify)
+  - [put](#put)
+  - [right](#right)
+- [model](#model)
+  - [StateReaderObservableEither (interface)](#statereaderobservableeither-interface)
 - [utils](#utils)
   - [Applicative](#applicative)
   - [Apply](#apply-1)
@@ -35,8 +50,7 @@ Added in v0.6.10
   - [MonadIO](#monadio)
   - [MonadObservable](#monadobservable)
   - [MonadTask](#monadtask)
-  - [MonadThrow](#monadthrow)
-  - [StateReaderObservableEither (interface)](#statereaderobservableeither-interface)
+  - [MonadThrow](#monadthrow-1)
   - [URI](#uri)
   - [URI (type alias)](#uri-type-alias)
   - [bind](#bind)
@@ -46,20 +60,9 @@ Added in v0.6.10
   - [execute](#execute)
   - [filterOrElse](#filterorelse)
   - [fromEither](#fromeither)
-  - [fromIO](#fromio)
-  - [fromObservable](#fromobservable)
   - [fromOption](#fromoption)
   - [fromPredicate](#frompredicate)
-  - [fromReaderObservableEither](#fromreaderobservableeither)
-  - [fromTask](#fromtask)
-  - [get](#get)
-  - [gets](#gets)
-  - [left](#left)
-  - [modify](#modify)
   - [of](#of)
-  - [put](#put)
-  - [right](#right)
-  - [throwError](#throwerror)
   - [~~stateReaderObservableEither~~](#statereaderobservableeither)
 
 ---
@@ -138,6 +141,18 @@ export declare const chain: <S, R, E, A, B>(
 
 Added in v0.6.10
 
+# MonadThrow
+
+## throwError
+
+**Signature**
+
+```ts
+export declare function throwError<S, R, E, A>(e: E): StateReaderObservableEither<S, R, E, A>
+```
+
+Added in v0.6.10
+
 # combinators
 
 ## apFirst
@@ -199,6 +214,124 @@ Derivable from `Monad`.
 export declare const flatten: <S, R, E, A>(
   mma: StateReaderObservableEither<S, R, E, StateReaderObservableEither<S, R, E, A>>
 ) => StateReaderObservableEither<S, R, E, A>
+```
+
+Added in v0.6.10
+
+# constructors
+
+## fromIO
+
+**Signature**
+
+```ts
+export declare function fromIO<S, R, E, A>(io: IO.IO<A>): StateReaderObservableEither<S, R, E, A>
+```
+
+Added in v0.6.10
+
+## fromObservable
+
+**Signature**
+
+```ts
+export declare function fromObservable<S, R, E, A>(observable: Observable<A>): StateReaderObservableEither<S, R, E, A>
+```
+
+Added in v0.6.10
+
+## fromReaderObservableEither
+
+**Signature**
+
+```ts
+export declare const fromReaderObservableEither: <S, R, E, A>(
+  ma: ROBE.ReaderObservableEither<R, E, A>
+) => StateReaderObservableEither<S, R, E, A>
+```
+
+Added in v0.6.10
+
+## fromTask
+
+**Signature**
+
+```ts
+export declare function fromTask<S, R, E, A>(task: T.Task<A>): StateReaderObservableEither<S, R, E, A>
+```
+
+Added in v0.6.10
+
+## get
+
+**Signature**
+
+```ts
+export declare const get: <R, E, S>() => StateReaderObservableEither<S, R, E, S>
+```
+
+Added in v0.6.10
+
+## gets
+
+**Signature**
+
+```ts
+export declare const gets: <S, R, E, A>(f: (s: S) => A) => StateReaderObservableEither<S, R, E, A>
+```
+
+Added in v0.6.10
+
+## left
+
+**Signature**
+
+```ts
+export declare const left: <S, R, E = never, A = never>(e: E) => StateReaderObservableEither<S, R, E, A>
+```
+
+Added in v0.6.10
+
+## modify
+
+**Signature**
+
+```ts
+export declare const modify: <R, E, S>(f: (s: S) => S) => StateReaderObservableEither<S, R, E, void>
+```
+
+Added in v0.6.10
+
+## put
+
+**Signature**
+
+```ts
+export declare const put: <R, E, S>(s: S) => StateReaderObservableEither<S, R, E, void>
+```
+
+Added in v0.6.10
+
+## right
+
+**Signature**
+
+```ts
+export declare const right: <S, R, E = never, A = never>(a: A) => StateReaderObservableEither<S, R, E, A>
+```
+
+Added in v0.6.10
+
+# model
+
+## StateReaderObservableEither (interface)
+
+**Signature**
+
+```ts
+export interface StateReaderObservableEither<S, R, E, A> {
+  (s: S): ROBE.ReaderObservableEither<R, E, [A, S]>
+}
 ```
 
 Added in v0.6.10
@@ -294,18 +427,6 @@ export declare const MonadThrow: MonadThrow4<'StateReaderObservableEither'>
 ```
 
 Added in v0.6.12
-
-## StateReaderObservableEither (interface)
-
-**Signature**
-
-```ts
-export interface StateReaderObservableEither<S, R, E, A> {
-  (s: S): ROBE.ReaderObservableEither<R, E, [A, S]>
-}
-```
-
-Added in v0.6.10
 
 ## URI
 
@@ -424,26 +545,6 @@ export declare const fromEither: <S, R, E, A>(ma: E.Either<E, A>) => StateReader
 
 Added in v0.6.10
 
-## fromIO
-
-**Signature**
-
-```ts
-export declare function fromIO<S, R, E, A>(io: IO.IO<A>): StateReaderObservableEither<S, R, E, A>
-```
-
-Added in v0.6.10
-
-## fromObservable
-
-**Signature**
-
-```ts
-export declare function fromObservable<S, R, E, A>(observable: Observable<A>): StateReaderObservableEither<S, R, E, A>
-```
-
-Added in v0.6.10
-
 ## fromOption
 
 Derivable from `MonadThrow`.
@@ -475,68 +576,6 @@ export declare const fromPredicate: {
 
 Added in v0.6.10
 
-## fromReaderObservableEither
-
-**Signature**
-
-```ts
-export declare const fromReaderObservableEither: <S, R, E, A>(
-  ma: ROBE.ReaderObservableEither<R, E, A>
-) => StateReaderObservableEither<S, R, E, A>
-```
-
-Added in v0.6.10
-
-## fromTask
-
-**Signature**
-
-```ts
-export declare function fromTask<S, R, E, A>(task: T.Task<A>): StateReaderObservableEither<S, R, E, A>
-```
-
-Added in v0.6.10
-
-## get
-
-**Signature**
-
-```ts
-export declare const get: <R, E, S>() => StateReaderObservableEither<S, R, E, S>
-```
-
-Added in v0.6.10
-
-## gets
-
-**Signature**
-
-```ts
-export declare const gets: <S, R, E, A>(f: (s: S) => A) => StateReaderObservableEither<S, R, E, A>
-```
-
-Added in v0.6.10
-
-## left
-
-**Signature**
-
-```ts
-export declare const left: <S, R, E = never, A = never>(e: E) => StateReaderObservableEither<S, R, E, A>
-```
-
-Added in v0.6.10
-
-## modify
-
-**Signature**
-
-```ts
-export declare const modify: <R, E, S>(f: (s: S) => S) => StateReaderObservableEither<S, R, E, void>
-```
-
-Added in v0.6.10
-
 ## of
 
 **Signature**
@@ -546,36 +585,6 @@ export declare const of: <S, R, E, A>(a: A) => StateReaderObservableEither<S, R,
 ```
 
 Added in v0.6.12
-
-## put
-
-**Signature**
-
-```ts
-export declare const put: <R, E, S>(s: S) => StateReaderObservableEither<S, R, E, void>
-```
-
-Added in v0.6.10
-
-## right
-
-**Signature**
-
-```ts
-export declare const right: <S, R, E = never, A = never>(a: A) => StateReaderObservableEither<S, R, E, A>
-```
-
-Added in v0.6.10
-
-## throwError
-
-**Signature**
-
-```ts
-export declare function throwError<S, R, E, A>(e: E): StateReaderObservableEither<S, R, E, A>
-```
-
-Added in v0.6.10
 
 ## ~~stateReaderObservableEither~~
 
