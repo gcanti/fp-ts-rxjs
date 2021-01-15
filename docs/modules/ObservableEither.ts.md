@@ -12,14 +12,30 @@ Added in v0.6.8
 
 <h2 class="text-delta">Table of contents</h2>
 
+- [Alt](#alt)
+  - [alt](#alt)
+- [Apply](#apply)
+  - [ap](#ap)
+- [Bifunctor](#bifunctor)
+  - [bimap](#bimap)
+  - [mapLeft](#mapleft)
+- [Functor](#functor)
+  - [map](#map)
+- [Monad](#monad)
+  - [chain](#chain)
+- [combinators](#combinators)
+  - [apFirst](#apfirst)
+  - [apSecond](#apsecond)
+  - [chainFirst](#chainfirst)
+  - [flatten](#flatten)
 - [utils](#utils)
-  - [Alt](#alt)
+  - [Alt](#alt-1)
   - [Applicative](#applicative)
-  - [Apply](#apply)
-  - [Bifunctor](#bifunctor)
+  - [Apply](#apply-1)
+  - [Bifunctor](#bifunctor-1)
   - [Do](#do)
-  - [Functor](#functor)
-  - [Monad](#monad)
+  - [Functor](#functor-1)
+  - [Monad](#monad-1)
   - [MonadIO](#monadio)
   - [MonadObservable](#monadobservable)
   - [MonadTask](#monadtask)
@@ -27,17 +43,9 @@ Added in v0.6.8
   - [ObservableEither (interface)](#observableeither-interface)
   - [URI](#uri)
   - [URI (type alias)](#uri-type-alias)
-  - [alt](#alt)
-  - [ap](#ap)
-  - [apFirst](#apfirst)
-  - [apSecond](#apsecond)
-  - [bimap](#bimap)
   - [bind](#bind)
   - [bindTo](#bindto)
   - [bindW](#bindw)
-  - [chain](#chain)
-  - [chainFirst](#chainfirst)
-  - [flatten](#flatten)
   - [fold](#fold)
   - [fromIO](#fromio)
   - [fromIOEither](#fromioeither)
@@ -48,8 +56,6 @@ Added in v0.6.8
   - [left](#left)
   - [leftIO](#leftio)
   - [leftObservable](#leftobservable)
-  - [map](#map)
-  - [mapLeft](#mapleft)
   - [of](#of)
   - [orElse](#orelse)
   - [right](#right)
@@ -61,6 +67,156 @@ Added in v0.6.8
   - [~~observableEither~~](#observableeither)
 
 ---
+
+# Alt
+
+## alt
+
+Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
+types of kind `* -> *`.
+
+**Signature**
+
+```ts
+export declare const alt: <E, A>(
+  that: () => ObservableEither<E, A>
+) => (fa: ObservableEither<E, A>) => ObservableEither<E, A>
+```
+
+Added in v0.6.8
+
+# Apply
+
+## ap
+
+Apply a function to an argument under a type constructor.
+
+**Signature**
+
+```ts
+export declare const ap: <E, A>(
+  fa: ObservableEither<E, A>
+) => <B>(fab: ObservableEither<E, (a: A) => B>) => ObservableEither<E, B>
+```
+
+Added in v0.6.0
+
+# Bifunctor
+
+## bimap
+
+**Signature**
+
+```ts
+export declare const bimap: <E, G, A, B>(
+  f: (e: E) => G,
+  g: (a: A) => B
+) => (fa: ObservableEither<E, A>) => ObservableEither<G, B>
+```
+
+Added in v0.6.8
+
+## mapLeft
+
+**Signature**
+
+```ts
+export declare const mapLeft: <E, G>(f: (e: E) => G) => <A>(fa: ObservableEither<E, A>) => ObservableEither<G, A>
+```
+
+Added in v0.6.8
+
+# Functor
+
+## map
+
+`map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+use the type constructor `F` to represent some computational context.
+
+**Signature**
+
+```ts
+export declare const map: <A, B>(f: (a: A) => B) => <E>(fa: ObservableEither<E, A>) => ObservableEither<E, B>
+```
+
+Added in v0.6.8
+
+# Monad
+
+## chain
+
+**Signature**
+
+```ts
+export declare const chain: <E, A, B>(
+  f: (a: A) => ObservableEither<E, B>
+) => (ma: ObservableEither<E, A>) => ObservableEither<E, B>
+```
+
+Added in v0.6.8
+
+# combinators
+
+## apFirst
+
+Combine two effectful actions, keeping only the result of the first.
+
+Derivable from `Apply`.
+
+**Signature**
+
+```ts
+export declare const apFirst: <E, B>(
+  fb: ObservableEither<E, B>
+) => <A>(fa: ObservableEither<E, A>) => ObservableEither<E, A>
+```
+
+Added in v0.6.8
+
+## apSecond
+
+Combine two effectful actions, keeping only the result of the second.
+
+Derivable from `Apply`.
+
+**Signature**
+
+```ts
+export declare const apSecond: <E, B>(
+  fb: ObservableEither<E, B>
+) => <A>(fa: ObservableEither<E, A>) => ObservableEither<E, B>
+```
+
+Added in v0.6.8
+
+## chainFirst
+
+Composes computations in sequence, using the return value of one computation to determine the next computation and
+keeping only the result of the first.
+
+Derivable from `Monad`.
+
+**Signature**
+
+```ts
+export declare const chainFirst: <A, E, B>(
+  f: (a: A) => ObservableEither<E, B>
+) => (ma: ObservableEither<E, A>) => ObservableEither<E, A>
+```
+
+Added in v0.6.8
+
+## flatten
+
+Derivable from `Monad`.
+
+**Signature**
+
+```ts
+export declare const flatten: <E, A>(mma: ObservableEither<E, ObservableEither<E, A>>) => ObservableEither<E, A>
+```
+
+Added in v0.6.0
 
 # utils
 
@@ -204,67 +360,6 @@ export type URI = typeof URI
 
 Added in v0.6.8
 
-## alt
-
-**Signature**
-
-```ts
-export declare const alt: <E, A>(
-  that: () => ObservableEither<E, A>
-) => (fa: ObservableEither<E, A>) => ObservableEither<E, A>
-```
-
-Added in v0.6.8
-
-## ap
-
-**Signature**
-
-```ts
-export declare const ap: <E, A>(
-  fa: ObservableEither<E, A>
-) => <B>(fab: ObservableEither<E, (a: A) => B>) => ObservableEither<E, B>
-```
-
-Added in v0.6.8
-
-## apFirst
-
-**Signature**
-
-```ts
-export declare const apFirst: <E, B>(
-  fb: ObservableEither<E, B>
-) => <A>(fa: ObservableEither<E, A>) => ObservableEither<E, A>
-```
-
-Added in v0.6.8
-
-## apSecond
-
-**Signature**
-
-```ts
-export declare const apSecond: <E, B>(
-  fb: ObservableEither<E, B>
-) => <A>(fa: ObservableEither<E, A>) => ObservableEither<E, B>
-```
-
-Added in v0.6.8
-
-## bimap
-
-**Signature**
-
-```ts
-export declare const bimap: <E, G, A, B>(
-  f: (e: E) => G,
-  g: (a: A) => B
-) => (fa: ObservableEither<E, A>) => ObservableEither<G, B>
-```
-
-Added in v0.6.8
-
 ## bind
 
 **Signature**
@@ -304,40 +399,6 @@ export declare const bindW: <K extends string, E2, A, B>(
 ```
 
 Added in v0.6.12
-
-## chain
-
-**Signature**
-
-```ts
-export declare const chain: <E, A, B>(
-  f: (a: A) => ObservableEither<E, B>
-) => (ma: ObservableEither<E, A>) => ObservableEither<E, B>
-```
-
-Added in v0.6.8
-
-## chainFirst
-
-**Signature**
-
-```ts
-export declare const chainFirst: <E, A, B>(
-  f: (a: A) => ObservableEither<E, B>
-) => (ma: ObservableEither<E, A>) => ObservableEither<E, A>
-```
-
-Added in v0.6.8
-
-## flatten
-
-**Signature**
-
-```ts
-export declare const flatten: <E, A>(mma: ObservableEither<E, ObservableEither<E, A>>) => ObservableEither<E, A>
-```
-
-Added in v0.6.8
 
 ## fold
 
@@ -438,26 +499,6 @@ Added in v0.6.8
 
 ```ts
 export declare const leftObservable: <E = never, A = never>(ma: Observable<E>) => ObservableEither<E, A>
-```
-
-Added in v0.6.8
-
-## map
-
-**Signature**
-
-```ts
-export declare const map: <A, B>(f: (a: A) => B) => <E>(fa: ObservableEither<E, A>) => ObservableEither<E, B>
-```
-
-Added in v0.6.8
-
-## mapLeft
-
-**Signature**
-
-```ts
-export declare const mapLeft: <E, G>(f: (e: E) => G) => <A>(fa: ObservableEither<E, A>) => ObservableEither<G, A>
 ```
 
 Added in v0.6.8

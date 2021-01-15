@@ -165,6 +165,32 @@ describe('ObservableEither', () => {
     })
   })
 
+  it('apFirst', () => {
+    return pipe(_.right(1), _.apFirst(_.right(2)))
+      .pipe(bufferTime(10))
+      .toPromise()
+      .then(events => {
+        assert.deepStrictEqual(events, [E.right(1)])
+      })
+  })
+
+  it('apFirst', () => {
+    return pipe(_.right(1), _.apSecond(_.right(2)))
+      .pipe(bufferTime(10))
+      .toPromise()
+      .then(events => {
+        assert.deepStrictEqual(events, [E.right(2)])
+      })
+  })
+
+  it('chainFirst', async () => {
+    const f = (a: string): _.ObservableEither<string, number> => (a.length > 2 ? _.right(a.length) : _.left('b'))
+    const e1 = await pipe(_.right('aaaa'), _.chainFirst(f))
+      .pipe(bufferTime(10))
+      .toPromise()
+    assert.deepStrictEqual(e1, [E.right('aaaa')])
+  })
+
   describe('Bifunctor', () => {
     it('bimap', async () => {
       const f = (s: string): number => s.length
