@@ -12,39 +12,50 @@ Added in v0.6.6
 
 <h2 class="text-delta">Table of contents</h2>
 
+- [Alt](#alt)
+  - [alt](#alt)
+- [Apply](#apply)
+  - [ap](#ap)
+- [Compactable](#compactable)
+  - [compact](#compact)
+  - [separate](#separate)
+- [Filterable](#filterable)
+  - [filter](#filter)
+  - [filterMap](#filtermap)
+  - [partition](#partition)
+  - [partitionMap](#partitionmap)
+- [Functor](#functor)
+  - [map](#map)
+- [Monad](#monad)
+  - [chain](#chain)
+- [combinators](#combinators)
+  - [apFirst](#apfirst)
+  - [apSecond](#apsecond)
+  - [chainFirst](#chainfirst)
+  - [flatten](#flatten)
 - [utils](#utils)
-  - [Alt](#alt)
+  - [Alt](#alt-1)
   - [Alternative](#alternative)
   - [Applicative](#applicative)
-  - [Apply](#apply)
-  - [Compactable](#compactable)
+  - [Apply](#apply-1)
+  - [Compactable](#compactable-1)
   - [Do](#do)
-  - [Filterable](#filterable)
-  - [Functor](#functor)
-  - [Monad](#monad)
+  - [Filterable](#filterable-1)
+  - [Functor](#functor-1)
+  - [Monad](#monad-1)
   - [MonadIO](#monadio)
   - [MonadObservable](#monadobservable)
   - [MonadTask](#monadtask)
   - [ReaderObservable (interface)](#readerobservable-interface)
   - [URI](#uri)
   - [URI (type alias)](#uri-type-alias)
-  - [alt](#alt)
-  - [ap](#ap)
-  - [apFirst](#apfirst)
-  - [apSecond](#apsecond)
   - [ask](#ask)
   - [asks](#asks)
   - [bind](#bind)
   - [bindTo](#bindto)
   - [bindW](#bindw)
-  - [chain](#chain)
-  - [chainFirst](#chainfirst)
   - [chainIOK](#chainiok)
   - [chainTaskK](#chaintaskk)
-  - [compact](#compact)
-  - [filter](#filter)
-  - [filterMap](#filtermap)
-  - [flatten](#flatten)
   - [fromIO](#fromio)
   - [fromIOK](#fromiok)
   - [fromObservable](#fromobservable)
@@ -55,17 +66,218 @@ Added in v0.6.6
   - [fromTask](#fromtask)
   - [getMonoid](#getmonoid)
   - [local](#local)
-  - [map](#map)
   - [of](#of)
-  - [partition](#partition)
-  - [partitionMap](#partitionmap)
   - [run](#run)
-  - [separate](#separate)
   - [toReaderTask](#toreadertask)
   - [zero](#zero)
   - [~~readerObservable~~](#readerobservable)
 
 ---
+
+# Alt
+
+## alt
+
+Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
+types of kind `* -> *`.
+
+**Signature**
+
+```ts
+export declare const alt: <E, A>(
+  that: () => ReaderObservable<E, A>
+) => (fa: ReaderObservable<E, A>) => ReaderObservable<E, A>
+```
+
+Added in v0.6.7
+
+# Apply
+
+## ap
+
+Apply a function to an argument under a type constructor.
+
+**Signature**
+
+```ts
+export declare const ap: <E, A>(
+  fa: ReaderObservable<E, A>
+) => <B>(fab: ReaderObservable<E, (a: A) => B>) => ReaderObservable<E, B>
+```
+
+Added in v0.6.6
+
+# Compactable
+
+## compact
+
+**Signature**
+
+```ts
+export declare const compact: <E, A>(fa: ReaderObservable<E, O.Option<A>>) => ReaderObservable<E, A>
+```
+
+Added in v0.6.7
+
+## separate
+
+**Signature**
+
+```ts
+export declare const separate: <E, A, B>(
+  fa: ReaderObservable<E, E.Either<A, B>>
+) => Separated<ReaderObservable<E, A>, ReaderObservable<E, B>>
+```
+
+Added in v0.6.7
+
+# Filterable
+
+## filter
+
+**Signature**
+
+```ts
+export declare const filter: {
+  <A, B extends A>(refinement: Refinement<A, B>): <E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, B>
+  <A>(predicate: Predicate<A>): <E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, A>
+}
+```
+
+Added in v0.6.7
+
+## filterMap
+
+**Signature**
+
+```ts
+export declare const filterMap: <A, B>(
+  f: (a: A) => O.Option<B>
+) => <E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, B>
+```
+
+Added in v0.6.7
+
+## partition
+
+**Signature**
+
+```ts
+export declare const partition: {
+  <A, B extends A>(refinement: Refinement<A, B>): <E>(
+    fa: ReaderObservable<E, A>
+  ) => Separated<ReaderObservable<E, A>, ReaderObservable<E, B>>
+  <A>(predicate: Predicate<A>): <E>(
+    fa: ReaderObservable<E, A>
+  ) => Separated<ReaderObservable<E, A>, ReaderObservable<E, A>>
+}
+```
+
+Added in v0.6.7
+
+## partitionMap
+
+**Signature**
+
+```ts
+export declare const partitionMap: <A, B, C>(
+  f: (a: A) => E.Either<B, C>
+) => <E>(fa: ReaderObservable<E, A>) => Separated<ReaderObservable<E, B>, ReaderObservable<E, C>>
+```
+
+Added in v0.6.7
+
+# Functor
+
+## map
+
+`map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+use the type constructor `F` to represent some computational context.
+
+**Signature**
+
+```ts
+export declare const map: <A, B>(f: (a: A) => B) => <E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, B>
+```
+
+Added in v0.6.6
+
+# Monad
+
+## chain
+
+**Signature**
+
+```ts
+export declare const chain: <E, A, B>(
+  f: (a: A) => ReaderObservable<E, B>
+) => (ma: ReaderObservable<E, A>) => ReaderObservable<E, B>
+```
+
+Added in v0.6.6
+
+# combinators
+
+## apFirst
+
+Combine two effectful actions, keeping only the result of the first.
+
+Derivable from `Apply`.
+
+**Signature**
+
+```ts
+export declare const apFirst: <E, B>(
+  fb: ReaderObservable<E, B>
+) => <A>(fa: ReaderObservable<E, A>) => ReaderObservable<E, A>
+```
+
+Added in v0.6.6
+
+## apSecond
+
+Combine two effectful actions, keeping only the result of the second.
+
+Derivable from `Apply`.
+
+**Signature**
+
+```ts
+export declare const apSecond: <E, B>(
+  fb: ReaderObservable<E, B>
+) => <A>(fa: ReaderObservable<E, A>) => ReaderObservable<E, B>
+```
+
+Added in v0.6.6
+
+## chainFirst
+
+Composes computations in sequence, using the return value of one computation to determine the next computation and
+keeping only the result of the first.
+
+Derivable from `Monad`.
+
+**Signature**
+
+```ts
+export declare const chainFirst: <A, E, B>(
+  f: (a: A) => ReaderObservable<E, B>
+) => (ma: ReaderObservable<E, A>) => ReaderObservable<E, A>
+```
+
+Added in v0.6.6
+
+## flatten
+
+Derivable from `Monad`.
+
+**Signature**
+
+```ts
+export declare const flatten: <E, A>(mma: ReaderObservable<E, ReaderObservable<E, A>>) => ReaderObservable<E, A>
+```
+
+Added in v0.6.6
 
 # utils
 
@@ -221,54 +433,6 @@ export type URI = typeof URI
 
 Added in v0.6.6
 
-## alt
-
-**Signature**
-
-```ts
-export declare const alt: <E, A>(
-  that: () => ReaderObservable<E, A>
-) => (fa: ReaderObservable<E, A>) => ReaderObservable<E, A>
-```
-
-Added in v0.6.7
-
-## ap
-
-**Signature**
-
-```ts
-export declare const ap: <E, A>(
-  fa: ReaderObservable<E, A>
-) => <B>(fab: ReaderObservable<E, (a: A) => B>) => ReaderObservable<E, B>
-```
-
-Added in v0.6.6
-
-## apFirst
-
-**Signature**
-
-```ts
-export declare const apFirst: <E, B>(
-  fb: ReaderObservable<E, B>
-) => <A>(fa: ReaderObservable<E, A>) => ReaderObservable<E, A>
-```
-
-Added in v0.6.6
-
-## apSecond
-
-**Signature**
-
-```ts
-export declare const apSecond: <E, B>(
-  fb: ReaderObservable<E, B>
-) => <A>(fa: ReaderObservable<E, A>) => ReaderObservable<E, B>
-```
-
-Added in v0.6.6
-
 ## ask
 
 **Signature**
@@ -329,30 +493,6 @@ export declare const bindW: <K extends string, R2, A, B>(
 
 Added in v0.6.12
 
-## chain
-
-**Signature**
-
-```ts
-export declare const chain: <E, A, B>(
-  f: (a: A) => ReaderObservable<E, B>
-) => (ma: ReaderObservable<E, A>) => ReaderObservable<E, B>
-```
-
-Added in v0.6.6
-
-## chainFirst
-
-**Signature**
-
-```ts
-export declare const chainFirst: <E, A, B>(
-  f: (a: A) => ReaderObservable<E, B>
-) => (ma: ReaderObservable<E, A>) => ReaderObservable<E, A>
-```
-
-Added in v0.6.6
-
 ## chainIOK
 
 **Signature**
@@ -371,51 +511,6 @@ Added in v0.6.6
 export declare function chainTaskK<A, B>(
   f: (a: A) => Observable<B>
 ): <R>(ma: ReaderObservable<R, A>) => ReaderObservable<R, B>
-```
-
-Added in v0.6.6
-
-## compact
-
-**Signature**
-
-```ts
-export declare const compact: <E, A>(fa: ReaderObservable<E, O.Option<A>>) => ReaderObservable<E, A>
-```
-
-Added in v0.6.7
-
-## filter
-
-**Signature**
-
-```ts
-export declare const filter: {
-  <A, B>(refinement: Refinement<A, B>): <E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, B>
-  <A>(predicate: Predicate<A>): <E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, A>
-}
-```
-
-Added in v0.6.7
-
-## filterMap
-
-**Signature**
-
-```ts
-export declare const filterMap: <A, B>(
-  f: (a: A) => O.Option<B>
-) => <E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, B>
-```
-
-Added in v0.6.7
-
-## flatten
-
-**Signature**
-
-```ts
-export declare const flatten: <E, A>(mma: ReaderObservable<E, ReaderObservable<E, A>>) => ReaderObservable<E, A>
 ```
 
 Added in v0.6.6
@@ -524,16 +619,6 @@ export declare function local<Q, R>(f: (f: Q) => R): <A>(ma: ReaderObservable<R,
 
 Added in v0.6.6
 
-## map
-
-**Signature**
-
-```ts
-export declare const map: <A, B>(f: (a: A) => B) => <E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, B>
-```
-
-Added in v0.6.6
-
 ## of
 
 **Signature**
@@ -544,35 +629,6 @@ export declare const of: <R, A>(a: A) => ReaderObservable<R, A>
 
 Added in v0.6.6
 
-## partition
-
-**Signature**
-
-```ts
-export declare const partition: {
-  <A, B>(refinement: Refinement<A, B>): <E>(
-    fa: ReaderObservable<E, A>
-  ) => Separated<ReaderObservable<E, A>, ReaderObservable<E, B>>
-  <A>(predicate: Predicate<A>): <E>(
-    fa: ReaderObservable<E, A>
-  ) => Separated<ReaderObservable<E, A>, ReaderObservable<E, A>>
-}
-```
-
-Added in v0.6.7
-
-## partitionMap
-
-**Signature**
-
-```ts
-export declare const partitionMap: <A, B, C>(
-  f: (a: A) => E.Either<B, C>
-) => <E>(fa: ReaderObservable<E, A>) => Separated<ReaderObservable<E, B>, ReaderObservable<E, C>>
-```
-
-Added in v0.6.7
-
 ## run
 
 **Signature**
@@ -582,18 +638,6 @@ export declare function run<R, A>(ma: ReaderObservable<R, A>, r: R): Promise<A>
 ```
 
 Added in v0.6.6
-
-## separate
-
-**Signature**
-
-```ts
-export declare const separate: <E, A, B>(
-  fa: ReaderObservable<E, E.Either<A, B>>
-) => Separated<ReaderObservable<E, A>, ReaderObservable<E, B>>
-```
-
-Added in v0.6.7
 
 ## toReaderTask
 
