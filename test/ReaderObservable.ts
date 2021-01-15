@@ -313,4 +313,39 @@ describe('ReaderObservable', () => {
 
     assert.deepStrictEqual(t, [{ a: 1, b: 'b' }])
   })
+
+  it('apFirst', () => {
+    return pipe(
+      _.of(1),
+      _.apFirst(_.of(2))
+    )(undefined)
+      .pipe(bufferTime(10))
+      .toPromise()
+      .then(events => {
+        assert.deepStrictEqual(events, [1])
+      })
+  })
+
+  it('apFirst', () => {
+    return pipe(
+      _.of(1),
+      _.apSecond(_.of(2))
+    )(undefined)
+      .pipe(bufferTime(10))
+      .toPromise()
+      .then(events => {
+        assert.deepStrictEqual(events, [2])
+      })
+  })
+
+  it('chainFirst', async () => {
+    const f = (a: string) => _.of(a.length)
+    const e1 = await pipe(
+      _.of('foo'),
+      _.chainFirst(f)
+    )({})
+      .pipe(bufferTime(10))
+      .toPromise()
+    assert.deepStrictEqual(e1, ['foo'])
+  })
 })

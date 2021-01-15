@@ -5,16 +5,18 @@ import { Alt2 } from 'fp-ts/lib/Alt'
 import { Alternative2 } from 'fp-ts/lib/Alternative'
 import { Applicative2 } from 'fp-ts/lib/Applicative'
 import { Apply2 } from 'fp-ts/lib/Apply'
-import { Compactable2 } from 'fp-ts/lib/Compactable'
+import { Compactable2, Separated } from 'fp-ts/lib/Compactable'
 import * as E from 'fp-ts/lib/Either'
 import { Filterable2 } from 'fp-ts/lib/Filterable'
-import { identity, Predicate } from 'fp-ts/lib/function'
+import { flow, identity, Predicate, Refinement } from 'fp-ts/lib/function'
 import { Functor2 } from 'fp-ts/lib/Functor'
 import { IO } from 'fp-ts/lib/IO'
 import { Monad2 } from 'fp-ts/lib/Monad'
+import { MonadIO2 } from 'fp-ts/lib/MonadIO'
+import { MonadTask2 } from 'fp-ts/lib/MonadTask'
 import { Monoid } from 'fp-ts/lib/Monoid'
 import * as O from 'fp-ts/lib/Option'
-import { pipe, pipeable } from 'fp-ts/lib/pipeable'
+import { pipe } from 'fp-ts/lib/pipeable'
 import { getMonoid as getReaderMonoid, Reader } from 'fp-ts/lib/Reader'
 import { getReaderM } from 'fp-ts/lib/ReaderT'
 import { ReaderTask } from 'fp-ts/lib/ReaderTask'
@@ -22,8 +24,6 @@ import { Task } from 'fp-ts/lib/Task'
 import { Observable } from 'rxjs'
 import { MonadObservable2 } from './MonadObservable'
 import * as R from './Observable'
-import { MonadIO2 } from 'fp-ts/lib/MonadIO'
-import { MonadTask2 } from 'fp-ts/lib/MonadTask'
 
 const T = getReaderM(R.Monad)
 
@@ -169,21 +169,193 @@ export function chainTaskK<A, B>(
 export const zero: Alternative2<URI>['zero'] = () => R.Alternative.zero
 
 // -------------------------------------------------------------------------------------
+// type class members
+// -------------------------------------------------------------------------------------
+
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 0.6.6
+ */
+export const map: <A, B>(f: (a: A) => B) => <E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, B> = f => fa =>
+  T.map(fa, f)
+
+/**
+ * Apply a function to an argument under a type constructor.
+ *
+ * @category Apply
+ * @since 0.6.6
+ */
+export const ap: <E, A>(
+  fa: ReaderObservable<E, A>
+) => <B>(fab: ReaderObservable<E, (a: A) => B>) => ReaderObservable<E, B> = fa => fab => T.ap(fab, fa)
+
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 0.6.6
+ */
+export const apFirst: <E, B>(
+  fb: ReaderObservable<E, B>
+) => <A>(fa: ReaderObservable<E, A>) => ReaderObservable<E, A> = fb =>
+  flow(
+    map(a => () => a),
+    ap(fb)
+  )
+
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 0.6.6
+ */
+export const apSecond = <E, B>(
+  fb: ReaderObservable<E, B>
+): (<A>(fa: ReaderObservable<E, A>) => ReaderObservable<E, B>) =>
+  flow(
+    map(() => (b: B) => b),
+    ap(fb)
+  )
+
+/**
+ * @category Monad
+ * @since 0.6.6
+ */
+export const chain: <E, A, B>(
+  f: (a: A) => ReaderObservable<E, B>
+) => (ma: ReaderObservable<E, A>) => ReaderObservable<E, B> = f => ma => T.chain(ma, f)
+
+/**
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 0.6.6
+ */
+export const flatten: <E, A>(mma: ReaderObservable<E, ReaderObservable<E, A>>) => ReaderObservable<E, A> =
+  /*#__PURE__*/
+  chain(identity)
+
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 0.6.6
+ */
+export const chainFirst: <A, E, B>(
+  f: (a: A) => ReaderObservable<E, B>
+) => (ma: ReaderObservable<E, A>) => ReaderObservable<E, A> = f =>
+  chain(a =>
+    pipe(
+      f(a),
+      map(() => a)
+    )
+  )
+
+/**
+ * Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
+ * types of kind `* -> *`.
+ *
+ * @category Alt
+ * @since 0.6.7
+ */
+export const alt: <E, A>(
+  that: () => ReaderObservable<E, A>
+) => (fa: ReaderObservable<E, A>) => ReaderObservable<E, A> = that => me => r => R.Alt.alt(me(r), () => that()(r))
+
+/**
+ * @category Filterable
+ * @since 0.6.7
+ */
+export const filterMap: <A, B>(
+  f: (a: A) => O.Option<B>
+) => <E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, B> = f => fa => r => R.Filterable.filterMap(fa(r), f)
+
+/**
+ * @category Compactable
+ * @since 0.6.7
+ */
+export const compact: <E, A>(fa: ReaderObservable<E, O.Option<A>>) => ReaderObservable<E, A> =
+  /*#__PURE__*/
+  filterMap(identity)
+
+/**
+ * @category Filterable
+ * @since 0.6.7
+ */
+export const partitionMap: <A, B, C>(
+  f: (a: A) => E.Either<B, C>
+) => <E>(fa: ReaderObservable<E, A>) => Separated<ReaderObservable<E, B>, ReaderObservable<E, C>> = f => fa => ({
+  left: pipe(
+    fa,
+    filterMap(a => O.fromEither(E.swap(f(a))))
+  ),
+  right: pipe(
+    fa,
+    filterMap(a => O.fromEither(f(a)))
+  )
+})
+
+/**
+ * @category Compactable
+ * @since 0.6.7
+ */
+export const separate: <E, A, B>(
+  fa: ReaderObservable<E, E.Either<A, B>>
+) => Separated<ReaderObservable<E, A>, ReaderObservable<E, B>> =
+  /*#__PURE__*/
+  partitionMap(identity)
+
+/**
+ * @category Filterable
+ * @since 0.6.7
+ */
+export const filter: {
+  <A, B extends A>(refinement: Refinement<A, B>): <E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, B>
+  <A>(predicate: Predicate<A>): <E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, A>
+} = <A>(predicate: Predicate<A>): (<E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, A>) =>
+  filterMap(O.fromPredicate(predicate))
+
+/**
+ * @category Filterable
+ * @since 0.6.7
+ */
+export const partition: {
+  <A, B extends A>(refinement: Refinement<A, B>): <E>(
+    fa: ReaderObservable<E, A>
+  ) => Separated<ReaderObservable<E, A>, ReaderObservable<E, B>>
+  <A>(predicate: Predicate<A>): <E>(
+    fa: ReaderObservable<E, A>
+  ) => Separated<ReaderObservable<E, A>, ReaderObservable<E, A>>
+} = <A>(
+  predicate: Predicate<A>
+): (<E>(fa: ReaderObservable<E, A>) => Separated<ReaderObservable<E, A>, ReaderObservable<E, A>>) =>
+  partitionMap(E.fromPredicate(predicate, identity))
+
+// -------------------------------------------------------------------------------------
 // instances
 // -------------------------------------------------------------------------------------
 
-const alt_: Alt2<URI>['alt'] = (fx, f) => r => R.Alt.alt(fx(r), () => f()(r))
-const compact_: Compactable2<URI>['compact'] = fa => filterMap_(fa, identity)
-const separate_: Compactable2<URI>['separate'] = fa => partitionMap_(fa, identity)
-const filter_: Filterable2<URI>['filter'] = <R, A>(fa: ReaderObservable<R, A>, p: Predicate<A>) =>
-  filterMap_(fa, O.fromPredicate(p))
-const filterMap_: Filterable2<URI>['filterMap'] = (fa, f) => r => R.Filterable.filterMap(fa(r), f)
+/* istanbul ignore next */
+const alt_: Alt2<URI>['alt'] = (fx, f) => pipe(fx, alt(f))
+/* istanbul ignore next */
+const filter_: Filterable2<URI>['filter'] = <R, A>(fa: ReaderObservable<R, A>, p: Predicate<A>) => pipe(fa, filter(p))
+/* istanbul ignore next */
+const filterMap_: Filterable2<URI>['filterMap'] = (fa, f) => pipe(fa, filterMap(f))
+/* istanbul ignore next */
 const partition_: Filterable2<URI>['partition'] = <R, A>(fa: ReaderObservable<R, A>, p: Predicate<A>) =>
-  partitionMap_(fa, E.fromPredicate(p, identity))
-const partitionMap_: Filterable2<URI>['partitionMap'] = (fa, f) => ({
-  left: filterMap_(fa, a => O.fromEither(E.swap(f(a)))),
-  right: filterMap_(fa, a => O.fromEither(f(a)))
-})
+  pipe(fa, partition(p))
+/* istanbul ignore next */
+const partitionMap_: Filterable2<URI>['partitionMap'] = (fa, f) => pipe(fa, partitionMap(f))
 
 /**
  * @since 0.6.12
@@ -249,8 +421,8 @@ export const Alternative: Alternative2<URI> = {
  */
 export const Compactable: Compactable2<URI> = {
   URI,
-  compact: compact_,
-  separate: separate_
+  compact,
+  separate
 }
 
 /**
@@ -258,8 +430,8 @@ export const Compactable: Compactable2<URI> = {
  */
 export const Filterable: Filterable2<URI> = {
   URI,
-  compact: compact_,
-  separate: separate_,
+  compact,
+  separate,
   map: T.map,
   filter: filter_,
   filterMap: filterMap_,
@@ -318,8 +490,8 @@ export const readerObservable: Monad2<URI> & Alternative2<URI> & Filterable2<URI
   chain: T.chain,
   zero,
   alt: alt_,
-  compact: compact_,
-  separate: separate_,
+  compact,
+  separate,
   partitionMap: partitionMap_,
   partition: partition_,
   filterMap: filterMap_,
@@ -327,83 +499,6 @@ export const readerObservable: Monad2<URI> & Alternative2<URI> & Filterable2<URI
   fromIO,
   fromTask,
   fromObservable
-}
-
-const {
-  ap,
-  apFirst,
-  apSecond,
-  chain,
-  chainFirst,
-  flatten,
-  map,
-  alt,
-  compact,
-  filter,
-  filterMap,
-  partition,
-  partitionMap,
-  separate
-  // tslint:disable-next-line: deprecation
-} = pipeable(readerObservable)
-
-export {
-  /**
-   * @since 0.6.6
-   */
-  ap,
-  /**
-   * @since 0.6.6
-   */
-  apFirst,
-  /**
-   * @since 0.6.6
-   */
-  apSecond,
-  /**
-   * @since 0.6.6
-   */
-  chain,
-  /**
-   * @since 0.6.6
-   */
-  chainFirst,
-  /**
-   * @since 0.6.6
-   */
-  flatten,
-  /**
-   * @since 0.6.6
-   */
-  map,
-  /**
-   * @since 0.6.7
-   */
-  alt,
-  /**
-   * @since 0.6.7
-   */
-  compact,
-  /**
-   * @since 0.6.7
-   */
-  filter,
-  /**
-   * @since 0.6.7
-   */
-  filterMap,
-  /**
-   * @since 0.6.7
-   */
-  partition,
-  /**
-   * @since 0.6.7
-   */
-  partitionMap,
-  /**
-   * @since 0.6.7
-   */
-  separate
 }
 
 // -------------------------------------------------------------------------------------

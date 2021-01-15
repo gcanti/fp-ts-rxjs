@@ -160,17 +160,6 @@ export const ap: <E, A>(
 ) => <B>(fab: ObservableEither<E, (a: A) => B>) => ObservableEither<E, B> = fa => fab => T.ap(fab, fa)
 
 /**
- * Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
- * types of kind `* -> *`.
- *
- * @category Alt
- * @since 0.6.8
- */
-export const alt: <E, A>(
-  that: () => ObservableEither<E, A>
-) => (fa: ObservableEither<E, A>) => ObservableEither<E, A> = that => fa => T.alt(fa, that)
-
-/**
  * Combine two effectful actions, keeping only the result of the first.
  *
  * Derivable from `Apply`.
@@ -201,6 +190,17 @@ export const apSecond = <E, B>(
     map(() => (b: B) => b),
     ap(fb)
   )
+
+/**
+ * Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
+ * types of kind `* -> *`.
+ *
+ * @category Alt
+ * @since 0.6.8
+ */
+export const alt: <E, A>(
+  that: () => ObservableEither<E, A>
+) => (fa: ObservableEither<E, A>) => ObservableEither<E, A> = that => fa => T.alt(fa, that)
 
 /**
  * @category Bifunctor
