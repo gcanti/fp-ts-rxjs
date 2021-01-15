@@ -18,11 +18,10 @@ describe('ReaderObservable', () => {
     it('map', async () => {
       const double = (n: number): number => n * 2
 
-      const x = await _.readerObservable
-        .map(
-          _.of(1),
-          double
-        )({})
+      const x = await pipe(
+        _.of(1),
+        _.map(double)
+      )({})
         .pipe(bufferTime(10))
         .toPromise()
       assert.deepStrictEqual(x, [2])
@@ -32,11 +31,10 @@ describe('ReaderObservable', () => {
       const double = (n: number): number => n * 2
       const mab = _.of(double)
       const ma = _.of(1)
-      const x = await _.readerObservable
-        .ap(
-          mab,
-          ma
-        )({})
+      const x = await pipe(
+        mab,
+        _.ap(ma)
+      )({})
         .pipe(bufferTime(10))
         .toPromise()
       assert.deepStrictEqual(x, [2])
@@ -44,11 +42,10 @@ describe('ReaderObservable', () => {
 
     it('chain', async () => {
       const f = (a: string) => _.of(a.length)
-      const e1 = await _.readerObservable
-        .chain(
-          _.of('foo'),
-          f
-        )({})
+      const e1 = await pipe(
+        _.of('foo'),
+        _.chain(f)
+      )({})
         .pipe(bufferTime(10))
         .toPromise()
       assert.deepStrictEqual(e1, [3])
@@ -115,10 +112,7 @@ describe('ReaderObservable', () => {
 
   it('filterMap', () => {
     const fa = from([1, 2, 3])
-    const fb = R.observable.filterMap(
-      fa,
-      O.fromPredicate(n => n > 1)
-    )
+    const fb = pipe(fa, R.filterMap(O.fromPredicate(n => n > 1)))
     return fb
       .pipe(bufferTime(10))
       .toPromise()
@@ -129,7 +123,7 @@ describe('ReaderObservable', () => {
 
   it('compact', () => {
     const fa = () => from([1, 2, 3].map(O.fromPredicate(n => n > 1)))
-    const fb = _.readerObservable.compact(fa)
+    const fb = _.compact(fa)
     return fb({})
       .pipe(bufferTime(10))
       .toPromise()
@@ -140,7 +134,10 @@ describe('ReaderObservable', () => {
 
   it('filter', () => {
     const fa = () => from([1, 2, 3])
-    const fb = _.readerObservable.filter(fa, n => n > 1)
+    const fb = pipe(
+      fa,
+      _.filter(n => n > 1)
+    )
     return fb({})
       .pipe(bufferTime(10))
       .toPromise()
@@ -151,10 +148,7 @@ describe('ReaderObservable', () => {
 
   it('partitionMap', () => {
     const fa = () => from([1, 2, 3])
-    const s = _.readerObservable.partitionMap(
-      fa,
-      E.fromPredicate(n => n > 1, identity)
-    )
+    const s = pipe(fa, _.partitionMap(E.fromPredicate(n => n > 1, identity)))
     return s
       .left({})
       .pipe(bufferTime(10))
@@ -175,7 +169,7 @@ describe('ReaderObservable', () => {
 
   it('separate', () => {
     const fa = () => from([1, 2, 3].map(E.fromPredicate(n => n > 1, identity)))
-    const s = _.readerObservable.separate(fa)
+    const s = _.separate(fa)
     return s
       .left({})
       .pipe(bufferTime(10))
@@ -196,7 +190,10 @@ describe('ReaderObservable', () => {
 
   it('partition', () => {
     const fa = () => from([1, 2, 3])
-    const s = _.readerObservable.partition(fa, n => n > 1)
+    const s = pipe(
+      fa,
+      _.partition(n => n > 1)
+    )
     return s
       .left({})
       .pipe(bufferTime(10))
@@ -216,16 +213,17 @@ describe('ReaderObservable', () => {
   })
 
   it('zero', async () => {
-    const events = await _.readerObservable
-      .zero()({})
+    const events = await _.zero()({})
       .pipe(bufferTime(10))
       .toPromise()
     assert.deepStrictEqual(events, [])
   })
 
   it('alt', async () => {
-    const events = await _.readerObservable
-      .alt(_.readerObservable.of(1), () => _.readerObservable.of(2))({})
+    const events = await pipe(
+      _.of(1),
+      _.alt(() => _.of(2))
+    )({})
       .pipe(bufferTime(10))
       .toPromise()
     assert.deepStrictEqual(events, [1, 2])
@@ -267,9 +265,15 @@ describe('ReaderObservable', () => {
     const log: Array<string> = []
     const append = (message: string): _.ReaderObservable<{}, number> =>
       _.fromTask(() => Promise.resolve(log.push(message)))
-    const t1 = _.readerObservable.chain(append('start 1'), () => append('end 1'))
-    const t2 = _.readerObservable.chain(append('start 2'), () => append('end 2'))
-    const sequenceParallel = array.sequence(_.readerObservable)
+    const t1 = pipe(
+      append('start 1'),
+      _.chain(() => append('end 1'))
+    )
+    const t2 = pipe(
+      append('start 2'),
+      _.chain(() => append('end 2'))
+    )
+    const sequenceParallel = array.sequence(_.Applicative)
     const ns = await sequenceParallel([t1, t2])({})
       .pipe(bufferTime(10))
       .toPromise()
@@ -279,8 +283,7 @@ describe('ReaderObservable', () => {
 
   describe('MonadIO', () => {
     it('fromIO', async () => {
-      const e = await _.readerObservable
-        .fromIO(() => 1)({})
+      const e = await _.fromIO(() => 1)({})
         .pipe(bufferTime(10))
         .toPromise()
       assert.deepStrictEqual(e, [1])

@@ -4,7 +4,7 @@ nav_order: 4
 parent: Modules
 ---
 
-# ObservableEither overview
+## ObservableEither overview
 
 Added in v0.6.8
 
@@ -12,43 +12,169 @@ Added in v0.6.8
 
 <h2 class="text-delta">Table of contents</h2>
 
-- [ObservableEither (interface)](#observableeither-interface)
-- [URI (type alias)](#uri-type-alias)
-- [Do](#do)
-- [URI](#uri)
-- [alt](#alt)
-- [ap](#ap)
-- [apFirst](#apfirst)
-- [apSecond](#apsecond)
-- [bimap](#bimap)
-- [bind](#bind)
-- [bindTo](#bindto)
-- [bindW](#bindw)
-- [chain](#chain)
-- [chainFirst](#chainfirst)
-- [flatten](#flatten)
-- [fold](#fold)
-- [fromIOEither](#fromioeither)
-- [fromTask](#fromtask)
-- [fromTaskEither](#fromtaskeither)
-- [getOrElse](#getorelse)
-- [left](#left)
-- [leftIO](#leftio)
-- [leftObservable](#leftobservable)
-- [map](#map)
-- [mapLeft](#mapleft)
-- [observableEither](#observableeither)
-- [of](#of)
-- [orElse](#orelse)
-- [right](#right)
-- [rightIO](#rightio)
-- [rightObservable](#rightobservable)
-- [swap](#swap)
-- [toTaskEither](#totaskeither)
+- [utils](#utils)
+  - [Alt](#alt)
+  - [Applicative](#applicative)
+  - [Apply](#apply)
+  - [Bifunctor](#bifunctor)
+  - [Do](#do)
+  - [Functor](#functor)
+  - [Monad](#monad)
+  - [MonadIO](#monadio)
+  - [MonadObservable](#monadobservable)
+  - [MonadTask](#monadtask)
+  - [MonadThrow](#monadthrow)
+  - [ObservableEither (interface)](#observableeither-interface)
+  - [URI](#uri)
+  - [URI (type alias)](#uri-type-alias)
+  - [alt](#alt)
+  - [ap](#ap)
+  - [apFirst](#apfirst)
+  - [apSecond](#apsecond)
+  - [bimap](#bimap)
+  - [bind](#bind)
+  - [bindTo](#bindto)
+  - [bindW](#bindw)
+  - [chain](#chain)
+  - [chainFirst](#chainfirst)
+  - [flatten](#flatten)
+  - [fold](#fold)
+  - [fromIO](#fromio)
+  - [fromIOEither](#fromioeither)
+  - [fromObservable](#fromobservable)
+  - [fromTask](#fromtask)
+  - [fromTaskEither](#fromtaskeither)
+  - [getOrElse](#getorelse)
+  - [left](#left)
+  - [leftIO](#leftio)
+  - [leftObservable](#leftobservable)
+  - [map](#map)
+  - [mapLeft](#mapleft)
+  - [of](#of)
+  - [orElse](#orelse)
+  - [right](#right)
+  - [rightIO](#rightio)
+  - [rightObservable](#rightobservable)
+  - [swap](#swap)
+  - [throwError](#throwerror)
+  - [toTaskEither](#totaskeither)
+  - [~~observableEither~~](#observableeither)
 
 ---
 
-# ObservableEither (interface)
+# utils
+
+## Alt
+
+**Signature**
+
+```ts
+export declare const Alt: Alt2<'ObservableEither'>
+```
+
+Added in v0.6.12
+
+## Applicative
+
+**Signature**
+
+```ts
+export declare const Applicative: Applicative2<'ObservableEither'>
+```
+
+Added in v0.6.12
+
+## Apply
+
+**Signature**
+
+```ts
+export declare const Apply: Apply2<'ObservableEither'>
+```
+
+Added in v0.6.12
+
+## Bifunctor
+
+**Signature**
+
+```ts
+export declare const Bifunctor: Bifunctor2<'ObservableEither'>
+```
+
+Added in v0.6.12
+
+## Do
+
+**Signature**
+
+```ts
+export declare const Do: ObservableEither<never, {}>
+```
+
+Added in v0.6.12
+
+## Functor
+
+**Signature**
+
+```ts
+export declare const Functor: Functor2<'ObservableEither'>
+```
+
+Added in v0.6.12
+
+## Monad
+
+**Signature**
+
+```ts
+export declare const Monad: Monad2<'ObservableEither'>
+```
+
+Added in v0.6.12
+
+## MonadIO
+
+**Signature**
+
+```ts
+export declare const MonadIO: MonadIO2<'ObservableEither'>
+```
+
+Added in v0.6.12
+
+## MonadObservable
+
+**Signature**
+
+```ts
+export declare const MonadObservable: MonadObservable2<'ObservableEither'>
+```
+
+Added in v0.6.12
+
+## MonadTask
+
+**Signature**
+
+```ts
+export declare const MonadTask: MonadTask2<'ObservableEither'>
+```
+
+Added in v0.6.12
+
+## MonadThrow
+
+**Signature**
+
+```ts
+export declare const MonadThrow: MonadThrow2<'ObservableEither'>
+```
+
+Added in v0.6.12
+
+## ObservableEither (interface)
 
 **Signature**
 
@@ -58,7 +184,17 @@ export interface ObservableEither<E, A> extends Observable<E.Either<E, A>> {}
 
 Added in v0.6.8
 
-# URI (type alias)
+## URI
+
+**Signature**
+
+```ts
+export declare const URI: 'ObservableEither'
+```
+
+Added in v0.6.8
+
+## URI (type alias)
 
 **Signature**
 
@@ -68,327 +204,356 @@ export type URI = typeof URI
 
 Added in v0.6.8
 
-# Do
+## alt
 
 **Signature**
 
 ```ts
-export const : ObservableEither<never, {}> = ...
-```
-
-Added in v0.6.12
-
-# URI
-
-**Signature**
-
-```ts
-export const URI: "ObservableEither" = ...
+export declare const alt: <E, A>(
+  that: () => ObservableEither<E, A>
+) => (fa: ObservableEither<E, A>) => ObservableEither<E, A>
 ```
 
 Added in v0.6.8
 
-# alt
+## ap
 
 **Signature**
 
 ```ts
-<E, A>(that: () => ObservableEither<E, A>) => (fa: ObservableEither<E, A>) => ObservableEither<E, A>
+export declare const ap: <E, A>(
+  fa: ObservableEither<E, A>
+) => <B>(fab: ObservableEither<E, (a: A) => B>) => ObservableEither<E, B>
 ```
 
 Added in v0.6.8
 
-# ap
+## apFirst
 
 **Signature**
 
 ```ts
-<E, A>(fa: ObservableEither<E, A>) => <B>(fab: ObservableEither<E, (a: A) => B>) => ObservableEither<E, B>
+export declare const apFirst: <E, B>(
+  fb: ObservableEither<E, B>
+) => <A>(fa: ObservableEither<E, A>) => ObservableEither<E, A>
 ```
 
 Added in v0.6.8
 
-# apFirst
+## apSecond
 
 **Signature**
 
 ```ts
-<E, B>(fb: ObservableEither<E, B>) => <A>(fa: ObservableEither<E, A>) => ObservableEither<E, A>
+export declare const apSecond: <E, B>(
+  fb: ObservableEither<E, B>
+) => <A>(fa: ObservableEither<E, A>) => ObservableEither<E, B>
 ```
 
 Added in v0.6.8
 
-# apSecond
+## bimap
 
 **Signature**
 
 ```ts
-<E, B>(fb: ObservableEither<E, B>) => <A>(fa: ObservableEither<E, A>) => ObservableEither<E, B>
+export declare const bimap: <E, G, A, B>(
+  f: (e: E) => G,
+  g: (a: A) => B
+) => (fa: ObservableEither<E, A>) => ObservableEither<G, B>
 ```
 
 Added in v0.6.8
 
-# bimap
+## bind
 
 **Signature**
 
 ```ts
-<E, G, A, B>(f: (e: E) => G, g: (a: A) => B) => (fa: ObservableEither<E, A>) => ObservableEither<G, B>
-```
-
-Added in v0.6.8
-
-# bind
-
-**Signature**
-
-```ts
-export function bind<K extends string, E, A, B>(
+export declare function bind<K extends string, E, A, B>(
   name: Exclude<K, keyof A>,
   f: (a: A) => ObservableEither<E, B>
-): (fa: ObservableEither<E, A>) => ObservableEither<E, { [P in keyof A | K]: P extends keyof A ? A[P] : B }> { ... }
+): (fa: ObservableEither<E, A>) => ObservableEither<E, { [P in keyof A | K]: P extends keyof A ? A[P] : B }>
 ```
 
 Added in v0.6.11
 
-# bindTo
+## bindTo
 
 **Signature**
 
 ```ts
-export function bindTo<K extends string, E, A>(
+export declare function bindTo<K extends string, E, A>(
   name: K
-): (fa: ObservableEither<E, A>) => ObservableEither<E, { [P in K]: A }> { ... }
+): (fa: ObservableEither<E, A>) => ObservableEither<E, { [P in K]: A }>
 ```
 
 Added in v0.6.11
 
-# bindW
+## bindW
 
 **Signature**
 
 ```ts
-export const bindW: <K extends string, E2, A, B>(
+export declare const bindW: <K extends string, E2, A, B>(
   name: Exclude<K, keyof A>,
   f: (a: A) => ObservableEither<E2, B>
 ) => <E1>(
   fa: ObservableEither<E1, A>
-) => ObservableEither<E1 | E2, { [P in keyof A | K]: P extends keyof A ? A[P] : B }> = ...
+) => ObservableEither<E2 | E1, { [P in K | keyof A]: P extends keyof A ? A[P] : B }>
 ```
 
 Added in v0.6.12
 
-# chain
+## chain
 
 **Signature**
 
 ```ts
-<E, A, B>(f: (a: A) => ObservableEither<E, B>) => (ma: ObservableEither<E, A>) => ObservableEither<E, B>
+export declare const chain: <E, A, B>(
+  f: (a: A) => ObservableEither<E, B>
+) => (ma: ObservableEither<E, A>) => ObservableEither<E, B>
 ```
 
 Added in v0.6.8
 
-# chainFirst
+## chainFirst
 
 **Signature**
 
 ```ts
-<E, A, B>(f: (a: A) => ObservableEither<E, B>) => (ma: ObservableEither<E, A>) => ObservableEither<E, A>
+export declare const chainFirst: <E, A, B>(
+  f: (a: A) => ObservableEither<E, B>
+) => (ma: ObservableEither<E, A>) => ObservableEither<E, A>
 ```
 
 Added in v0.6.8
 
-# flatten
+## flatten
 
 **Signature**
 
 ```ts
-<E, A>(mma: ObservableEither<E, ObservableEither<E, A>>) => ObservableEither<E, A>
+export declare const flatten: <E, A>(mma: ObservableEither<E, ObservableEither<E, A>>) => ObservableEither<E, A>
 ```
 
 Added in v0.6.8
 
-# fold
+## fold
 
 **Signature**
 
 ```ts
-export function fold<E, A, B>(
+export declare function fold<E, A, B>(
   onLeft: (e: E) => Observable<B>,
   onRight: (a: A) => Observable<B>
-): (ma: ObservableEither<E, A>) => Observable<B> { ... }
+): (ma: ObservableEither<E, A>) => Observable<B>
 ```
 
 Added in v0.6.8
 
-# fromIOEither
+## fromIO
 
 **Signature**
 
 ```ts
-export const fromIOEither: <E, A>(fa: IOEither<E, A>) => ObservableEither<E, A> = ...
-```
-
-Added in v0.6.8
-
-# fromTask
-
-**Signature**
-
-```ts
-export function fromTask<E, A>(ma: Task<A>): ObservableEither<E, A> { ... }
-```
-
-Added in v0.6.8
-
-# fromTaskEither
-
-**Signature**
-
-```ts
-export function fromTaskEither<E, A>(t: TE.TaskEither<E, A>): ObservableEither<E, A> { ... }
-```
-
-Added in v0.6.8
-
-# getOrElse
-
-**Signature**
-
-```ts
-export function getOrElse<E, A>(onLeft: (e: E) => Observable<A>): (ma: ObservableEither<E, A>) => Observable<A> { ... }
-```
-
-Added in v0.6.8
-
-# left
-
-**Signature**
-
-```ts
-export const left: <E = never, A = never>(e: E) => ObservableEither<E, A> = ...
-```
-
-Added in v0.6.8
-
-# leftIO
-
-**Signature**
-
-```ts
-export function leftIO<E, A>(me: IO<E>): ObservableEither<E, A> { ... }
-```
-
-Added in v0.6.8
-
-# leftObservable
-
-**Signature**
-
-```ts
-export const leftObservable: <E = never, A = never>(ma: Observable<E>) => ObservableEither<E, A> = ...
-```
-
-Added in v0.6.8
-
-# map
-
-**Signature**
-
-```ts
-<A, B>(f: (a: A) => B) => <E>(fa: ObservableEither<E, A>) => ObservableEither<E, B>
-```
-
-Added in v0.6.8
-
-# mapLeft
-
-**Signature**
-
-```ts
-<E, G>(f: (e: E) => G) => <A>(fa: ObservableEither<E, A>) => ObservableEither<G, A>
-```
-
-Added in v0.6.8
-
-# observableEither
-
-**Signature**
-
-```ts
-export const observableEither: Monad2<URI> & Bifunctor2<URI> & Alt2<URI> & MonadObservable2<URI> & MonadThrow2<URI> = ...
-```
-
-Added in v0.6.8
-
-# of
-
-**Signature**
-
-```ts
-export const of: Applicative2<URI>['of'] = ...
+export declare const fromIO: <E, A>(fa: IO<A>) => ObservableEither<E, A>
 ```
 
 Added in v0.6.12
 
-# orElse
+## fromIOEither
 
 **Signature**
 
 ```ts
-export function orElse<E, A, M>(
+export declare const fromIOEither: <E, A>(fa: IOEither<E, A>) => ObservableEither<E, A>
+```
+
+Added in v0.6.8
+
+## fromObservable
+
+**Signature**
+
+```ts
+export declare const fromObservable: <E, A>(fa: Observable<A>) => ObservableEither<E, A>
+```
+
+Added in v0.6.12
+
+## fromTask
+
+**Signature**
+
+```ts
+export declare function fromTask<E, A>(ma: Task<A>): ObservableEither<E, A>
+```
+
+Added in v0.6.8
+
+## fromTaskEither
+
+**Signature**
+
+```ts
+export declare function fromTaskEither<E, A>(t: TE.TaskEither<E, A>): ObservableEither<E, A>
+```
+
+Added in v0.6.8
+
+## getOrElse
+
+**Signature**
+
+```ts
+export declare function getOrElse<E, A>(onLeft: (e: E) => Observable<A>): (ma: ObservableEither<E, A>) => Observable<A>
+```
+
+Added in v0.6.8
+
+## left
+
+**Signature**
+
+```ts
+export declare const left: <E = never, A = never>(e: E) => ObservableEither<E, A>
+```
+
+Added in v0.6.8
+
+## leftIO
+
+**Signature**
+
+```ts
+export declare function leftIO<E, A>(me: IO<E>): ObservableEither<E, A>
+```
+
+Added in v0.6.8
+
+## leftObservable
+
+**Signature**
+
+```ts
+export declare const leftObservable: <E = never, A = never>(ma: Observable<E>) => ObservableEither<E, A>
+```
+
+Added in v0.6.8
+
+## map
+
+**Signature**
+
+```ts
+export declare const map: <A, B>(f: (a: A) => B) => <E>(fa: ObservableEither<E, A>) => ObservableEither<E, B>
+```
+
+Added in v0.6.8
+
+## mapLeft
+
+**Signature**
+
+```ts
+export declare const mapLeft: <E, G>(f: (e: E) => G) => <A>(fa: ObservableEither<E, A>) => ObservableEither<G, A>
+```
+
+Added in v0.6.8
+
+## of
+
+**Signature**
+
+```ts
+export declare const of: <E, A>(a: A) => ObservableEither<E, A>
+```
+
+Added in v0.6.12
+
+## orElse
+
+**Signature**
+
+```ts
+export declare function orElse<E, A, M>(
   onLeft: (e: E) => ObservableEither<M, A>
-): (ma: ObservableEither<E, A>) => ObservableEither<M, A> { ... }
+): (ma: ObservableEither<E, A>) => ObservableEither<M, A>
 ```
 
 Added in v0.6.8
 
-# right
+## right
 
 **Signature**
 
 ```ts
-export const right: <E = never, A = never>(a: A) => ObservableEither<E, A> = ...
+export declare const right: <E = never, A = never>(a: A) => ObservableEither<E, A>
 ```
 
 Added in v0.6.8
 
-# rightIO
+## rightIO
 
 **Signature**
 
 ```ts
-export function rightIO<E, A>(ma: IO<A>): ObservableEither<E, A> { ... }
+export declare function rightIO<E, A>(ma: IO<A>): ObservableEither<E, A>
 ```
 
 Added in v0.6.8
 
-# rightObservable
+## rightObservable
 
 **Signature**
 
 ```ts
-export const rightObservable: <E = never, A = never>(ma: Observable<A>) => ObservableEither<E, A> = ...
+export declare const rightObservable: <E = never, A = never>(ma: Observable<A>) => ObservableEither<E, A>
 ```
 
 Added in v0.6.8
 
-# swap
+## swap
 
 **Signature**
 
 ```ts
-export const swap: <E, A>(ma: ObservableEither<E, A>) => ObservableEither<A, E> = ...
+export declare const swap: <E, A>(ma: ObservableEither<E, A>) => ObservableEither<A, E>
 ```
 
 Added in v0.6.8
 
-# toTaskEither
+## throwError
 
 **Signature**
 
 ```ts
-export function toTaskEither<E, A>(o: ObservableEither<E, A>): TE.TaskEither<E, A> { ... }
+export declare const throwError: <E, A>(e: E) => ObservableEither<E, A>
+```
+
+Added in v0.6.12
+
+## toTaskEither
+
+**Signature**
+
+```ts
+export declare function toTaskEither<E, A>(o: ObservableEither<E, A>): TE.TaskEither<E, A>
+```
+
+Added in v0.6.8
+
+## ~~observableEither~~
+
+**Signature**
+
+```ts
+export declare const observableEither: Monad2<'ObservableEither'> &
+  Bifunctor2<'ObservableEither'> &
+  Alt2<'ObservableEither'> &
+  MonadObservable2<'ObservableEither'> &
+  MonadThrow2<'ObservableEither'>
 ```
 
 Added in v0.6.8

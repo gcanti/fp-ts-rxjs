@@ -4,7 +4,7 @@ nav_order: 7
 parent: Modules
 ---
 
-# ReaderObservableEither overview
+## ReaderObservableEither overview
 
 Added in v0.6.10
 
@@ -12,41 +12,153 @@ Added in v0.6.10
 
 <h2 class="text-delta">Table of contents</h2>
 
-- [ReaderObservableEither (interface)](#readerobservableeither-interface)
-- [URI (type alias)](#uri-type-alias)
-- [Do](#do)
-- [URI](#uri)
-- [ap](#ap)
-- [apFirst](#apfirst)
-- [apSecond](#apsecond)
-- [ask](#ask)
-- [asks](#asks)
-- [bimap](#bimap)
-- [bind](#bind)
-- [bindTo](#bindto)
-- [bindW](#bindw)
-- [chain](#chain)
-- [chainFirst](#chainfirst)
-- [filterOrElse](#filterorelse)
-- [flatten](#flatten)
-- [fromEither](#fromeither)
-- [fromIO](#fromio)
-- [fromObservable](#fromobservable)
-- [fromObservableEither](#fromobservableeither)
-- [fromOption](#fromoption)
-- [fromPredicate](#frompredicate)
-- [fromReader](#fromreader)
-- [fromTask](#fromtask)
-- [local](#local)
-- [map](#map)
-- [mapLeft](#mapleft)
-- [of](#of)
-- [readerObservableEither](#readerobservableeither)
-- [throwError](#throwerror)
+- [utils](#utils)
+  - [Applicative](#applicative)
+  - [Apply](#apply)
+  - [Bifunctor](#bifunctor)
+  - [Do](#do)
+  - [Functor](#functor)
+  - [Monad](#monad)
+  - [MonadIO](#monadio)
+  - [MonadObservable](#monadobservable)
+  - [MonadTask](#monadtask)
+  - [MonadThrow](#monadthrow)
+  - [ReaderObservableEither (interface)](#readerobservableeither-interface)
+  - [URI](#uri)
+  - [URI (type alias)](#uri-type-alias)
+  - [ap](#ap)
+  - [apFirst](#apfirst)
+  - [apSecond](#apsecond)
+  - [ask](#ask)
+  - [asks](#asks)
+  - [bimap](#bimap)
+  - [bind](#bind)
+  - [bindTo](#bindto)
+  - [bindW](#bindw)
+  - [chain](#chain)
+  - [chainFirst](#chainfirst)
+  - [filterOrElse](#filterorelse)
+  - [flatten](#flatten)
+  - [fromEither](#fromeither)
+  - [fromIO](#fromio)
+  - [fromObservable](#fromobservable)
+  - [fromObservableEither](#fromobservableeither)
+  - [fromOption](#fromoption)
+  - [fromPredicate](#frompredicate)
+  - [fromReader](#fromreader)
+  - [fromTask](#fromtask)
+  - [local](#local)
+  - [map](#map)
+  - [mapLeft](#mapleft)
+  - [of](#of)
+  - [throwError](#throwerror)
+  - [~~readerObservableEither~~](#readerobservableeither)
 
 ---
 
-# ReaderObservableEither (interface)
+# utils
+
+## Applicative
+
+**Signature**
+
+```ts
+export declare const Applicative: Applicative3<'ReaderObservableEither'>
+```
+
+Added in v0.6.12
+
+## Apply
+
+**Signature**
+
+```ts
+export declare const Apply: Apply3<'ReaderObservableEither'>
+```
+
+Added in v0.6.12
+
+## Bifunctor
+
+**Signature**
+
+```ts
+export declare const Bifunctor: Bifunctor3<'ReaderObservableEither'>
+```
+
+Added in v0.6.12
+
+## Do
+
+**Signature**
+
+```ts
+export declare const Do: ReaderObservableEither<unknown, never, {}>
+```
+
+Added in v0.6.12
+
+## Functor
+
+**Signature**
+
+```ts
+export declare const Functor: Functor3<'ReaderObservableEither'>
+```
+
+Added in v0.6.12
+
+## Monad
+
+**Signature**
+
+```ts
+export declare const Monad: Monad3<'ReaderObservableEither'>
+```
+
+Added in v0.6.12
+
+## MonadIO
+
+**Signature**
+
+```ts
+export declare const MonadIO: MonadIO3<'ReaderObservableEither'>
+```
+
+Added in v0.6.12
+
+## MonadObservable
+
+**Signature**
+
+```ts
+export declare const MonadObservable: MonadObservable3<'ReaderObservableEither'>
+```
+
+Added in v0.6.12
+
+## MonadTask
+
+**Signature**
+
+```ts
+export declare const MonadTask: MonadTask3<'ReaderObservableEither'>
+```
+
+Added in v0.6.12
+
+## MonadThrow
+
+**Signature**
+
+```ts
+export declare const MonadThrow: MonadThrow3<'ReaderObservableEither'>
+```
+
+Added in v0.6.12
+
+## ReaderObservableEither (interface)
 
 **Signature**
 
@@ -58,7 +170,17 @@ export interface ReaderObservableEither<R, E, A> {
 
 Added in v0.6.10
 
-# URI (type alias)
+## URI
+
+**Signature**
+
+```ts
+export declare const URI: 'ReaderObservableEither'
+```
+
+Added in v0.6.10
+
+## URI (type alias)
 
 **Signature**
 
@@ -68,306 +190,317 @@ export type URI = typeof URI
 
 Added in v0.6.10
 
-# Do
+## ap
 
 **Signature**
 
 ```ts
-export const : ReaderObservableEither<unknown, never, {}> = ...
-```
-
-Added in v0.6.12
-
-# URI
-
-**Signature**
-
-```ts
-export const URI: "ReaderObservableEither" = ...
+export declare const ap: <R, E, A>(
+  fa: ReaderObservableEither<R, E, A>
+) => <B>(fab: ReaderObservableEither<R, E, (a: A) => B>) => ReaderObservableEither<R, E, B>
 ```
 
 Added in v0.6.10
 
-# ap
+## apFirst
 
 **Signature**
 
 ```ts
-<R, E, A>(fa: ReaderObservableEither<R, E, A>) => <B>(fab: ReaderObservableEither<R, E, (a: A) => B>) => ReaderObservableEither<R, E, B>
+export declare const apFirst: <R, E, B>(
+  fb: ReaderObservableEither<R, E, B>
+) => <A>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10
 
-# apFirst
+## apSecond
 
 **Signature**
 
 ```ts
-<R, E, B>(fb: ReaderObservableEither<R, E, B>) => <A>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, A>
+export declare const apSecond: <R, E, B>(
+  fb: ReaderObservableEither<R, E, B>
+) => <A>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, B>
 ```
 
 Added in v0.6.10
 
-# apSecond
+## ask
 
 **Signature**
 
 ```ts
-<R, E, B>(fb: ReaderObservableEither<R, E, B>) => <A>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, B>
+export declare function ask<R, E>(): ReaderObservableEither<R, E, R>
 ```
 
 Added in v0.6.10
 
-# ask
+## asks
 
 **Signature**
 
 ```ts
-export function ask<R, E>(): ReaderObservableEither<R, E, R> { ... }
+export declare function asks<R, E, A>(f: (r: R) => A): ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10
 
-# asks
+## bimap
 
 **Signature**
 
 ```ts
-export function asks<R, E, A>(f: (r: R) => A): ReaderObservableEither<R, E, A> { ... }
+export declare const bimap: <E, G, A, B>(
+  f: (e: E) => G,
+  g: (a: A) => B
+) => <R>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, G, B>
 ```
 
 Added in v0.6.10
 
-# bimap
+## bind
 
 **Signature**
 
 ```ts
-<E, G, A, B>(f: (e: E) => G, g: (a: A) => B) => <R>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, G, B>
-```
-
-Added in v0.6.10
-
-# bind
-
-**Signature**
-
-```ts
-export function bind<K extends string, R, E, A, B>(
+export declare function bind<K extends string, R, E, A, B>(
   name: Exclude<K, keyof A>,
   f: (a: A) => ReaderObservableEither<R, E, B>
 ): (
   fa: ReaderObservableEither<R, E, A>
-) => ReaderObservableEither<R, E, { [P in keyof A | K]: P extends keyof A ? A[P] : B }> { ... }
+) => ReaderObservableEither<R, E, { [P in keyof A | K]: P extends keyof A ? A[P] : B }>
 ```
 
 Added in v0.6.11
 
-# bindTo
+## bindTo
 
 **Signature**
 
 ```ts
-export function bindTo<K extends string, R, E, A>(
+export declare function bindTo<K extends string, R, E, A>(
   name: K
-): (fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, { [P in K]: A }> { ... }
+): (fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, { [P in K]: A }>
 ```
 
 Added in v0.6.11
 
-# bindW
+## bindW
 
 **Signature**
 
 ```ts
-export const bindW: <K extends string, R2, E2, A, B>(
+export declare const bindW: <K extends string, R2, E2, A, B>(
   name: Exclude<K, keyof A>,
   f: (a: A) => ReaderObservableEither<R2, E2, B>
 ) => <R1, E1>(
   fa: ReaderObservableEither<R1, E1, A>
-) => ReaderObservableEither<R1 & R2, E1 | E2, { [P in keyof A | K]: P extends keyof A ? A[P] : B }> = ...
+) => ReaderObservableEither<R1 & R2, E2 | E1, { [P in K | keyof A]: P extends keyof A ? A[P] : B }>
 ```
 
 Added in v0.6.12
 
-# chain
+## chain
 
 **Signature**
 
 ```ts
-<R, E, A, B>(f: (a: A) => ReaderObservableEither<R, E, B>) => (ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, B>
+export declare const chain: <R, E, A, B>(
+  f: (a: A) => ReaderObservableEither<R, E, B>
+) => (ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, B>
 ```
 
 Added in v0.6.10
 
-# chainFirst
+## chainFirst
 
 **Signature**
 
 ```ts
-<R, E, A, B>(f: (a: A) => ReaderObservableEither<R, E, B>) => (ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, A>
+export declare const chainFirst: <R, E, A, B>(
+  f: (a: A) => ReaderObservableEither<R, E, B>
+) => (ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10
 
-# filterOrElse
+## filterOrElse
 
 **Signature**
 
 ```ts
-{ <E, A, B>(refinement: Refinement<A, B>, onFalse: (a: A) => E): <R>(ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, B>; <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E): <R>(ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, A>; }
+export declare const filterOrElse: {
+  <E, A, B>(refinement: Refinement<A, B>, onFalse: (a: A) => E): <R>(
+    ma: ReaderObservableEither<R, E, A>
+  ) => ReaderObservableEither<R, E, B>
+  <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E): <R>(
+    ma: ReaderObservableEither<R, E, A>
+  ) => ReaderObservableEither<R, E, A>
+}
 ```
 
 Added in v0.6.10
 
-# flatten
+## flatten
 
 **Signature**
 
 ```ts
-<R, E, A>(mma: ReaderObservableEither<R, E, ReaderObservableEither<R, E, A>>) => ReaderObservableEither<R, E, A>
+export declare const flatten: <R, E, A>(
+  mma: ReaderObservableEither<R, E, ReaderObservableEither<R, E, A>>
+) => ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10
 
-# fromEither
+## fromEither
 
 **Signature**
 
 ```ts
-<R, E, A>(ma: Either<E, A>) => ReaderObservableEither<R, E, A>
+export declare const fromEither: <R, E, A>(ma: Either<E, A>) => ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10
 
-# fromIO
+## fromIO
 
 **Signature**
 
 ```ts
-export function fromIO<R, E, A>(a: IO.IO<A>): ReaderObservableEither<R, E, A> { ... }
+export declare function fromIO<R, E, A>(a: IO.IO<A>): ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10
 
-# fromObservable
+## fromObservable
 
 **Signature**
 
 ```ts
-export function fromObservable<R, E, A>(a: Observable<A>): ReaderObservableEither<R, E, A> { ... }
+export declare function fromObservable<R, E, A>(a: Observable<A>): ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10
 
-# fromObservableEither
+## fromObservableEither
 
 **Signature**
 
 ```ts
-export function fromObservableEither<R, E, A>(ma: OBE.ObservableEither<E, A>): ReaderObservableEither<R, E, A> { ... }
+export declare function fromObservableEither<R, E, A>(ma: OBE.ObservableEither<E, A>): ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10
 
-# fromOption
+## fromOption
 
 **Signature**
 
 ```ts
-<E>(onNone: () => E) => <R, A>(ma: Option<A>) => ReaderObservableEither<R, E, A>
+export declare const fromOption: <E>(onNone: () => E) => <R, A>(ma: Option<A>) => ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10
 
-# fromPredicate
+## fromPredicate
 
 **Signature**
 
 ```ts
-{ <E, A, B>(refinement: Refinement<A, B>, onFalse: (a: A) => E): <U>(a: A) => ReaderObservableEither<U, E, B>; <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E): <R>(a: A) => ReaderObservableEither<R, E, A>; }
+export declare const fromPredicate: {
+  <E, A, B>(refinement: Refinement<A, B>, onFalse: (a: A) => E): <U>(a: A) => ReaderObservableEither<U, E, B>
+  <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E): <R>(a: A) => ReaderObservableEither<R, E, A>
+}
 ```
 
 Added in v0.6.10
 
-# fromReader
+## fromReader
 
 **Signature**
 
 ```ts
-export function fromReader<R, E, A>(ma: R.Reader<R, A>): ReaderObservableEither<R, E, A> { ... }
+export declare function fromReader<R, E, A>(ma: R.Reader<R, A>): ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10
 
-# fromTask
+## fromTask
 
 **Signature**
 
 ```ts
-export function fromTask<R, E, A>(a: T.Task<A>): ReaderObservableEither<R, E, A> { ... }
+export declare function fromTask<R, E, A>(a: T.Task<A>): ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10
 
-# local
+## local
 
 **Signature**
 
 ```ts
-export function local<R, Q>(
+export declare function local<R, Q>(
   f: (d: Q) => R
-): <E, A>(ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<Q, E, A> { ... }
+): <E, A>(ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<Q, E, A>
 ```
 
 Added in v0.6.10
 
-# map
+## map
 
 **Signature**
 
 ```ts
-<A, B>(f: (a: A) => B) => <R, E>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, B>
+export declare const map: <A, B>(
+  f: (a: A) => B
+) => <R, E>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, B>
 ```
 
 Added in v0.6.10
 
-# mapLeft
+## mapLeft
 
 **Signature**
 
 ```ts
-<E, G>(f: (e: E) => G) => <R, A>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, G, A>
+export declare const mapLeft: <E, G>(
+  f: (e: E) => G
+) => <R, A>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, G, A>
 ```
 
 Added in v0.6.10
 
-# of
+## of
 
 **Signature**
 
 ```ts
-export function of<R, E, A>(a: A): ReaderObservableEither<R, E, A> { ... }
+export declare function of<R, E, A>(a: A): ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10
 
-# readerObservableEither
+## throwError
 
 **Signature**
 
 ```ts
-export const readerObservableEither: MonadObservable3<URI> & MonadThrow3<URI> & Bifunctor3<URI> = ...
+export declare function throwError<R, E, A>(e: E): ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10
 
-# throwError
+## ~~readerObservableEither~~
 
 **Signature**
 
 ```ts
-export function throwError<R, E, A>(e: E): ReaderObservableEither<R, E, A> { ... }
+export declare const readerObservableEither: MonadObservable3<'ReaderObservableEither'> &
+  MonadThrow3<'ReaderObservableEither'> &
+  Bifunctor3<'ReaderObservableEither'>
 ```
 
 Added in v0.6.10

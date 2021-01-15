@@ -15,24 +15,89 @@ high state of flux, you're at risk of it changing without notice.
 
 # 0.6.12
 
+- **Deprecations**
+  - `Observable`
+    - deprecate `observable` (@gcanti)
+  - `ObservableEither`
+    - deprecate `observableEither` (@gcanti)
+  - `ReaderObservable`
+    - deprecate `readerObservable` (@gcanti)
+  - `ReaderObservable`
+    - deprecate `readerObservable` (@gcanti)
+  - `ReaderObservableEither`
+    - deprecate `readerObservableEither` (@gcanti)
+  - `StateReaderObservableEither`
+    - deprecate `stateReaderObservableEither` (@gcanti)
 - **New Feature**
   - add `ObservableThese`, #44 (@siuvdlec)
   - expose `fp-ts-rxjs` modules without lib/es6 prefix, closes #40 (@gcanti)
   - `Observable`
     - add `Do` (@gcanti)
+    - add `Functor` instance (@gcanti)
+    - add `Apply` instance (@gcanti)
+    - add `Applicative` instance (@gcanti)
+    - add `Monad` instance (@gcanti)
+    - add `Alt` instance (@gcanti)
+    - add `zero` (@gcanti)
+    - add `Alternative` instance (@gcanti)
+    - add `Compactable` instance (@gcanti)
+    - add `Filterable` instance (@gcanti)
+    - add `MonadIO` instance (@gcanti)
+    - add `MonadTask` instance (@gcanti)
+    - add `MonadObservable` instance (@gcanti)
   - `ObservableEither`
     - add `Do` (@gcanti)
     - add `of` (@gcanti)
     - add `bindW` (@gcanti)
+    - add `Functor` instance (@gcanti)
+    - add `Apply` instance (@gcanti)
+    - add `Applicative` instance (@gcanti)
+    - add `Monad` instance (@gcanti)
+    - add `Bifunctor` instance (@gcanti)
+    - add `Alt` instance (@gcanti)
+    - add `MonadIO` instance (@gcanti)
+    - add `MonadTask` instance (@gcanti)
+    - add `MonadObservable` instance (@gcanti)
+    - add `MonadThrow` instance (@gcanti)
   - `ReaderObservable`
     - add `Do` (@gcanti)
     - add `bindW` (@gcanti)
+    - add `Functor` instance (@gcanti)
+    - add `Apply` instance (@gcanti)
+    - add `Applicative` instance (@gcanti)
+    - add `Monad` instance (@gcanti)
+    - add `Alt` instance (@gcanti)
+    - add `zero` (@gcanti)
+    - add `Alternative` instance (@gcanti)
+    - add `Compactable` instance (@gcanti)
+    - add `Filterable` instance (@gcanti)
+    - add `MonadIO` instance (@gcanti)
+    - add `MonadTask` instance (@gcanti)
+    - add `MonadObservable` instance (@gcanti)
   - `ReaderObservableEither`
     - add `Do` (@gcanti)
     - add `bindW` (@gcanti)
+    - add `Functor` instance (@gcanti)
+    - add `Apply` instance (@gcanti)
+    - add `Applicative` instance (@gcanti)
+    - add `Monad` instance (@gcanti)
+    - add `Bifunctor` instance (@gcanti)
+    - add `MonadIO` instance (@gcanti)
+    - add `MonadTask` instance (@gcanti)
+    - add `MonadObservable` instance (@gcanti)
+    - add `MonadThrow` instance (@gcanti)
   - `StateReaderObservableEither`
     - add `of` (@gcanti)
     - add `bindW` (@gcanti)
+    - add `Functor` instance (@gcanti)
+    - add `Apply` instance (@gcanti)
+    - add `Applicative` instance (@gcanti)
+    - add `Monad` instance (@gcanti)
+    - add `Bifunctor` instance (@gcanti)
+    - add `MonadIO` instance (@gcanti)
+    - add `MonadTask` instance (@gcanti)
+    - add `MonadObservable` instance (@gcanti)
+    - add `MonadThrow` instance (@gcanti)
 - **Polish**
   - export `MonadObservable` from `index.ts` (@canti)
 - **Internal**

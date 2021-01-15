@@ -17,7 +17,7 @@ import { getTheseM } from 'fp-ts/lib/TheseT'
 import { Observable } from 'rxjs'
 import * as R from './Observable'
 
-const T = getTheseM(R.observable)
+const T = getTheseM(R.Monad)
 
 /**
  * @since 0.6.12
@@ -153,7 +153,7 @@ export function getApplicative<E>(A: Apply1<R.URI>, SE: Semigroup<E>): Applicati
  * @since 0.6.12
  */
 export function getMonad<E>(SE: Semigroup<E>): Monad2C<URI, E> {
-  const A = getApplicative(R.observable, SE)
+  const A = getApplicative(R.Apply, SE)
   return {
     URI,
     _E: undefined as any,

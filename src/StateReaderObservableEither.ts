@@ -1,7 +1,9 @@
 /**
  * @since 0.6.10
  */
-import { either as E, io as IO, task as T } from 'fp-ts'
+import * as E from 'fp-ts/lib/Either'
+import * as IO from 'fp-ts/lib/IO'
+import * as T from 'fp-ts/lib/Task'
 import { Bifunctor4 } from 'fp-ts/lib/Bifunctor'
 import { MonadThrow4 } from 'fp-ts/lib/MonadThrow'
 import { pipeable, pipe } from 'fp-ts/lib/pipeable'
@@ -11,6 +13,11 @@ import { MonadObservable4 } from './MonadObservable'
 import * as OB from './Observable'
 import * as ROBE from './ReaderObservableEither'
 import { Applicative4 } from 'fp-ts/lib/Applicative'
+import { Functor4 } from 'fp-ts/lib/Functor'
+import { Apply4 } from 'fp-ts/lib/Apply'
+import { Monad4 } from 'fp-ts/lib/Monad'
+import { MonadIO4 } from 'fp-ts/lib/MonadIO'
+import { MonadTask4 } from 'fp-ts/lib/MonadTask'
 
 /**
  * @since 0.6.10
@@ -35,7 +42,7 @@ declare module 'fp-ts/lib/HKT' {
   }
 }
 
-const M = getStateM(ROBE.readerObservableEither)
+const M = getStateM(ROBE.Monad)
 
 /**
  * @since 0.6.10
@@ -133,8 +140,114 @@ export function fromObservable<S, R, E, A>(observable: Observable<A>): StateRead
  */
 export const of: Applicative4<URI>['of'] = M.of
 
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+
+const bimap_: Bifunctor4<URI>['bimap'] = (fea, f, g) => mapLeft_(M.map(fea, g), f)
+const mapLeft_: Bifunctor4<URI>['mapLeft'] = (fa, f) => s => pipe(fa(s), ROBE.mapLeft(f))
+
+/**
+ * @since 0.6.12
+ */
+export const Functor: Functor4<URI> = {
+  URI,
+  map: M.map
+}
+
+/**
+ * @since 0.6.12
+ */
+export const Apply: Apply4<URI> = {
+  URI,
+  ap: M.ap,
+  map: M.map
+}
+
+/**
+ * @since 0.6.12
+ */
+export const Applicative: Applicative4<URI> = {
+  URI,
+  ap: M.ap,
+  map: M.map,
+  of
+}
+
+/**
+ * @since 0.6.12
+ */
+export const Monad: Monad4<URI> = {
+  URI,
+  ap: M.ap,
+  map: M.map,
+  of,
+  chain: M.chain
+}
+
+/**
+ * @since 0.6.12
+ */
+export const Bifunctor: Bifunctor4<URI> = {
+  URI,
+  bimap: bimap_,
+  mapLeft: mapLeft_
+}
+
+/**
+ * @since 0.6.12
+ */
+export const MonadIO: MonadIO4<URI> = {
+  URI,
+  map: M.map,
+  of,
+  ap: M.ap,
+  chain: M.chain,
+  fromIO
+}
+
+/**
+ * @since 0.6.12
+ */
+export const MonadTask: MonadTask4<URI> = {
+  URI,
+  map: M.map,
+  of,
+  ap: M.ap,
+  chain: M.chain,
+  fromIO,
+  fromTask
+}
+
+/**
+ * @since 0.6.12
+ */
+export const MonadObservable: MonadObservable4<URI> = {
+  URI,
+  map: M.map,
+  of,
+  ap: M.ap,
+  chain: M.chain,
+  fromIO,
+  fromObservable,
+  fromTask
+}
+
+/**
+ * @since 0.6.12
+ */
+export const MonadThrow: MonadThrow4<URI> = {
+  URI,
+  map: M.map,
+  of,
+  ap: M.ap,
+  chain: M.chain,
+  throwError
+}
+
 /**
  * @since 0.6.10
+ * @deprecated
  */
 export const stateReaderObservableEither: MonadObservable4<URI> & Bifunctor4<URI> & MonadThrow4<URI> = {
   URI,
@@ -142,8 +255,8 @@ export const stateReaderObservableEither: MonadObservable4<URI> & Bifunctor4<URI
   chain: M.chain,
   map: M.map,
   of,
-  mapLeft: (fa, f) => s => pipe(fa(s), ROBE.mapLeft(f)),
-  bimap: (fea, f, g) => stateReaderObservableEither.mapLeft(M.map(fea, g), f),
+  mapLeft: mapLeft_,
+  bimap: bimap_,
   throwError,
   fromIO,
   fromObservable,
@@ -167,6 +280,7 @@ const {
   fromPredicate,
   map,
   mapLeft
+  // tslint:disable-next-line: deprecation
 } = pipeable(stateReaderObservableEither)
 
 export {
