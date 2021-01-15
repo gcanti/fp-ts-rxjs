@@ -259,8 +259,18 @@ export {
   separate
 }
 
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
+
 /**
- * @category Do
+ * @since 0.6.12
+ */
+export const Do: ReaderObservable<unknown, {}> =
+  /*#__PURE__*/
+  of({})
+
+/**
  * @since 0.6.11
  */
 export function bindTo<K extends string, R, A>(
@@ -270,7 +280,6 @@ export function bindTo<K extends string, R, A>(
 }
 
 /**
- * @category Do
  * @since 0.6.11
  */
 export function bind<K extends string, R, A, B>(
@@ -284,3 +293,13 @@ export function bind<K extends string, R, A, B>(
     )
   )
 }
+
+/**
+ * @since 0.6.12
+ */
+export const bindW: <K extends string, R2, A, B>(
+  name: Exclude<K, keyof A>,
+  f: (a: A) => ReaderObservable<R2, B>
+) => <R1>(
+  fa: ReaderObservable<R1, A>
+) => ReaderObservable<R1 & R2, { [P in keyof A | K]: P extends keyof A ? A[P] : B }> = bind as any

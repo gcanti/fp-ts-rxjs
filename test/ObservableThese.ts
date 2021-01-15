@@ -6,7 +6,6 @@ import { io } from 'fp-ts/lib/IO'
 import { pipe } from 'fp-ts/lib/pipeable'
 import { bufferTime } from 'rxjs/operators'
 import { monoidString } from 'fp-ts/lib/Monoid'
-
 import * as _ from '../src/ObservableThese'
 import { of as rxOf, Observable } from 'rxjs'
 
@@ -94,15 +93,30 @@ describe('ObservableThese', () => {
     assert.deepStrictEqual(e, [TH.both(2, 1)])
   })
 
+  it('map', async () => {
+    const f = (n: number): number => n * 2
+    assert.deepStrictEqual(await pipe(_.right(1), _.map(f)).toPromise(), TH.right(2))
+    assert.deepStrictEqual(await pipe(_.left('a'), _.map(f)).toPromise(), TH.left('a'))
+    assert.deepStrictEqual(await pipe(_.both('a', 1), _.map(f)).toPromise(), TH.both('a', 2))
+  })
+
+  it('bimap', async () => {
+    const f = (s: string): string => s + '!'
+    const g = (n: number): number => n * 2
+    assert.deepStrictEqual(await pipe(_.right(1), _.bimap(f, g)).toPromise(), TH.right(2))
+    assert.deepStrictEqual(await pipe(_.left('a'), _.bimap(f, g)).toPromise(), TH.left('a!'))
+    assert.deepStrictEqual(await pipe(_.both('a', 1), _.bimap(f, g)).toPromise(), TH.both('a!', 2))
+  })
+
+  it('mapLeft', async () => {
+    const f = (s: string): string => s + '!'
+    assert.deepStrictEqual(await pipe(_.right(1), _.mapLeft(f)).toPromise(), TH.right(1))
+    assert.deepStrictEqual(await pipe(_.left('a'), _.mapLeft(f)).toPromise(), TH.left('a!'))
+    assert.deepStrictEqual(await pipe(_.both('a', 1), _.mapLeft(f)).toPromise(), TH.both('a!', 1))
+  })
+
   describe('getMonad', () => {
     const M = _.getMonad(monoidString)
-    it('map', async () => {
-      const f = (n: number): number => n * 2
-      assert.deepStrictEqual(await M.map(_.right(1), f).toPromise(), TH.right(2))
-      assert.deepStrictEqual(await M.map(_.left('a'), f).toPromise(), TH.left('a'))
-      assert.deepStrictEqual(await M.map(_.both('a', 1), f).toPromise(), TH.both('a', 2))
-    })
-
     it('ap', async () => {
       const f = (n: number): number => n * 2
       assert.deepStrictEqual(await M.ap(_.right(f), _.right(1)).toPromise(), TH.right(2))

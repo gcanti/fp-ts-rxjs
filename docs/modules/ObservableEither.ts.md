@@ -14,6 +14,7 @@ Added in v0.6.8
 
 - [ObservableEither (interface)](#observableeither-interface)
 - [URI (type alias)](#uri-type-alias)
+- [Do](#do)
 - [URI](#uri)
 - [alt](#alt)
 - [ap](#ap)
@@ -22,6 +23,7 @@ Added in v0.6.8
 - [bimap](#bimap)
 - [bind](#bind)
 - [bindTo](#bindto)
+- [bindW](#bindw)
 - [chain](#chain)
 - [chainFirst](#chainfirst)
 - [flatten](#flatten)
@@ -36,6 +38,7 @@ Added in v0.6.8
 - [map](#map)
 - [mapLeft](#mapleft)
 - [observableEither](#observableeither)
+- [of](#of)
 - [orElse](#orelse)
 - [right](#right)
 - [rightIO](#rightio)
@@ -64,6 +67,16 @@ export type URI = typeof URI
 ```
 
 Added in v0.6.8
+
+# Do
+
+**Signature**
+
+```ts
+export const : ObservableEither<never, {}> = ...
+```
+
+Added in v0.6.12
 
 # URI
 
@@ -149,6 +162,21 @@ export function bindTo<K extends string, E, A>(
 ```
 
 Added in v0.6.11
+
+# bindW
+
+**Signature**
+
+```ts
+export const bindW: <K extends string, E2, A, B>(
+  name: Exclude<K, keyof A>,
+  f: (a: A) => ObservableEither<E2, B>
+) => <E1>(
+  fa: ObservableEither<E1, A>
+) => ObservableEither<E1 | E2, { [P in keyof A | K]: P extends keyof A ? A[P] : B }> = ...
+```
+
+Added in v0.6.12
 
 # chain
 
@@ -292,6 +320,16 @@ export const observableEither: Monad2<URI> & Bifunctor2<URI> & Alt2<URI> & Monad
 ```
 
 Added in v0.6.8
+
+# of
+
+**Signature**
+
+```ts
+export const of: Applicative2<URI>['of'] = ...
+```
+
+Added in v0.6.12
 
 # orElse
 

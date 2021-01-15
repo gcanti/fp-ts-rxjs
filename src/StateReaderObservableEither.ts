@@ -10,6 +10,7 @@ import { Observable } from 'rxjs'
 import { MonadObservable4 } from './MonadObservable'
 import * as OB from './Observable'
 import * as ROBE from './ReaderObservableEither'
+import { Applicative4 } from 'fp-ts/lib/Applicative'
 
 /**
  * @since 0.6.10
@@ -128,6 +129,11 @@ export function fromObservable<S, R, E, A>(observable: Observable<A>): StateRead
 }
 
 /**
+ * @since 0.6.12
+ */
+export const of: Applicative4<URI>['of'] = M.of
+
+/**
  * @since 0.6.10
  */
 export const stateReaderObservableEither: MonadObservable4<URI> & Bifunctor4<URI> & MonadThrow4<URI> = {
@@ -135,7 +141,7 @@ export const stateReaderObservableEither: MonadObservable4<URI> & Bifunctor4<URI
   ap: M.ap,
   chain: M.chain,
   map: M.map,
-  of: M.of,
+  of,
   mapLeft: (fa, f) => s => pipe(fa(s), ROBE.mapLeft(f)),
   bimap: (fea, f, g) => stateReaderObservableEither.mapLeft(M.map(fea, g), f),
   throwError,
@@ -218,10 +224,11 @@ export {
   mapLeft
 }
 
-// DO SYNTAX
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
 
 /**
- * @category Do
  * @since 0.6.11
  */
 export function bindTo<K extends string>(
@@ -235,7 +242,6 @@ export function bindTo<K extends string>(
 }
 
 /**
- * @category Do
  * @since 0.6.11
  */
 export function bind<K extends string, S, R, E, A, B>(
@@ -251,3 +257,18 @@ export function bind<K extends string, S, R, E, A, B>(
     )
   )
 }
+
+/**
+ * @since 0.6.12
+ */
+export const bindW: <K extends string, S, R2, E2, A, B>(
+  name: Exclude<K, keyof A>,
+  f: (a: A) => StateReaderObservableEither<S, R2, E2, B>
+) => <R1, E1>(
+  fa: StateReaderObservableEither<S, R1, E1, A>
+) => StateReaderObservableEither<
+  S,
+  R1 & R2,
+  E1 | E2,
+  { [P in keyof A | K]: P extends keyof A ? A[P] : B }
+> = bind as any

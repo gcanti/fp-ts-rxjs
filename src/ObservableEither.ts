@@ -15,6 +15,7 @@ import { Observable } from 'rxjs'
 import { Task } from 'fp-ts/lib/Task'
 import { getEitherM } from 'fp-ts/lib/EitherT'
 import { pipe, pipeable } from 'fp-ts/lib/pipeable'
+import { Applicative2 } from 'fp-ts/lib/Applicative'
 
 const T = getEitherM(R.observable)
 
@@ -193,7 +194,22 @@ export {
 }
 
 /**
- * @category Do
+ * @since 0.6.12
+ */
+export const of: Applicative2<URI>['of'] = right
+
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
+
+/**
+ * @since 0.6.12
+ */
+export const Do: ObservableEither<never, {}> =
+  /*#__PURE__*/
+  of({})
+
+/**
  * @since 0.6.11
  */
 export function bindTo<K extends string, E, A>(
@@ -203,7 +219,6 @@ export function bindTo<K extends string, E, A>(
 }
 
 /**
- * @category Do
  * @since 0.6.11
  */
 export function bind<K extends string, E, A, B>(
@@ -217,3 +232,13 @@ export function bind<K extends string, E, A, B>(
     )
   )
 }
+
+/**
+ * @since 0.6.12
+ */
+export const bindW: <K extends string, E2, A, B>(
+  name: Exclude<K, keyof A>,
+  f: (a: A) => ObservableEither<E2, B>
+) => <E1>(
+  fa: ObservableEither<E1, A>
+) => ObservableEither<E1 | E2, { [P in keyof A | K]: P extends keyof A ? A[P] : B }> = bind as any

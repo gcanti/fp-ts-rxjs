@@ -14,6 +14,7 @@ Added in v0.6.10
 
 - [ReaderObservableEither (interface)](#readerobservableeither-interface)
 - [URI (type alias)](#uri-type-alias)
+- [Do](#do)
 - [URI](#uri)
 - [ap](#ap)
 - [apFirst](#apfirst)
@@ -23,6 +24,7 @@ Added in v0.6.10
 - [bimap](#bimap)
 - [bind](#bind)
 - [bindTo](#bindto)
+- [bindW](#bindw)
 - [chain](#chain)
 - [chainFirst](#chainfirst)
 - [filterOrElse](#filterorelse)
@@ -65,6 +67,16 @@ export type URI = typeof URI
 ```
 
 Added in v0.6.10
+
+# Do
+
+**Signature**
+
+```ts
+export const : ReaderObservableEither<unknown, never, {}> = ...
+```
+
+Added in v0.6.12
 
 # URI
 
@@ -162,6 +174,21 @@ export function bindTo<K extends string, R, E, A>(
 ```
 
 Added in v0.6.11
+
+# bindW
+
+**Signature**
+
+```ts
+export const bindW: <K extends string, R2, E2, A, B>(
+  name: Exclude<K, keyof A>,
+  f: (a: A) => ReaderObservableEither<R2, E2, B>
+) => <R1, E1>(
+  fa: ReaderObservableEither<R1, E1, A>
+) => ReaderObservableEither<R1 & R2, E1 | E2, { [P in keyof A | K]: P extends keyof A ? A[P] : B }> = ...
+```
+
+Added in v0.6.12
 
 # chain
 

@@ -13,6 +13,7 @@ Added in v0.6.0
 <h2 class="text-delta">Table of contents</h2>
 
 - [URI (type alias)](#uri-type-alias)
+- [Do](#do)
 - [URI](#uri)
 - [alt](#alt)
 - [ap](#ap)
@@ -49,6 +50,16 @@ export type URI = typeof URI
 ```
 
 Added in v0.6.0
+
+# Do
+
+**Signature**
+
+```ts
+export const : Observable<{}> = ...
+```
+
+Added in v0.6.12
 
 # URI
 

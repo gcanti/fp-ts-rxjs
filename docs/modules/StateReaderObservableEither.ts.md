@@ -21,6 +21,7 @@ Added in v0.6.10
 - [bimap](#bimap)
 - [bind](#bind)
 - [bindTo](#bindto)
+- [bindW](#bindw)
 - [chain](#chain)
 - [chainFirst](#chainfirst)
 - [evaluate](#evaluate)
@@ -40,6 +41,7 @@ Added in v0.6.10
 - [map](#map)
 - [mapLeft](#mapleft)
 - [modify](#modify)
+- [of](#of)
 - [put](#put)
 - [right](#right)
 - [stateReaderObservableEither](#statereaderobservableeither)
@@ -145,6 +147,26 @@ export function bindTo<K extends string>(
 ```
 
 Added in v0.6.11
+
+# bindW
+
+**Signature**
+
+```ts
+export const bindW: <K extends string, S, R2, E2, A, B>(
+  name: Exclude<K, keyof A>,
+  f: (a: A) => StateReaderObservableEither<S, R2, E2, B>
+) => <R1, E1>(
+  fa: StateReaderObservableEither<S, R1, E1, A>
+) => StateReaderObservableEither<
+  S,
+  R1 & R2,
+  E1 | E2,
+  { [P in keyof A | K]: P extends keyof A ? A[P] : B }
+> = ...
+```
+
+Added in v0.6.12
 
 # chain
 
@@ -341,6 +363,16 @@ export const modify: <R, E, S>(f: (s: S) => S) => StateReaderObservableEither<S,
 ```
 
 Added in v0.6.10
+
+# of
+
+**Signature**
+
+```ts
+export const of: Applicative4<URI>['of'] = ...
+```
+
+Added in v0.6.12
 
 # put
 

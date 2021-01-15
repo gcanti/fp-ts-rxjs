@@ -1,21 +1,21 @@
 /**
  * @since 0.6.12
  */
-import * as TH from 'fp-ts/lib/These'
-import * as R from './Observable'
-import * as TT from 'fp-ts/lib/TaskThese'
+import { Applicative2, Applicative2C } from 'fp-ts/lib/Applicative'
+import { Apply1 } from 'fp-ts/lib/Apply'
 import { Bifunctor2 } from 'fp-ts/lib/Bifunctor'
+import { Functor2 } from 'fp-ts/lib/Functor'
 import { IO } from 'fp-ts/lib/IO'
 import { IOEither } from 'fp-ts/lib/IOEither'
 import { Monad2C } from 'fp-ts/lib/Monad'
-import { Observable } from 'rxjs'
-import { Task } from 'fp-ts/lib/Task'
+import { pipe } from 'fp-ts/lib/pipeable'
 import { Semigroup } from 'fp-ts/lib/Semigroup'
+import { Task } from 'fp-ts/lib/Task'
+import * as TT from 'fp-ts/lib/TaskThese'
+import * as TH from 'fp-ts/lib/These'
 import { getTheseM } from 'fp-ts/lib/TheseT'
-import { pipe, pipeable } from 'fp-ts/lib/pipeable'
-import { Functor2 } from 'fp-ts/lib/Functor'
-import { Apply1 } from 'fp-ts/lib/Apply'
-import { Applicative2, Applicative2C } from 'fp-ts/lib/Applicative'
+import { Observable } from 'rxjs'
+import * as R from './Observable'
 
 const T = getTheseM(R.observable)
 
@@ -200,29 +200,21 @@ export const Bifunctor: Bifunctor2<URI> = {
 }
 
 /**
- * @category instances
  * @since 0.6.12
  */
-export const observableThese: Functor2<URI> & Bifunctor2<URI> = {
-  URI,
-  map: T.map,
-  bimap: T.bimap,
-  mapLeft: T.mapLeft
-}
+export const map: <A, B>(f: (a: A) => B) => <E>(fa: ObservableThese<E, A>) => ObservableThese<E, B> = f => fa =>
+  T.map(fa, f)
 
-const { map, bimap, mapLeft } = pipeable(observableThese)
+/**
+ * @since 0.6.12
+ */
+export const bimap: <E, G, A, B>(
+  f: (e: E) => G,
+  g: (a: A) => B
+) => (fa: ObservableThese<E, A>) => ObservableThese<G, B> = (f, g) => fa => T.bimap(fa, f, g)
 
-export {
-  /**
-   * @since 0.6.12
-   */
-  bimap,
-  /**
-   * @since 0.6.12
-   */
-  map,
-  /**
-   * @since 0.6.12
-   */
-  mapLeft
-}
+/**
+ * @since 0.6.12
+ */
+export const mapLeft: <E, G>(f: (e: E) => G) => <A>(fa: ObservableThese<E, A>) => ObservableThese<G, A> = f => fa =>
+  T.mapLeft(fa, f)
