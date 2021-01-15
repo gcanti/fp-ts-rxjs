@@ -22,39 +22,12 @@ import { combineLatest, defer, EMPTY, merge, Observable, of as rxOf } from 'rxjs
 import { map as rxMap, mergeMap } from 'rxjs/operators'
 import { MonadObservable1 } from './MonadObservable'
 
-declare module 'fp-ts/lib/HKT' {
-  interface URItoKind<A> {
-    Observable: Observable<A>
-  }
-}
+// -------------------------------------------------------------------------------------
+// constructors
+// -------------------------------------------------------------------------------------
 
 /**
- * @since 0.6.0
- */
-export const URI = 'Observable'
-
-/**
- * @since 0.6.0
- */
-export type URI = typeof URI
-
-/**
- * @since 0.6.0
- */
-export function getMonoid<A = never>(): Monoid<Observable<A>> {
-  return {
-    concat: (x, y) => merge(x, y),
-    empty: EMPTY
-  }
-}
-
-/**
- * @since 0.6.6
- */
-// tslint:disable-next-line: deprecation
-export const of: Applicative1<URI>['of'] = rxOf
-
-/**
+ * @category constructors
  * @since 0.6.5
  */
 export function fromOption<A>(o: O.Option<A>): Observable<A> {
@@ -62,6 +35,7 @@ export function fromOption<A>(o: O.Option<A>): Observable<A> {
 }
 
 /**
+ * @category constructors
  * @since 0.6.5
  */
 export function fromIO<A>(io: IO<A>): Observable<A> {
@@ -69,17 +43,11 @@ export function fromIO<A>(io: IO<A>): Observable<A> {
 }
 
 /**
+ * @category constructors
  * @since 0.6.5
  */
 export function fromTask<A>(t: Task<A>): Observable<A> {
   return defer(t)
-}
-
-/**
- * @since 0.6.5
- */
-export function toTask<A>(o: Observable<A>): Task<A> {
-  return () => o.toPromise()
 }
 
 // -------------------------------------------------------------------------------------
@@ -131,6 +99,13 @@ export const apSecond = <B>(fb: Observable<B>): (<A>(fa: Observable<A>) => Obser
     map(() => (b: B) => b),
     ap(fb)
   )
+
+/**
+ * @category Applicative
+ * @since 0.6.6
+ */
+// tslint:disable-next-line: deprecation
+export const of: Applicative1<URI>['of'] = rxOf
 
 /**
  * Composes computations in sequence, using the return value of one computation to determine the next computation.
@@ -244,6 +219,12 @@ export const partition: {
   <A>(predicate: Predicate<A>): (fa: Observable<A>) => Separated<Observable<A>, Observable<A>>
 } = <A>(p: Predicate<A>) => (fa: Observable<A>) => pipe(fa, partitionMap(E.fromPredicate(p, identity)))
 
+/**
+ * @category Aletrnaitve
+ * @since 0.6.12
+ */
+export const zero: Alternative1<URI>['zero'] = () => EMPTY
+
 // -------------------------------------------------------------------------------------
 // instances
 // -------------------------------------------------------------------------------------
@@ -262,11 +243,36 @@ const partition_: Filterable1<URI>['partition'] = <A>(fa: Observable<A>, p: Pred
 const partitionMap_: Filterable1<URI>['partitionMap'] = (fa, f) => pipe(fa, partitionMap(f))
 
 /**
- * @since 0.6.12
+ * @category instances
+ * @since 0.6.0
  */
-export const zero: Alternative1<URI>['zero'] = () => EMPTY
+export const URI = 'Observable'
 
 /**
+ * @category instances
+ * @since 0.6.0
+ */
+export type URI = typeof URI
+
+declare module 'fp-ts/lib/HKT' {
+  interface URItoKind<A> {
+    Observable: Observable<A>
+  }
+}
+
+/**
+ * @category instances
+ * @since 0.6.0
+ */
+export function getMonoid<A = never>(): Monoid<Observable<A>> {
+  return {
+    concat: (x, y) => merge(x, y),
+    empty: EMPTY
+  }
+}
+
+/**
+ * @category instances
  * @since 0.6.12
  */
 export const Functor: Functor1<URI> = {
@@ -275,6 +281,7 @@ export const Functor: Functor1<URI> = {
 }
 
 /**
+ * @category instances
  * @since 0.6.12
  */
 export const Apply: Apply1<URI> = {
@@ -284,6 +291,7 @@ export const Apply: Apply1<URI> = {
 }
 
 /**
+ * @category instances
  * @since 0.6.12
  */
 export const Applicative: Applicative1<URI> = {
@@ -294,6 +302,7 @@ export const Applicative: Applicative1<URI> = {
 }
 
 /**
+ * @category instances
  * @since 0.6.12
  */
 export const Monad: Monad1<URI> = {
@@ -305,6 +314,7 @@ export const Monad: Monad1<URI> = {
 }
 
 /**
+ * @category instances
  * @since 0.6.12
  */
 export const Alt: Alt1<URI> = {
@@ -314,6 +324,7 @@ export const Alt: Alt1<URI> = {
 }
 
 /**
+ * @category instances
  * @since 0.6.12
  */
 export const Alternative: Alternative1<URI> = {
@@ -326,6 +337,7 @@ export const Alternative: Alternative1<URI> = {
 }
 
 /**
+ * @category instances
  * @since 0.6.12
  */
 export const Compactable: Compactable1<URI> = {
@@ -335,6 +347,7 @@ export const Compactable: Compactable1<URI> = {
 }
 
 /**
+ * @category instances
  * @since 0.6.12
  */
 export const Filterable: Filterable1<URI> = {
@@ -349,6 +362,7 @@ export const Filterable: Filterable1<URI> = {
 }
 
 /**
+ * @category instances
  * @since 0.6.12
  */
 export const MonadIO: MonadIO1<URI> = {
@@ -361,6 +375,7 @@ export const MonadIO: MonadIO1<URI> = {
 }
 
 /**
+ * @category instances
  * @since 0.6.12
  */
 export const MonadTask: MonadTask1<URI> = {
@@ -374,6 +389,7 @@ export const MonadTask: MonadTask1<URI> = {
 }
 
 /**
+ * @category instances
  * @since 0.6.12
  */
 export const MonadObservable: MonadObservable1<URI> = {
@@ -388,6 +404,7 @@ export const MonadObservable: MonadObservable1<URI> = {
 }
 
 /**
+ * @category instances
  * @since 0.6.0
  * @deprecated
  */
@@ -411,7 +428,7 @@ export const observable: Monad1<URI> & Alternative1<URI> & Filterable1<URI> & Mo
 }
 
 // -------------------------------------------------------------------------------------
-// do notation
+// utils
 // -------------------------------------------------------------------------------------
 
 /**
@@ -441,4 +458,11 @@ export function bind<K extends string, A, B>(
       map(b => ({ ...a, [name]: b } as any))
     )
   )
+}
+
+/**
+ * @since 0.6.5
+ */
+export function toTask<A>(o: Observable<A>): Task<A> {
+  return () => o.toPromise()
 }
