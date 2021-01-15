@@ -46,10 +46,14 @@ Added in v0.6.8
   - [bind](#bind)
   - [bindTo](#bindto)
   - [bindW](#bindw)
+  - [filterOrElse](#filterorelse)
   - [fold](#fold)
+  - [fromEither](#fromeither)
   - [fromIO](#fromio)
   - [fromIOEither](#fromioeither)
   - [fromObservable](#fromobservable)
+  - [fromOption](#fromoption)
+  - [fromPredicate](#frompredicate)
   - [fromTask](#fromtask)
   - [fromTaskEither](#fromtaskeither)
   - [getOrElse](#getorelse)
@@ -400,6 +404,23 @@ export declare const bindW: <K extends string, E2, A, B>(
 
 Added in v0.6.12
 
+## filterOrElse
+
+Derivable from `MonadThrow`.
+
+**Signature**
+
+```ts
+export declare const filterOrElse: {
+  <E, A, B extends A>(refinement: Refinement<A, B>, onFalse: (a: A) => E): (
+    ma: ObservableEither<E, A>
+  ) => ObservableEither<E, B>
+  <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E): (ma: ObservableEither<E, A>) => ObservableEither<E, A>
+}
+```
+
+Added in v0.6.10
+
 ## fold
 
 **Signature**
@@ -412,6 +433,18 @@ export declare function fold<E, A, B>(
 ```
 
 Added in v0.6.8
+
+## fromEither
+
+Derivable from `MonadThrow`.
+
+**Signature**
+
+```ts
+export declare const fromEither: <E, A>(ma: E.Either<E, A>) => ObservableEither<E, A>
+```
+
+Added in v0.6.10
 
 ## fromIO
 
@@ -442,6 +475,33 @@ export declare const fromObservable: <E, A>(fa: Observable<A>) => ObservableEith
 ```
 
 Added in v0.6.12
+
+## fromOption
+
+Derivable from `MonadThrow`.
+
+**Signature**
+
+```ts
+export declare const fromOption: <E>(onNone: () => E) => <A>(ma: Option<A>) => ObservableEither<E, A>
+```
+
+Added in v0.6.10
+
+## fromPredicate
+
+Derivable from `MonadThrow`.
+
+**Signature**
+
+```ts
+export declare const fromPredicate: {
+  <E, A, B extends A>(refinement: Refinement<A, B>, onFalse: (a: A) => E): (a: A) => ObservableEither<E, B>
+  <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E): (a: A) => ObservableEither<E, A>
+}
+```
+
+Added in v0.6.10
 
 ## fromTask
 

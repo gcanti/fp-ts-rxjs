@@ -5,7 +5,7 @@ import * as E from 'fp-ts/lib/Either'
 import { io } from 'fp-ts/lib/IO'
 import { pipe } from 'fp-ts/lib/pipeable'
 import { bufferTime } from 'rxjs/operators'
-
+import * as O from 'fp-ts/lib/Option'
 import * as _ from '../src/ObservableEither'
 import { of as rxOf, Observable } from 'rxjs'
 
@@ -283,5 +283,77 @@ describe('ObservableEither', () => {
       .toPromise()
 
     assert.deepStrictEqual(t, [E.right({ a: 1, b: 'b' })])
+  })
+
+  it('fromOption', async () => {
+    assert.deepStrictEqual(
+      await _.fromOption(() => 'a')(O.some(1))
+        .pipe(bufferTime(10))
+        .toPromise(),
+      [E.right(1)]
+    )
+    assert.deepStrictEqual(
+      await _.fromOption(() => 'a')(O.none)
+        .pipe(bufferTime(10))
+        .toPromise(),
+      [E.left('a')]
+    )
+  })
+
+  it('fromEither', async () => {
+    assert.deepStrictEqual(
+      await _.fromEither(E.right(1))
+        .pipe(bufferTime(10))
+        .toPromise(),
+      [E.right(1)]
+    )
+    assert.deepStrictEqual(
+      await _.fromEither(E.left('a'))
+        .pipe(bufferTime(10))
+        .toPromise(),
+      [E.left('a')]
+    )
+  })
+
+  it('filterOrElse', async () => {
+    assert.deepStrictEqual(
+      await _.filterOrElse(
+        (n: number) => n > 0,
+        () => 'a'
+      )(_.of(1))
+        .pipe(bufferTime(10))
+        .toPromise(),
+      [E.right(1)]
+    )
+    assert.deepStrictEqual(
+      await _.filterOrElse(
+        (n: number) => n > 0,
+        () => 'a'
+      )(_.of(-1))
+        .pipe(bufferTime(10))
+        .toPromise(),
+      [E.left('a')]
+    )
+  })
+
+  it('filterOrElse', async () => {
+    assert.deepStrictEqual(
+      await _.fromPredicate(
+        (n: number) => n > 0,
+        () => 'a'
+      )(1)
+        .pipe(bufferTime(10))
+        .toPromise(),
+      [E.right(1)]
+    )
+    assert.deepStrictEqual(
+      await _.fromPredicate(
+        (n: number) => n > 0,
+        () => 'a'
+      )(-1)
+        .pipe(bufferTime(10))
+        .toPromise(),
+      [E.left('a')]
+    )
   })
 })

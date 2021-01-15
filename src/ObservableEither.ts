@@ -7,7 +7,7 @@ import { Apply2 } from 'fp-ts/lib/Apply'
 import { Bifunctor2 } from 'fp-ts/lib/Bifunctor'
 import * as E from 'fp-ts/lib/Either'
 import { getEitherM } from 'fp-ts/lib/EitherT'
-import { flow, identity } from 'fp-ts/lib/function'
+import { flow, identity, Predicate, Refinement } from 'fp-ts/lib/function'
 import { Functor2 } from 'fp-ts/lib/Functor'
 import { IO } from 'fp-ts/lib/IO'
 import { IOEither } from 'fp-ts/lib/IOEither'
@@ -15,6 +15,7 @@ import { Monad2 } from 'fp-ts/lib/Monad'
 import { MonadIO2 } from 'fp-ts/lib/MonadIO'
 import { MonadTask2 } from 'fp-ts/lib/MonadTask'
 import { MonadThrow2 } from 'fp-ts/lib/MonadThrow'
+import { Option } from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/pipeable'
 import { Task } from 'fp-ts/lib/Task'
 import * as TE from 'fp-ts/lib/TaskEither'
@@ -259,6 +260,46 @@ export const chainFirst: <A, E, B>(
  * @since 0.6.12
  */
 export const of: Applicative2<URI>['of'] = right
+
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @since 0.6.10
+ */
+export const filterOrElse: {
+  <E, A, B extends A>(refinement: Refinement<A, B>, onFalse: (a: A) => E): (
+    ma: ObservableEither<E, A>
+  ) => ObservableEither<E, B>
+  <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E): (ma: ObservableEither<E, A>) => ObservableEither<E, A>
+} = <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E): ((ma: ObservableEither<E, A>) => ObservableEither<E, A>) =>
+  chain(a => (predicate(a) ? of(a) : throwError(onFalse(a))))
+
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @since 0.6.10
+ */
+export const fromEither: <E, A>(ma: E.Either<E, A>) => ObservableEither<E, A> = ma =>
+  ma._tag === 'Left' ? throwError(ma.left) : of(ma.right)
+
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @since 0.6.10
+ */
+export const fromOption = <E>(onNone: () => E) => <A>(ma: Option<A>): ObservableEither<E, A> =>
+  ma._tag === 'None' ? throwError(onNone()) : of(ma.value)
+
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @since 0.6.10
+ */
+export const fromPredicate: {
+  <E, A, B extends A>(refinement: Refinement<A, B>, onFalse: (a: A) => E): (a: A) => ObservableEither<E, B>
+  <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E): (a: A) => ObservableEither<E, A>
+} = <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E) => (a: A): ObservableEither<E, A> =>
+  predicate(a) ? of(a) : throwError(onFalse(a))
 
 // -------------------------------------------------------------------------------------
 // instances

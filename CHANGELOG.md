@@ -59,6 +59,10 @@ high state of flux, you're at risk of it changing without notice.
     - add `MonadTask` instance (@gcanti)
     - add `MonadObservable` instance (@gcanti)
     - add `MonadThrow` instance (@gcanti)
+    - add `filterOrElse` (@gcanti)
+    - add `fromEither` (@gcanti)
+    - add `fromOption` (@gcanti)
+    - add `fromPredicate` (@gcanti)
   - `ReaderObservable`
     - add `Do` (@gcanti)
     - add `bindW` (@gcanti)
