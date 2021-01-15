@@ -13,6 +13,16 @@
 **Note**: Gaps between patch versions are faulty/broken releases. **Note**: A feature tagged as Experimental is in a
 high state of flux, you're at risk of it changing without notice.
 
+# 0.6.12
+
+- **New Feature**
+  - add `ObservableThese`, #44 (@siuvdlec)
+- **Polish**
+  - export `MonadObservable` from `index.ts` (@canti)
+- **Internal**
+  - `Observable`
+    - make `fromIO` synchronous, #43 (@anthonyjoeseph)
+
 # 0.6.11
 
 - **New Feature**
