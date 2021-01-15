@@ -7,6 +7,7 @@ import { Apply2 } from 'fp-ts/lib/Apply'
 import { Bifunctor2 } from 'fp-ts/lib/Bifunctor'
 import * as E from 'fp-ts/lib/Either'
 import { getEitherM } from 'fp-ts/lib/EitherT'
+import { flow, identity } from 'fp-ts/lib/function'
 import { Functor2 } from 'fp-ts/lib/Functor'
 import { IO } from 'fp-ts/lib/IO'
 import { IOEither } from 'fp-ts/lib/IOEither'
@@ -14,7 +15,7 @@ import { Monad2 } from 'fp-ts/lib/Monad'
 import { MonadIO2 } from 'fp-ts/lib/MonadIO'
 import { MonadTask2 } from 'fp-ts/lib/MonadTask'
 import { MonadThrow2 } from 'fp-ts/lib/MonadThrow'
-import { pipe, pipeable } from 'fp-ts/lib/pipeable'
+import { pipe } from 'fp-ts/lib/pipeable'
 import { Task } from 'fp-ts/lib/Task'
 import * as TE from 'fp-ts/lib/TaskEither'
 import { Observable } from 'rxjs'
@@ -133,6 +134,126 @@ export function orElse<E, A, M>(
  * @since 0.6.8
  */
 export const swap: <E, A>(ma: ObservableEither<E, A>) => ObservableEither<A, E> = T.swap
+
+// -------------------------------------------------------------------------------------
+// type class members
+// -------------------------------------------------------------------------------------
+
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 0.6.8
+ */
+export const map: <A, B>(f: (a: A) => B) => <E>(fa: ObservableEither<E, A>) => ObservableEither<E, B> = f => fa =>
+  T.map(fa, f)
+
+/**
+ * Apply a function to an argument under a type constructor.
+ *
+ * @category Apply
+ * @since 0.6.0
+ */
+export const ap: <E, A>(
+  fa: ObservableEither<E, A>
+) => <B>(fab: ObservableEither<E, (a: A) => B>) => ObservableEither<E, B> = fa => fab => T.ap(fab, fa)
+
+/**
+ * Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
+ * types of kind `* -> *`.
+ *
+ * @category Alt
+ * @since 0.6.8
+ */
+export const alt: <E, A>(
+  that: () => ObservableEither<E, A>
+) => (fa: ObservableEither<E, A>) => ObservableEither<E, A> = that => fa => T.alt(fa, that)
+
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 0.6.8
+ */
+export const apFirst: <E, B>(
+  fb: ObservableEither<E, B>
+) => <A>(fa: ObservableEither<E, A>) => ObservableEither<E, A> = fb =>
+  flow(
+    map(a => () => a),
+    ap(fb)
+  )
+
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 0.6.8
+ */
+export const apSecond = <E, B>(
+  fb: ObservableEither<E, B>
+): (<A>(fa: ObservableEither<E, A>) => ObservableEither<E, B>) =>
+  flow(
+    map(() => (b: B) => b),
+    ap(fb)
+  )
+
+/**
+ * @category Bifunctor
+ * @since 0.6.8
+ */
+export const bimap: <E, G, A, B>(
+  f: (e: E) => G,
+  g: (a: A) => B
+) => (fa: ObservableEither<E, A>) => ObservableEither<G, B> = (f, g) => fa => T.bimap(fa, f, g)
+
+/**
+ * @category Bifunctor
+ * @since 0.6.8
+ */
+export const mapLeft: <E, G>(f: (e: E) => G) => <A>(fa: ObservableEither<E, A>) => ObservableEither<G, A> = f => fa =>
+  T.mapLeft(fa, f)
+
+/**
+ * @category Monad
+ * @since 0.6.8
+ */
+export const chain: <E, A, B>(
+  f: (a: A) => ObservableEither<E, B>
+) => (ma: ObservableEither<E, A>) => ObservableEither<E, B> = f => ma => T.chain(ma, f)
+
+/**
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 0.6.0
+ */
+export const flatten: <E, A>(mma: ObservableEither<E, ObservableEither<E, A>>) => ObservableEither<E, A> =
+  /*#__PURE__*/
+  chain(identity)
+
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 0.6.8
+ */
+export const chainFirst: <A, E, B>(
+  f: (a: A) => ObservableEither<E, B>
+) => (ma: ObservableEither<E, A>) => ObservableEither<E, A> = f =>
+  chain(a =>
+    pipe(
+      f(a),
+      map(() => a)
+    )
+  )
 
 /**
  * @since 0.6.12
@@ -282,52 +403,6 @@ export const observableEither: Monad2<URI> & Bifunctor2<URI> & Alt2<URI> & Monad
   fromTask,
   fromObservable: rightObservable,
   throwError: left
-}
-
-// tslint:disable-next-line: deprecation
-const { alt, ap, apFirst, apSecond, bimap, chain, chainFirst, flatten, map, mapLeft } = pipeable(observableEither)
-
-export {
-  /**
-   * @since 0.6.8
-   */
-  alt,
-  /**
-   * @since 0.6.8
-   */
-  ap,
-  /**
-   * @since 0.6.8
-   */
-  apFirst,
-  /**
-   * @since 0.6.8
-   */
-  apSecond,
-  /**
-   * @since 0.6.8
-   */
-  bimap,
-  /**
-   * @since 0.6.8
-   */
-  chain,
-  /**
-   * @since 0.6.8
-   */
-  chainFirst,
-  /**
-   * @since 0.6.8
-   */
-  flatten,
-  /**
-   * @since 0.6.8
-   */
-  map,
-  /**
-   * @since 0.6.8
-   */
-  mapLeft
 }
 
 // -------------------------------------------------------------------------------------
