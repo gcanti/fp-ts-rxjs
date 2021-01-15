@@ -12,12 +12,26 @@ Added in v0.6.10
 
 <h2 class="text-delta">Table of contents</h2>
 
+- [Apply](#apply)
+  - [ap](#ap)
+- [Bifunctor](#bifunctor)
+  - [bimap](#bimap)
+  - [mapLeft](#mapleft)
+- [Functor](#functor)
+  - [map](#map)
+- [Monad](#monad)
+  - [chain](#chain)
+- [combinators](#combinators)
+  - [apFirst](#apfirst)
+  - [apSecond](#apsecond)
+  - [chainFirst](#chainfirst)
+  - [flatten](#flatten)
 - [utils](#utils)
   - [Applicative](#applicative)
-  - [Apply](#apply)
-  - [Bifunctor](#bifunctor)
-  - [Functor](#functor)
-  - [Monad](#monad)
+  - [Apply](#apply-1)
+  - [Bifunctor](#bifunctor-1)
+  - [Functor](#functor-1)
+  - [Monad](#monad-1)
   - [MonadIO](#monadio)
   - [MonadObservable](#monadobservable)
   - [MonadTask](#monadtask)
@@ -25,19 +39,12 @@ Added in v0.6.10
   - [StateReaderObservableEither (interface)](#statereaderobservableeither-interface)
   - [URI](#uri)
   - [URI (type alias)](#uri-type-alias)
-  - [ap](#ap)
-  - [apFirst](#apfirst)
-  - [apSecond](#apsecond)
-  - [bimap](#bimap)
   - [bind](#bind)
   - [bindTo](#bindto)
   - [bindW](#bindw)
-  - [chain](#chain)
-  - [chainFirst](#chainfirst)
   - [evaluate](#evaluate)
   - [execute](#execute)
   - [filterOrElse](#filterorelse)
-  - [flatten](#flatten)
   - [fromEither](#fromeither)
   - [fromIO](#fromio)
   - [fromObservable](#fromobservable)
@@ -48,8 +55,6 @@ Added in v0.6.10
   - [get](#get)
   - [gets](#gets)
   - [left](#left)
-  - [map](#map)
-  - [mapLeft](#mapleft)
   - [modify](#modify)
   - [of](#of)
   - [put](#put)
@@ -58,6 +63,145 @@ Added in v0.6.10
   - [~~stateReaderObservableEither~~](#statereaderobservableeither)
 
 ---
+
+# Apply
+
+## ap
+
+Apply a function to an argument under a type constructor.
+
+**Signature**
+
+```ts
+export declare const ap: <S, R, E, A>(
+  fa: StateReaderObservableEither<S, R, E, A>
+) => <B>(fab: StateReaderObservableEither<S, R, E, (a: A) => B>) => StateReaderObservableEither<S, R, E, B>
+```
+
+Added in v0.6.10
+
+# Bifunctor
+
+## bimap
+
+**Signature**
+
+```ts
+export declare const bimap: <E, G, A, B>(
+  f: (e: E) => G,
+  g: (a: A) => B
+) => <S, R>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, G, B>
+```
+
+Added in v0.6.10
+
+## mapLeft
+
+**Signature**
+
+```ts
+export declare const mapLeft: <E, G>(
+  f: (e: E) => G
+) => <S, R, A>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, G, A>
+```
+
+Added in v0.6.10
+
+# Functor
+
+## map
+
+`map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+use the type constructor `F` to represent some computational context.
+
+**Signature**
+
+```ts
+export declare const map: <A, B>(
+  f: (a: A) => B
+) => <S, R, E>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, B>
+```
+
+Added in v0.6.10
+
+# Monad
+
+## chain
+
+**Signature**
+
+```ts
+export declare const chain: <S, R, E, A, B>(
+  f: (a: A) => StateReaderObservableEither<S, R, E, B>
+) => (ma: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, B>
+```
+
+Added in v0.6.10
+
+# combinators
+
+## apFirst
+
+Combine two effectful actions, keeping only the result of the first.
+
+Derivable from `Apply`.
+
+**Signature**
+
+```ts
+export declare const apFirst: <S, R, E, B>(
+  fb: StateReaderObservableEither<S, R, E, B>
+) => <A>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, A>
+```
+
+Added in v0.6.10
+
+## apSecond
+
+Combine two effectful actions, keeping only the result of the second.
+
+Derivable from `Apply`.
+
+**Signature**
+
+```ts
+export declare const apSecond: <S, R, E, B>(
+  fb: StateReaderObservableEither<S, R, E, B>
+) => <A>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, B>
+```
+
+Added in v0.6.10
+
+## chainFirst
+
+Composes computations in sequence, using the return value of one computation to determine the next computation and
+keeping only the result of the first.
+
+Derivable from `Monad`.
+
+**Signature**
+
+```ts
+export declare const chainFirst: <S, R, E, A, B>(
+  f: (a: A) => StateReaderObservableEither<S, R, E, B>
+) => (ma: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, A>
+```
+
+Added in v0.6.10
+
+## flatten
+
+Derivable from `Monad`.
+
+**Signature**
+
+```ts
+export declare const flatten: <S, R, E, A>(
+  mma: StateReaderObservableEither<S, R, E, StateReaderObservableEither<S, R, E, A>>
+) => StateReaderObservableEither<S, R, E, A>
+```
+
+Added in v0.6.10
 
 # utils
 
@@ -183,55 +327,6 @@ export type URI = typeof URI
 
 Added in v0.6.10
 
-## ap
-
-**Signature**
-
-```ts
-export declare const ap: <S, R, E, A>(
-  fa: StateReaderObservableEither<S, R, E, A>
-) => <B>(fab: StateReaderObservableEither<S, R, E, (a: A) => B>) => StateReaderObservableEither<S, R, E, B>
-```
-
-Added in v0.6.10
-
-## apFirst
-
-**Signature**
-
-```ts
-export declare const apFirst: <S, R, E, B>(
-  fb: StateReaderObservableEither<S, R, E, B>
-) => <A>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, A>
-```
-
-Added in v0.6.10
-
-## apSecond
-
-**Signature**
-
-```ts
-export declare const apSecond: <S, R, E, B>(
-  fb: StateReaderObservableEither<S, R, E, B>
-) => <A>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, B>
-```
-
-Added in v0.6.10
-
-## bimap
-
-**Signature**
-
-```ts
-export declare const bimap: <E, G, A, B>(
-  f: (e: E) => G,
-  g: (a: A) => B
-) => <S, R>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, G, B>
-```
-
-Added in v0.6.10
-
 ## bind
 
 **Signature**
@@ -274,30 +369,6 @@ export declare const bindW: <K extends string, S, R2, E2, A, B>(
 
 Added in v0.6.12
 
-## chain
-
-**Signature**
-
-```ts
-export declare const chain: <S, R, E, A, B>(
-  f: (a: A) => StateReaderObservableEither<S, R, E, B>
-) => (ma: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, B>
-```
-
-Added in v0.6.10
-
-## chainFirst
-
-**Signature**
-
-```ts
-export declare const chainFirst: <S, R, E, A, B>(
-  f: (a: A) => StateReaderObservableEither<S, R, E, B>
-) => (ma: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, A>
-```
-
-Added in v0.6.10
-
 ## evaluate
 
 **Signature**
@@ -324,11 +395,13 @@ Added in v0.6.10
 
 ## filterOrElse
 
+Derivable from `MonadThrow`.
+
 **Signature**
 
 ```ts
 export declare const filterOrElse: {
-  <E, A, B>(refinement: Refinement<A, B>, onFalse: (a: A) => E): <S, R>(
+  <E, A, B extends A>(refinement: Refinement<A, B>, onFalse: (a: A) => E): <S, R>(
     ma: StateReaderObservableEither<S, R, E, A>
   ) => StateReaderObservableEither<S, R, E, B>
   <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E): <S, R>(
@@ -339,19 +412,9 @@ export declare const filterOrElse: {
 
 Added in v0.6.10
 
-## flatten
-
-**Signature**
-
-```ts
-export declare const flatten: <S, R, E, A>(
-  mma: StateReaderObservableEither<S, R, E, StateReaderObservableEither<S, R, E, A>>
-) => StateReaderObservableEither<S, R, E, A>
-```
-
-Added in v0.6.10
-
 ## fromEither
+
+Derivable from `MonadThrow`.
 
 **Signature**
 
@@ -383,6 +446,8 @@ Added in v0.6.10
 
 ## fromOption
 
+Derivable from `MonadThrow`.
+
 **Signature**
 
 ```ts
@@ -395,11 +460,15 @@ Added in v0.6.10
 
 ## fromPredicate
 
+Derivable from `MonadThrow`.
+
 **Signature**
 
 ```ts
 export declare const fromPredicate: {
-  <E, A, B>(refinement: Refinement<A, B>, onFalse: (a: A) => E): <S, R>(a: A) => StateReaderObservableEither<S, R, E, B>
+  <E, A, B extends A>(refinement: Refinement<A, B>, onFalse: (a: A) => E): <S, R>(
+    a: A
+  ) => StateReaderObservableEither<S, R, E, B>
   <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E): <S, R>(a: A) => StateReaderObservableEither<S, R, E, A>
 }
 ```
@@ -454,30 +523,6 @@ Added in v0.6.10
 
 ```ts
 export declare const left: <S, R, E = never, A = never>(e: E) => StateReaderObservableEither<S, R, E, A>
-```
-
-Added in v0.6.10
-
-## map
-
-**Signature**
-
-```ts
-export declare const map: <A, B>(
-  f: (a: A) => B
-) => <S, R, E>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, B>
-```
-
-Added in v0.6.10
-
-## mapLeft
-
-**Signature**
-
-```ts
-export declare const mapLeft: <E, G>(
-  f: (e: E) => G
-) => <S, R, A>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, G, A>
 ```
 
 Added in v0.6.10

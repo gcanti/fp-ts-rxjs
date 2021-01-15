@@ -229,7 +229,7 @@ describe('ReaderObservable', () => {
     )
   })
 
-  it('filterOrElse', async () => {
+  it('fromPredicate', async () => {
     assert.deepStrictEqual(
       await _.fromPredicate(
         (n: number) => n > 0,

@@ -246,7 +246,7 @@ export const flatten: <E, A>(mma: ObservableEither<E, ObservableEither<E, A>>) =
  * @category combinators
  * @since 0.6.8
  */
-export const chainFirst: <A, E, B>(
+export const chainFirst: <E, A, B>(
   f: (a: A) => ObservableEither<E, B>
 ) => (ma: ObservableEither<E, A>) => ObservableEither<E, A> = f =>
   chain(a =>

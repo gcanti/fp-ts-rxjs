@@ -119,6 +119,166 @@ export function throwError<R, E, A = never>(e: E): ReaderObservableEither<R, E, 
 }
 
 // -------------------------------------------------------------------------------------
+// type class members
+// -------------------------------------------------------------------------------------
+
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 0.6.10
+ */
+export const map: <A, B>(
+  f: (a: A) => B
+) => <R, E>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, B> = f => fa => M.map(fa, f)
+
+/**
+ * Apply a function to an argument under a type constructor.
+ *
+ * @category Apply
+ * @since 0.6.10
+ */
+export const ap: <R, E, A>(
+  fa: ReaderObservableEither<R, E, A>
+) => <B>(fab: ReaderObservableEither<R, E, (a: A) => B>) => ReaderObservableEither<R, E, B> = fa => fab => M.ap(fab, fa)
+
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 0.6.10
+ */
+export const apFirst: <R, E, B>(
+  fb: ReaderObservableEither<R, E, B>
+) => <A>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, A> = fb =>
+  flow(
+    map(a => () => a),
+    ap(fb)
+  )
+
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 0.6.10
+ */
+export const apSecond = <R, E, B>(
+  fb: ReaderObservableEither<R, E, B>
+): (<A>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, B>) =>
+  flow(
+    map(() => (b: B) => b),
+    ap(fb)
+  )
+
+/**
+ * @category Bifunctor
+ * @since 0.6.10
+ */
+export const bimap: <E, G, A, B>(
+  f: (e: E) => G,
+  g: (a: A) => B
+) => <R>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, G, B> = (f, g) => fea => r =>
+  OBE.bimap(f, g)(fea(r))
+
+/**
+ * @category Bifunctor
+ * @since 0.6.10
+ */
+export const mapLeft: <E, G>(
+  f: (e: E) => G
+) => <R, A>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, G, A> = f => fea => r =>
+  OBE.mapLeft(f)(fea(r))
+
+/**
+ * @category Monad
+ * @since 0.6.10
+ */
+export const chain: <R, E, A, B>(
+  f: (a: A) => ReaderObservableEither<R, E, B>
+) => (ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, B> = f => ma => M.chain(ma, f)
+
+/**
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 0.6.10
+ */
+export const flatten: <R, E, A>(
+  mma: ReaderObservableEither<R, E, ReaderObservableEither<R, E, A>>
+) => ReaderObservableEither<R, E, A> =
+  /*#__PURE__*/
+  chain(identity)
+
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 0.6.10
+ */
+export const chainFirst: <R, E, A, B>(
+  f: (a: A) => ReaderObservableEither<R, E, B>
+) => (ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, A> = f =>
+  chain(a =>
+    pipe(
+      f(a),
+      map(() => a)
+    )
+  )
+
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @since 0.6.10
+ */
+export const filterOrElse: {
+  <E, A, B extends A>(refinement: Refinement<A, B>, onFalse: (a: A) => E): <R>(
+    ma: ReaderObservableEither<R, E, A>
+  ) => ReaderObservableEither<R, E, B>
+  <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E): <R>(
+    ma: ReaderObservableEither<R, E, A>
+  ) => ReaderObservableEither<R, E, A>
+} = <E, A>(
+  predicate: Predicate<A>,
+  onFalse: (a: A) => E
+): (<R>(ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, A>) =>
+  chain(a => (predicate(a) ? of(a) : throwError(onFalse(a))))
+
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @since 0.6.10
+ */
+export const fromEither: <R, E, A>(ma: Either<E, A>) => ReaderObservableEither<R, E, A> = ma =>
+  ma._tag === 'Left' ? throwError(ma.left) : of(ma.right)
+
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @since 0.6.10
+ */
+export const fromOption = <E>(onNone: () => E) => <R, A>(ma: Option<A>): ReaderObservableEither<R, E, A> =>
+  ma._tag === 'None' ? throwError(onNone()) : of(ma.value)
+
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @since 0.6.10
+ */
+export const fromPredicate: {
+  <E, A, B extends A>(refinement: Refinement<A, B>, onFalse: (a: A) => E): <R>(a: A) => ReaderObservableEither<R, E, B>
+  <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E): <R>(a: A) => ReaderObservableEither<R, E, A>
+} = <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E) => <R>(a: A): ReaderObservableEither<R, E, A> =>
+  predicate(a) ? of(a) : throwError(onFalse(a))
+
+// -------------------------------------------------------------------------------------
 // instances
 // -------------------------------------------------------------------------------------
 
@@ -242,166 +402,6 @@ export const readerObservableEither: MonadObservable3<URI> & MonadThrow3<URI> & 
   bimap: bimap_,
   mapLeft: mapLeft_
 }
-
-// -------------------------------------------------------------------------------------
-// type class members
-// -------------------------------------------------------------------------------------
-
-/**
- * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
- * use the type constructor `F` to represent some computational context.
- *
- * @category Functor
- * @since 0.6.10
- */
-export const map: <A, B>(
-  f: (a: A) => B
-) => <R, E>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, B> = f => fa => M.map(fa, f)
-
-/**
- * Apply a function to an argument under a type constructor.
- *
- * @category Apply
- * @since 0.6.10
- */
-export const ap: <R, E, A>(
-  fa: ReaderObservableEither<R, E, A>
-) => <B>(fab: ReaderObservableEither<R, E, (a: A) => B>) => ReaderObservableEither<R, E, B> = fa => fab => M.ap(fab, fa)
-
-/**
- * Combine two effectful actions, keeping only the result of the first.
- *
- * Derivable from `Apply`.
- *
- * @category combinators
- * @since 0.6.10
- */
-export const apFirst: <R, E, B>(
-  fb: ReaderObservableEither<R, E, B>
-) => <A>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, A> = fb =>
-  flow(
-    map(a => () => a),
-    ap(fb)
-  )
-
-/**
- * Combine two effectful actions, keeping only the result of the second.
- *
- * Derivable from `Apply`.
- *
- * @category combinators
- * @since 0.6.10
- */
-export const apSecond = <R, E, B>(
-  fb: ReaderObservableEither<R, E, B>
-): (<A>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, B>) =>
-  flow(
-    map(() => (b: B) => b),
-    ap(fb)
-  )
-
-/**
- * @category Bifunctor
- * @since 0.6.10
- */
-export const bimap: <E, G, A, B>(
-  f: (e: E) => G,
-  g: (a: A) => B
-) => <R>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, G, B> = (f, g) => fea => r =>
-  OBE.bimap(f, g)(fea(r))
-
-/**
- * @category Bifunctor
- * @since 0.6.10
- */
-export const mapLeft: <E, G>(
-  f: (e: E) => G
-) => <R, A>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, G, A> = f => fea => r =>
-  OBE.mapLeft(f)(fea(r))
-
-/**
- * @category Monad
- * @since 0.6.10
- */
-export const chain: <R, E, A, B>(
-  f: (a: A) => ReaderObservableEither<R, E, B>
-) => (ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, B> = f => ma => M.chain(ma, f)
-
-/**
- * Derivable from `Monad`.
- *
- * @category combinators
- * @since 0.6.10
- */
-export const flatten: <R, E, A>(
-  mma: ReaderObservableEither<R, E, ReaderObservableEither<R, E, A>>
-) => ReaderObservableEither<R, E, A> =
-  /*#__PURE__*/
-  chain(identity)
-
-/**
- * Composes computations in sequence, using the return value of one computation to determine the next computation and
- * keeping only the result of the first.
- *
- * Derivable from `Monad`.
- *
- * @category combinators
- * @since 0.6.10
- */
-export const chainFirst: <A, R, E, B>(
-  f: (a: A) => ReaderObservableEither<R, E, B>
-) => (ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, A> = f =>
-  chain(a =>
-    pipe(
-      f(a),
-      map(() => a)
-    )
-  )
-
-/**
- * Derivable from `MonadThrow`.
- *
- * @since 0.6.10
- */
-export const filterOrElse: {
-  <E, A, B extends A>(refinement: Refinement<A, B>, onFalse: (a: A) => E): <R>(
-    ma: ReaderObservableEither<R, E, A>
-  ) => ReaderObservableEither<R, E, B>
-  <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E): <R>(
-    ma: ReaderObservableEither<R, E, A>
-  ) => ReaderObservableEither<R, E, A>
-} = <E, A>(
-  predicate: Predicate<A>,
-  onFalse: (a: A) => E
-): (<R>(ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, A>) =>
-  chain(a => (predicate(a) ? of(a) : throwError(onFalse(a))))
-
-/**
- * Derivable from `MonadThrow`.
- *
- * @since 0.6.10
- */
-export const fromEither: <R, E, A>(ma: Either<E, A>) => ReaderObservableEither<R, E, A> = ma =>
-  ma._tag === 'Left' ? throwError(ma.left) : of(ma.right)
-
-/**
- * Derivable from `MonadThrow`.
- *
- * @since 0.6.10
- */
-export const fromOption = <E>(onNone: () => E) => <R, A>(ma: Option<A>): ReaderObservableEither<R, E, A> =>
-  ma._tag === 'None' ? throwError(onNone()) : of(ma.value)
-
-/**
- * Derivable from `MonadThrow`.
- *
- * @since 0.6.10
- */
-export const fromPredicate: {
-  <E, A, B extends A>(refinement: Refinement<A, B>, onFalse: (a: A) => E): <U>(a: A) => ReaderObservableEither<U, E, B>
-  <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E): <R>(a: A) => ReaderObservableEither<R, E, A>
-} = <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E) => <R>(a: A): ReaderObservableEither<R, E, A> =>
-  predicate(a) ? of(a) : throwError(onFalse(a))
 
 // -------------------------------------------------------------------------------------
 // do notation

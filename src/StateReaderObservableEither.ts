@@ -1,23 +1,25 @@
 /**
  * @since 0.6.10
  */
-import * as E from 'fp-ts/lib/Either'
-import * as IO from 'fp-ts/lib/IO'
-import * as T from 'fp-ts/lib/Task'
+import { Applicative4 } from 'fp-ts/lib/Applicative'
+import { Apply4 } from 'fp-ts/lib/Apply'
 import { Bifunctor4 } from 'fp-ts/lib/Bifunctor'
+import * as E from 'fp-ts/lib/Either'
+import { Predicate, Refinement, flow, identity } from 'fp-ts/lib/function'
+import { Functor4 } from 'fp-ts/lib/Functor'
+import * as IO from 'fp-ts/lib/IO'
+import { Monad4 } from 'fp-ts/lib/Monad'
+import { MonadIO4 } from 'fp-ts/lib/MonadIO'
+import { MonadTask4 } from 'fp-ts/lib/MonadTask'
 import { MonadThrow4 } from 'fp-ts/lib/MonadThrow'
-import { pipeable, pipe } from 'fp-ts/lib/pipeable'
+import { Option } from 'fp-ts/lib/Option'
+import { pipe } from 'fp-ts/lib/pipeable'
 import { getStateM } from 'fp-ts/lib/StateT'
+import * as T from 'fp-ts/lib/Task'
 import { Observable } from 'rxjs'
 import { MonadObservable4 } from './MonadObservable'
 import * as OB from './Observable'
 import * as ROBE from './ReaderObservableEither'
-import { Applicative4 } from 'fp-ts/lib/Applicative'
-import { Functor4 } from 'fp-ts/lib/Functor'
-import { Apply4 } from 'fp-ts/lib/Apply'
-import { Monad4 } from 'fp-ts/lib/Monad'
-import { MonadIO4 } from 'fp-ts/lib/MonadIO'
-import { MonadTask4 } from 'fp-ts/lib/MonadTask'
 
 /**
  * @since 0.6.10
@@ -135,6 +137,172 @@ export function fromObservable<S, R, E, A>(observable: Observable<A>): StateRead
     )
 }
 
+// -------------------------------------------------------------------------------------
+// type class members
+// -------------------------------------------------------------------------------------
+
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 0.6.10
+ */
+export const map: <A, B>(
+  f: (a: A) => B
+) => <S, R, E>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, B> = f => fa =>
+  M.map(fa, f)
+
+/**
+ * Apply a function to an argument under a type constructor.
+ *
+ * @category Apply
+ * @since 0.6.10
+ */
+export const ap: <S, R, E, A>(
+  fa: StateReaderObservableEither<S, R, E, A>
+) => <B>(
+  fab: StateReaderObservableEither<S, R, E, (a: A) => B>
+) => StateReaderObservableEither<S, R, E, B> = fa => fab => M.ap(fab, fa)
+
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 0.6.10
+ */
+export const apFirst: <S, R, E, B>(
+  fb: StateReaderObservableEither<S, R, E, B>
+) => <A>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, A> = fb =>
+  flow(
+    map(a => () => a),
+    ap(fb)
+  )
+
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 0.6.10
+ */
+export const apSecond = <S, R, E, B>(
+  fb: StateReaderObservableEither<S, R, E, B>
+): (<A>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, B>) =>
+  flow(
+    map(() => (b: B) => b),
+    ap(fb)
+  )
+
+/**
+ * @category Bifunctor
+ * @since 0.6.10
+ */
+export const bimap: <E, G, A, B>(
+  f: (e: E) => G,
+  g: (a: A) => B
+) => <S, R>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, G, B> = (f, g) => fea =>
+  pipe(M.map(fea, g), mapLeft(f))
+
+/**
+ * @category Bifunctor
+ * @since 0.6.10
+ */
+export const mapLeft: <E, G>(
+  f: (e: E) => G
+) => <S, R, A>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, G, A> = f => fea =>
+  flow(fea, ROBE.mapLeft(f))
+
+/**
+ * @category Monad
+ * @since 0.6.10
+ */
+export const chain: <S, R, E, A, B>(
+  f: (a: A) => StateReaderObservableEither<S, R, E, B>
+) => (ma: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, B> = f => ma =>
+  M.chain(ma, f)
+
+/**
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 0.6.10
+ */
+export const flatten: <S, R, E, A>(
+  mma: StateReaderObservableEither<S, R, E, StateReaderObservableEither<S, R, E, A>>
+) => StateReaderObservableEither<S, R, E, A> =
+  /*#__PURE__*/
+  chain(identity)
+
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 0.6.10
+ */
+export const chainFirst: <S, R, E, A, B>(
+  f: (a: A) => StateReaderObservableEither<S, R, E, B>
+) => (ma: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, A> = f =>
+  chain(a =>
+    pipe(
+      f(a),
+      map(() => a)
+    )
+  )
+
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @since 0.6.10
+ */
+export const filterOrElse: {
+  <E, A, B extends A>(refinement: Refinement<A, B>, onFalse: (a: A) => E): <S, R>(
+    ma: StateReaderObservableEither<S, R, E, A>
+  ) => StateReaderObservableEither<S, R, E, B>
+  <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E): <S, R>(
+    ma: StateReaderObservableEither<S, R, E, A>
+  ) => StateReaderObservableEither<S, R, E, A>
+} = <E, A>(
+  predicate: Predicate<A>,
+  onFalse: (a: A) => E
+): (<S, R>(ma: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, A>) =>
+  chain(a => (predicate(a) ? of(a) : throwError(onFalse(a))))
+
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @since 0.6.10
+ */
+export const fromEither: <S, R, E, A>(ma: E.Either<E, A>) => StateReaderObservableEither<S, R, E, A> = ma =>
+  ma._tag === 'Left' ? throwError(ma.left) : of(ma.right)
+
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @since 0.6.10
+ */
+export const fromOption = <E>(onNone: () => E) => <S, R, A>(ma: Option<A>): StateReaderObservableEither<S, R, E, A> =>
+  ma._tag === 'None' ? throwError(onNone()) : of(ma.value)
+
+/**
+ * Derivable from `MonadThrow`.
+ *
+ * @since 0.6.10
+ */
+export const fromPredicate: {
+  <E, A, B extends A>(refinement: Refinement<A, B>, onFalse: (a: A) => E): <S, R>(
+    a: A
+  ) => StateReaderObservableEither<S, R, E, B>
+  <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E): <S, R>(a: A) => StateReaderObservableEither<S, R, E, A>
+} = <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E) => <S, R>(a: A): StateReaderObservableEither<S, R, E, A> =>
+  predicate(a) ? of(a) : throwError(onFalse(a))
+
 /**
  * @since 0.6.12
  */
@@ -144,8 +312,10 @@ export const of: Applicative4<URI>['of'] = M.of
 // instances
 // -------------------------------------------------------------------------------------
 
-const bimap_: Bifunctor4<URI>['bimap'] = (fea, f, g) => mapLeft_(M.map(fea, g), f)
-const mapLeft_: Bifunctor4<URI>['mapLeft'] = (fa, f) => s => pipe(fa(s), ROBE.mapLeft(f))
+/* istanbul ignore next */
+const bimap_: Bifunctor4<URI>['bimap'] = (fea, f, g) => pipe(fea, bimap(f, g))
+/* istanbul ignore next */
+const mapLeft_: Bifunctor4<URI>['mapLeft'] = (fea, f) => pipe(fea, mapLeft(f))
 
 /**
  * @since 0.6.12
@@ -261,81 +431,6 @@ export const stateReaderObservableEither: MonadObservable4<URI> & Bifunctor4<URI
   fromIO,
   fromObservable,
   fromTask
-}
-
-/**
- * @since 0.6.10
- */
-const {
-  ap,
-  apFirst,
-  apSecond,
-  bimap,
-  chain,
-  chainFirst,
-  filterOrElse,
-  flatten,
-  fromEither,
-  fromOption,
-  fromPredicate,
-  map,
-  mapLeft
-  // tslint:disable-next-line: deprecation
-} = pipeable(stateReaderObservableEither)
-
-export {
-  /**
-   * @since 0.6.10
-   */
-  ap,
-  /**
-   * @since 0.6.10
-   */
-  apFirst,
-  /**
-   * @since 0.6.10
-   */
-  apSecond,
-  /**
-   * @since 0.6.10
-   */
-  bimap,
-  /**
-   * @since 0.6.10
-   */
-  chain,
-  /**
-   * @since 0.6.10
-   */
-  chainFirst,
-  /**
-   * @since 0.6.10
-   */
-  filterOrElse,
-  /**
-   * @since 0.6.10
-   */
-  flatten,
-  /**
-   * @since 0.6.10
-   */
-  fromEither,
-  /**
-   * @since 0.6.10
-   */
-  fromOption,
-  /**
-   * @since 0.6.10
-   */
-  fromPredicate,
-  /**
-   * @since 0.6.10
-   */
-  map,
-  /**
-   * @since 0.6.10
-   */
-  mapLeft
 }
 
 // -------------------------------------------------------------------------------------
