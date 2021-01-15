@@ -5,22 +5,22 @@ import { Alt1 } from 'fp-ts/lib/Alt'
 import { Alternative1 } from 'fp-ts/lib/Alternative'
 import { Applicative1 } from 'fp-ts/lib/Applicative'
 import { Apply1 } from 'fp-ts/lib/Apply'
-import { Compactable1 } from 'fp-ts/lib/Compactable'
+import { Compactable1, Separated } from 'fp-ts/lib/Compactable'
 import * as E from 'fp-ts/lib/Either'
 import { Filterable1 } from 'fp-ts/lib/Filterable'
-import { identity, Predicate } from 'fp-ts/lib/function'
+import { flow, identity, Predicate, Refinement } from 'fp-ts/lib/function'
 import { Functor1 } from 'fp-ts/lib/Functor'
 import { IO } from 'fp-ts/lib/IO'
 import { Monad1 } from 'fp-ts/lib/Monad'
+import { MonadIO1 } from 'fp-ts/lib/MonadIO'
+import { MonadTask1 } from 'fp-ts/lib/MonadTask'
 import { Monoid } from 'fp-ts/lib/Monoid'
 import * as O from 'fp-ts/lib/Option'
-import { pipe, pipeable } from 'fp-ts/lib/pipeable'
+import { pipe } from 'fp-ts/lib/pipeable'
 import { Task } from 'fp-ts/lib/Task'
 import { combineLatest, defer, EMPTY, merge, Observable, of as rxOf } from 'rxjs'
 import { map as rxMap, mergeMap } from 'rxjs/operators'
 import { MonadObservable1 } from './MonadObservable'
-import { MonadIO1 } from 'fp-ts/lib/MonadIO'
-import { MonadTask1 } from 'fp-ts/lib/MonadTask'
 
 declare module 'fp-ts/lib/HKT' {
   interface URItoKind<A> {
@@ -83,18 +83,106 @@ export function toTask<A>(o: Observable<A>): Task<A> {
 }
 
 // -------------------------------------------------------------------------------------
-// instances
+// type class members
 // -------------------------------------------------------------------------------------
 
-const map_: Functor1<URI>['map'] = (fa, f) => fa.pipe(rxMap(f))
-const ap_: Apply1<URI>['ap'] = (fab, fa) => combineLatest([fab, fa]).pipe(rxMap(([f, a]) => f(a)))
-const chain_: Monad1<URI>['chain'] = (fa, f) => fa.pipe(mergeMap(f))
-const alt_: Alt1<URI>['alt'] = (fx, f) => merge(fx, f())
-const compact_: Compactable1<URI>['compact'] = fa => filterMap_(fa, identity)
-const separate_: Compactable1<URI>['separate'] = fa => partitionMap_(fa, identity)
-const filter_: Filterable1<URI>['filter'] = <A>(fa: Observable<A>, p: Predicate<A>) =>
-  filterMap_(fa, O.fromPredicate(p))
-const filterMap_: Filterable1<URI>['filterMap'] = <A, B>(fa: Observable<A>, f: (a: A) => O.Option<B>) =>
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 0.6.0
+ */
+export const map: <A, B>(f: (a: A) => B) => (fa: Observable<A>) => Observable<B> = f => fa => fa.pipe(rxMap(f))
+
+/**
+ * Apply a function to an argument under a type constructor.
+ *
+ * @category Apply
+ * @since 0.6.0
+ */
+export const ap: <A>(fa: Observable<A>) => <B>(fab: Observable<(a: A) => B>) => Observable<B> = fa => fab =>
+  combineLatest([fab, fa]).pipe(rxMap(([f, a]) => f(a)))
+
+/**
+ * Combine two effectful actions, keeping only the result of the first.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 0.6.0
+ */
+export const apFirst: <B>(fb: Observable<B>) => <A>(fa: Observable<A>) => Observable<A> = fb =>
+  flow(
+    map(a => () => a),
+    ap(fb)
+  )
+
+/**
+ * Combine two effectful actions, keeping only the result of the second.
+ *
+ * Derivable from `Apply`.
+ *
+ * @category combinators
+ * @since 0.6.0
+ */
+export const apSecond = <B>(fb: Observable<B>): (<A>(fa: Observable<A>) => Observable<B>) =>
+  flow(
+    map(() => (b: B) => b),
+    ap(fb)
+  )
+
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation.
+ *
+ * @category Monad
+ * @since 0.6.0
+ */
+export const chain: <A, B>(f: (a: A) => Observable<B>) => (ma: Observable<A>) => Observable<B> = f => ma =>
+  ma.pipe(mergeMap(f))
+
+/**
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 0.6.0
+ */
+export const flatten: <A>(mma: Observable<Observable<A>>) => Observable<A> =
+  /*#__PURE__*/
+  chain(identity)
+
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation and
+ * keeping only the result of the first.
+ *
+ * Derivable from `Monad`.
+ *
+ * @category combinators
+ * @since 0.6.0
+ */
+export const chainFirst: <A, B>(f: (a: A) => Observable<B>) => (ma: Observable<A>) => Observable<A> = f =>
+  chain(a =>
+    pipe(
+      f(a),
+      map(() => a)
+    )
+  )
+
+/**
+ * Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
+ * types of kind `* -> *`.
+ *
+ * @category Alt
+ * @since 0.6.0
+ */
+export const alt: <A>(that: () => Observable<A>) => (fa: Observable<A>) => Observable<A> = that => fa =>
+  merge(fa, that())
+
+/**
+ * @category Filterable
+ * @since 0.6.0
+ */
+export const filterMap = <A, B>(f: (a: A) => O.Option<B>) => (fa: Observable<A>): Observable<B> =>
   fa.pipe(
     mergeMap(a =>
       pipe(
@@ -104,12 +192,74 @@ const filterMap_: Filterable1<URI>['filterMap'] = <A, B>(fa: Observable<A>, f: (
       )
     )
   )
-const partition_: Filterable1<URI>['partition'] = <A>(fa: Observable<A>, p: Predicate<A>) =>
-  partitionMap_(fa, E.fromPredicate(p, identity))
-const partitionMap_: Filterable1<URI>['partitionMap'] = (fa, f) => ({
-  left: filterMap_(fa, a => O.fromEither(E.swap(f(a)))),
-  right: filterMap_(fa, a => O.fromEither(f(a)))
+
+/**
+ * @category Compactable
+ * @since 0.6.0
+ */
+export const compact: <A>(fa: Observable<O.Option<A>>) => Observable<A> =
+  /*#__PURE__*/
+  filterMap(identity)
+
+/**
+ * @category Filterable
+ * @since 0.6.0
+ */
+export const partitionMap: <A, B, C>(
+  f: (a: A) => E.Either<B, C>
+) => (fa: Observable<A>) => Separated<Observable<B>, Observable<C>> = f => fa => ({
+  left: pipe(
+    fa,
+    filterMap(a => O.fromEither(E.swap(f(a))))
+  ),
+  right: pipe(
+    fa,
+    filterMap(a => O.fromEither(f(a)))
+  )
 })
+
+/**
+ * @category Compactable
+ * @since 0.6.0
+ */
+export const separate: <A, B>(fa: Observable<E.Either<A, B>>) => Separated<Observable<A>, Observable<B>> =
+  /*#__PURE__*/
+  partitionMap(identity)
+
+/**
+ * @category Filterable
+ * @since 0.6.0
+ */
+export const filter: {
+  <A, B extends A>(refinement: Refinement<A, B>): (fa: Observable<A>) => Observable<B>
+  <A>(predicate: Predicate<A>): (fa: Observable<A>) => Observable<A>
+} = <A>(p: Predicate<A>) => (fa: Observable<A>) => pipe(fa, filterMap(O.fromPredicate(p)))
+
+/**
+ * @category Filterable
+ * @since 0.6.0
+ */
+export const partition: {
+  <A, B extends A>(refinement: Refinement<A, B>): (fa: Observable<A>) => Separated<Observable<A>, Observable<B>>
+  <A>(predicate: Predicate<A>): (fa: Observable<A>) => Separated<Observable<A>, Observable<A>>
+} = <A>(p: Predicate<A>) => (fa: Observable<A>) => pipe(fa, partitionMap(E.fromPredicate(p, identity)))
+
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+
+const map_: Functor1<URI>['map'] = (fa, f) => pipe(fa, map(f))
+const ap_: Apply1<URI>['ap'] = (fab, fa) => pipe(fab, ap(fa))
+const chain_: Monad1<URI>['chain'] = (fa, f) => pipe(fa, chain(f))
+const alt_: Alt1<URI>['alt'] = (me, that) => pipe(me, alt(that))
+/* istanbul ignore next */
+const filter_: Filterable1<URI>['filter'] = <A>(fa: Observable<A>, p: Predicate<A>) => pipe(fa, filter(p))
+const filterMap_: Filterable1<URI>['filterMap'] = <A, B>(fa: Observable<A>, f: (a: A) => O.Option<B>) =>
+  pipe(fa, filterMap(f))
+/* istanbul ignore next */
+const partition_: Filterable1<URI>['partition'] = <A>(fa: Observable<A>, p: Predicate<A>) => pipe(fa, partition(p))
+/* istanbul ignore next */
+const partitionMap_: Filterable1<URI>['partitionMap'] = (fa, f) => pipe(fa, partitionMap(f))
 
 /**
  * @since 0.6.12
@@ -180,8 +330,8 @@ export const Alternative: Alternative1<URI> = {
  */
 export const Compactable: Compactable1<URI> = {
   URI,
-  compact: compact_,
-  separate: separate_
+  compact,
+  separate
 }
 
 /**
@@ -189,8 +339,8 @@ export const Compactable: Compactable1<URI> = {
  */
 export const Filterable: Filterable1<URI> = {
   URI,
-  compact: compact_,
-  separate: separate_,
+  compact,
+  separate,
   map: map_,
   filter: filter_,
   filterMap: filterMap_,
@@ -249,8 +399,8 @@ export const observable: Monad1<URI> & Alternative1<URI> & Filterable1<URI> & Mo
   chain: chain_,
   zero,
   alt: alt_,
-  compact: compact_,
-  separate: separate_,
+  compact,
+  separate,
   filter: filter_,
   filterMap: filterMap_,
   partition: partition_,
@@ -258,83 +408,6 @@ export const observable: Monad1<URI> & Alternative1<URI> & Filterable1<URI> & Mo
   fromIO,
   fromTask,
   fromObservable: identity
-}
-
-const {
-  alt,
-  ap,
-  apFirst,
-  apSecond,
-  chain,
-  chainFirst,
-  compact,
-  filter,
-  filterMap,
-  flatten,
-  map,
-  partition,
-  partitionMap,
-  separate
-  // tslint:disable-next-line: deprecation
-} = pipeable(observable)
-
-export {
-  /**
-   * @since 0.6.0
-   */
-  alt,
-  /**
-   * @since 0.6.0
-   */
-  ap,
-  /**
-   * @since 0.6.0
-   */
-  apFirst,
-  /**
-   * @since 0.6.0
-   */
-  apSecond,
-  /**
-   * @since 0.6.0
-   */
-  chain,
-  /**
-   * @since 0.6.0
-   */
-  chainFirst,
-  /**
-   * @since 0.6.0
-   */
-  compact,
-  /**
-   * @since 0.6.0
-   */
-  filter,
-  /**
-   * @since 0.6.0
-   */
-  filterMap,
-  /**
-   * @since 0.6.0
-   */
-  flatten,
-  /**
-   * @since 0.6.0
-   */
-  map,
-  /**
-   * @since 0.6.0
-   */
-  partition,
-  /**
-   * @since 0.6.0
-   */
-  partitionMap,
-  /**
-   * @since 0.6.0
-   */
-  separate
 }
 
 // -------------------------------------------------------------------------------------
