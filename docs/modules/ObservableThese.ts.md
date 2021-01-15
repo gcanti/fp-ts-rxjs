@@ -14,15 +14,15 @@ Added in v0.6.12
 
 - [ObservableThese (interface)](#observablethese-interface)
 - [URI (type alias)](#uri-type-alias)
+- [Bifunctor](#bifunctor)
+- [Functor](#functor)
 - [URI](#uri)
-- [bifunctorObservableThese](#bifunctorobservablethese)
 - [bimap](#bimap)
 - [both](#both)
 - [fold](#fold)
 - [fromIOEither](#fromioeither)
 - [fromTask](#fromtask)
 - [fromTaskThese](#fromtaskthese)
-- [functorObservableThese](#functorobservablethese)
 - [getApplicative](#getapplicative)
 - [getMonad](#getmonad)
 - [left](#left)
@@ -60,22 +60,32 @@ export type URI = typeof URI
 
 Added in v0.6.12
 
+# Bifunctor
+
+**Signature**
+
+```ts
+export const Bifunctor: Bifunctor2<URI> = ...
+```
+
+Added in v0.6.12
+
+# Functor
+
+**Signature**
+
+```ts
+export const Functor: Functor2<URI> = ...
+```
+
+Added in v0.6.12
+
 # URI
 
 **Signature**
 
 ```ts
 export const URI: "ObservableThese" = ...
-```
-
-Added in v0.6.12
-
-# bifunctorObservableThese
-
-**Signature**
-
-```ts
-export const bifunctorObservableThese: Bifunctor2<URI> = ...
 ```
 
 Added in v0.6.12
@@ -140,16 +150,6 @@ Added in v0.6.12
 
 ```ts
 export function fromTaskThese<E, A>(t: TT.TaskThese<E, A>): ObservableThese<E, A> { ... }
-```
-
-Added in v0.6.12
-
-# functorObservableThese
-
-**Signature**
-
-```ts
-export const functorObservableThese: Functor2<URI> = ...
 ```
 
 Added in v0.6.12

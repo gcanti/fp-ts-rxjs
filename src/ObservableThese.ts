@@ -131,7 +131,7 @@ export const swap: <E, A>(ma: ObservableThese<E, A>) => ObservableThese<A, E> = 
  * @since 0.6.12
  */
 export function getApplicative<E>(A: Apply1<R.URI>, SE: Semigroup<E>): Applicative2C<URI, E> {
-  const AV = TH.getApplicative(SE)
+  const AV = TH.getMonad(SE)
   const ap = <A>(fga: Observable<TH.These<E, A>>) => <B>(
     fgab: Observable<TH.These<E, (a: A) => B>>
   ): Observable<TH.These<E, B>> =>
@@ -184,7 +184,7 @@ export function getMonad<E>(SE: Semigroup<E>): Monad2C<URI, E> {
 /**
  * @since 0.6.12
  */
-export const functorObservableThese: Functor2<URI> = {
+export const Functor: Functor2<URI> = {
   URI,
   map: T.map
 }
@@ -193,7 +193,7 @@ export const functorObservableThese: Functor2<URI> = {
  * @category instances
  * @since 0.6.12
  */
-export const bifunctorObservableThese: Bifunctor2<URI> = {
+export const Bifunctor: Bifunctor2<URI> = {
   URI,
   bimap: T.bimap,
   mapLeft: T.mapLeft
