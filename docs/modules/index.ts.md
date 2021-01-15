@@ -12,13 +12,25 @@ Added in v0.6.0
 
 <h2 class="text-delta">Table of contents</h2>
 
+- [monadObservable](#monadobservable)
 - [observable](#observable)
 - [observableEither](#observableeither)
+- [observableThese](#observablethese)
 - [readerObservable](#readerobservable)
 - [readerObservableEither](#readerobservableeither)
 - [stateReaderObservableEither](#statereaderobservableeither)
 
 ---
+
+# monadObservable
+
+**Signature**
+
+```ts
+typeof monadObservable
+```
+
+Added in v0.6.12
 
 # observable
 
@@ -39,6 +51,16 @@ typeof observableEither
 ```
 
 Added in v0.6.8
+
+# observableThese
+
+**Signature**
+
+```ts
+typeof observableThese
+```
+
+Added in v0.6.12
 
 # readerObservable
 

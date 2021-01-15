@@ -245,7 +245,7 @@ Added in v0.6.10
 **Signature**
 
 ```ts
-<E>(onNone: Lazy<E>) => <S, R, A>(ma: Option<A>) => StateReaderObservableEither<S, R, E, A>
+<E>(onNone: () => E) => <S, R, A>(ma: Option<A>) => StateReaderObservableEither<S, R, E, A>
 ```
 
 Added in v0.6.10
