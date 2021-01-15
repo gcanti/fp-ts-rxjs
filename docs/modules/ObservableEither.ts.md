@@ -203,7 +203,7 @@ Derivable from `Monad`.
 **Signature**
 
 ```ts
-export declare const chainFirst: <A, E, B>(
+export declare const chainFirst: <E, A, B>(
   f: (a: A) => ObservableEither<E, B>
 ) => (ma: ObservableEither<E, A>) => ObservableEither<E, A>
 ```

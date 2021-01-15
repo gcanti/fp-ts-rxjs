@@ -251,7 +251,7 @@ export const flatten: <E, A>(mma: ReaderObservable<E, ReaderObservable<E, A>>) =
  * @category combinators
  * @since 0.6.6
  */
-export const chainFirst: <A, E, B>(
+export const chainFirst: <E, A, B>(
   f: (a: A) => ReaderObservable<E, B>
 ) => (ma: ReaderObservable<E, A>) => ReaderObservable<E, A> = f =>
   chain(a =>

@@ -260,7 +260,7 @@ Derivable from `Monad`.
 **Signature**
 
 ```ts
-export declare const chainFirst: <A, E, B>(
+export declare const chainFirst: <E, A, B>(
   f: (a: A) => ReaderObservable<E, B>
 ) => (ma: ReaderObservable<E, A>) => ReaderObservable<E, A>
 ```

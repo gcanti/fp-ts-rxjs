@@ -179,7 +179,7 @@ Derivable from `Monad`.
 **Signature**
 
 ```ts
-export declare const chainFirst: <A, R, E, B>(
+export declare const chainFirst: <R, E, A, B>(
   f: (a: A) => ReaderObservableEither<R, E, B>
 ) => (ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, A>
 ```
@@ -477,7 +477,7 @@ Derivable from `MonadThrow`.
 
 ```ts
 export declare const fromPredicate: {
-  <E, A, B extends A>(refinement: Refinement<A, B>, onFalse: (a: A) => E): <U>(a: A) => ReaderObservableEither<U, E, B>
+  <E, A, B extends A>(refinement: Refinement<A, B>, onFalse: (a: A) => E): <R>(a: A) => ReaderObservableEither<R, E, B>
   <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E): <R>(a: A) => ReaderObservableEither<R, E, A>
 }
 ```
