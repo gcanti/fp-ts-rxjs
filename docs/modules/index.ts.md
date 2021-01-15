@@ -4,7 +4,7 @@ nav_order: 1
 parent: Modules
 ---
 
-# index overview
+## index overview
 
 Added in v0.6.0
 
@@ -12,82 +12,85 @@ Added in v0.6.0
 
 <h2 class="text-delta">Table of contents</h2>
 
-- [monadObservable](#monadobservable)
-- [observable](#observable)
-- [observableEither](#observableeither)
-- [observableThese](#observablethese)
-- [readerObservable](#readerobservable)
-- [readerObservableEither](#readerobservableeither)
-- [stateReaderObservableEither](#statereaderobservableeither)
+- [utils](#utils)
+  - [monadObservable](#monadobservable)
+  - [observable](#observable)
+  - [observableEither](#observableeither)
+  - [observableThese](#observablethese)
+  - [readerObservable](#readerobservable)
+  - [readerObservableEither](#readerobservableeither)
+  - [stateReaderObservableEither](#statereaderobservableeither)
 
 ---
 
-# monadObservable
+# utils
+
+## monadObservable
 
 **Signature**
 
 ```ts
-typeof monadObservable
+export declare const monadObservable: typeof monadObservable
 ```
 
 Added in v0.6.12
 
-# observable
+## observable
 
 **Signature**
 
 ```ts
-typeof observable
+export declare const observable: typeof observable
 ```
 
 Added in v0.6.0
 
-# observableEither
+## observableEither
 
 **Signature**
 
 ```ts
-typeof observableEither
+export declare const observableEither: typeof observableEither
 ```
 
 Added in v0.6.8
 
-# observableThese
+## observableThese
 
 **Signature**
 
 ```ts
-typeof observableThese
+export declare const observableThese: typeof observableThese
 ```
 
 Added in v0.6.12
 
-# readerObservable
+## readerObservable
 
 **Signature**
 
 ```ts
-typeof readerObservable
+export declare const readerObservable: typeof readerObservable
 ```
 
 Added in v0.6.6
 
-# readerObservableEither
+## readerObservableEither
 
 **Signature**
 
 ```ts
-typeof readerObservableEither
+export declare const readerObservableEither: typeof readerObservableEither
 ```
 
 Added in v0.6.10
 
-# stateReaderObservableEither
+## stateReaderObservableEither
 
 **Signature**
 
 ```ts
-typeof stateReaderObservableEither
+export declare const stateReaderObservableEither: typeof stateReaderObservableEither
 ```
 
 Added in v0.6.10

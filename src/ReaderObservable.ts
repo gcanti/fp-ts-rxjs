@@ -1,24 +1,31 @@
 /**
  * @since 0.6.6
  */
-import { Observable } from 'rxjs'
-import { getReaderM } from 'fp-ts/lib/ReaderT'
-import * as R from './Observable'
-import { pipe, pipeable } from 'fp-ts/lib/pipeable'
+import { Alt2 } from 'fp-ts/lib/Alt'
+import { Alternative2 } from 'fp-ts/lib/Alternative'
+import { Applicative2 } from 'fp-ts/lib/Applicative'
+import { Apply2 } from 'fp-ts/lib/Apply'
+import { Compactable2 } from 'fp-ts/lib/Compactable'
+import * as E from 'fp-ts/lib/Either'
+import { Filterable2 } from 'fp-ts/lib/Filterable'
+import { identity, Predicate } from 'fp-ts/lib/function'
+import { Functor2 } from 'fp-ts/lib/Functor'
 import { IO } from 'fp-ts/lib/IO'
 import { Monad2 } from 'fp-ts/lib/Monad'
 import { Monoid } from 'fp-ts/lib/Monoid'
-import { getMonoid as getReaderMonoid, Reader } from 'fp-ts/lib/Reader'
-import { Task } from 'fp-ts/lib/Task'
-import { MonadObservable2 } from './MonadObservable'
-import { ReaderTask } from 'fp-ts/lib/ReaderTask'
-import { Alternative2 } from 'fp-ts/lib/Alternative'
-import { Filterable2 } from 'fp-ts/lib/Filterable'
-import { identity, Predicate } from 'fp-ts/lib/function'
-import * as E from 'fp-ts/lib/Either'
 import * as O from 'fp-ts/lib/Option'
+import { pipe, pipeable } from 'fp-ts/lib/pipeable'
+import { getMonoid as getReaderMonoid, Reader } from 'fp-ts/lib/Reader'
+import { getReaderM } from 'fp-ts/lib/ReaderT'
+import { ReaderTask } from 'fp-ts/lib/ReaderTask'
+import { Task } from 'fp-ts/lib/Task'
+import { Observable } from 'rxjs'
+import { MonadObservable2 } from './MonadObservable'
+import * as R from './Observable'
+import { MonadIO2 } from 'fp-ts/lib/MonadIO'
+import { MonadTask2 } from 'fp-ts/lib/MonadTask'
 
-const T = getReaderM(R.observable)
+const T = getReaderM(R.Monad)
 
 declare module 'fp-ts/lib/HKT' {
   interface URItoKind2<E, A> {
@@ -157,27 +164,166 @@ export function chainTaskK<A, B>(
 }
 
 /**
- * @since 0.6.6
+ * @since 0.6.12
  */
+export const zero: Alternative2<URI>['zero'] = () => R.Alternative.zero
 
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+
+const alt_: Alt2<URI>['alt'] = (fx, f) => r => R.Alt.alt(fx(r), () => f()(r))
+const compact_: Compactable2<URI>['compact'] = fa => filterMap_(fa, identity)
+const separate_: Compactable2<URI>['separate'] = fa => partitionMap_(fa, identity)
+const filter_: Filterable2<URI>['filter'] = <R, A>(fa: ReaderObservable<R, A>, p: Predicate<A>) =>
+  filterMap_(fa, O.fromPredicate(p))
+const filterMap_: Filterable2<URI>['filterMap'] = (fa, f) => r => R.Filterable.filterMap(fa(r), f)
+const partition_: Filterable2<URI>['partition'] = <R, A>(fa: ReaderObservable<R, A>, p: Predicate<A>) =>
+  partitionMap_(fa, E.fromPredicate(p, identity))
+const partitionMap_: Filterable2<URI>['partitionMap'] = (fa, f) => ({
+  left: filterMap_(fa, a => O.fromEither(E.swap(f(a)))),
+  right: filterMap_(fa, a => O.fromEither(f(a)))
+})
+
+/**
+ * @since 0.6.12
+ */
+export const Functor: Functor2<URI> = {
+  URI,
+  map: T.map
+}
+
+/**
+ * @since 0.6.12
+ */
+export const Apply: Apply2<URI> = {
+  URI,
+  map: T.map,
+  ap: T.ap
+}
+
+/**
+ * @since 0.6.12
+ */
+export const Applicative: Applicative2<URI> = {
+  URI,
+  map: T.map,
+  ap: T.ap,
+  of
+}
+
+/**
+ * @since 0.6.12
+ */
+export const Monad: Monad2<URI> = {
+  URI,
+  map: T.map,
+  ap: T.ap,
+  of,
+  chain: T.chain
+}
+
+/**
+ * @since 0.6.12
+ */
+export const Alt: Alt2<URI> = {
+  URI,
+  map: T.map,
+  alt: alt_
+}
+
+/**
+ * @since 0.6.12
+ */
+export const Alternative: Alternative2<URI> = {
+  URI,
+  map: T.map,
+  ap: T.ap,
+  of,
+  alt: alt_,
+  zero
+}
+
+/**
+ * @since 0.6.12
+ */
+export const Compactable: Compactable2<URI> = {
+  URI,
+  compact: compact_,
+  separate: separate_
+}
+
+/**
+ * @since 0.6.12
+ */
+export const Filterable: Filterable2<URI> = {
+  URI,
+  compact: compact_,
+  separate: separate_,
+  map: T.map,
+  filter: filter_,
+  filterMap: filterMap_,
+  partition: partition_,
+  partitionMap: partitionMap_
+}
+
+/**
+ * @since 0.6.12
+ */
+export const MonadIO: MonadIO2<URI> = {
+  URI,
+  map: T.map,
+  ap: T.ap,
+  of,
+  chain: T.chain,
+  fromIO
+}
+
+/**
+ * @since 0.6.12
+ */
+export const MonadTask: MonadTask2<URI> = {
+  URI,
+  map: T.map,
+  ap: T.ap,
+  of,
+  chain: T.chain,
+  fromIO,
+  fromTask
+}
+
+/**
+ * @since 0.6.12
+ */
+export const MonadObservable: MonadObservable2<URI> = {
+  URI,
+  map: T.map,
+  ap: T.ap,
+  of,
+  chain: T.chain,
+  fromIO,
+  fromTask,
+  fromObservable
+}
+
+/**
+ * @since 0.6.6
+ * @deprecated
+ */
 export const readerObservable: Monad2<URI> & Alternative2<URI> & Filterable2<URI> & MonadObservable2<URI> = {
   URI,
   map: T.map,
   of,
   ap: T.ap,
   chain: T.chain,
-  zero: () => R.observable.zero,
-  alt: (fx, f) => r => R.observable.alt(fx(r), () => f()(r)),
-  compact: fa => readerObservable.filterMap(fa, identity),
-  separate: fa => readerObservable.partitionMap(fa, identity),
-  partitionMap: (fa, f) => ({
-    left: readerObservable.filterMap(fa, a => O.fromEither(E.swap(f(a)))),
-    right: readerObservable.filterMap(fa, a => O.fromEither(f(a)))
-  }),
-  partition: <R, A>(fa: ReaderObservable<R, A>, p: Predicate<A>) =>
-    readerObservable.partitionMap(fa, E.fromPredicate(p, identity)),
-  filterMap: (fa, f) => r => R.observable.filterMap(fa(r), f),
-  filter: <R, A>(fa: ReaderObservable<R, A>, p: Predicate<A>) => readerObservable.filterMap(fa, O.fromPredicate(p)),
+  zero,
+  alt: alt_,
+  compact: compact_,
+  separate: separate_,
+  partitionMap: partitionMap_,
+  partition: partition_,
+  filterMap: filterMap_,
+  filter: filter_,
   fromIO,
   fromTask,
   fromObservable
@@ -198,6 +344,7 @@ const {
   partition,
   partitionMap,
   separate
+  // tslint:disable-next-line: deprecation
 } = pipeable(readerObservable)
 
 export {

@@ -103,7 +103,7 @@ describe('ReaderObservable', () => {
   })
 
   it('fromObservableEither', async () => {
-    const robe = pipe(ROBE.fromObservableEither(OBE.observableEither.of(1)), buffer)
+    const robe = pipe(ROBE.fromObservableEither(OBE.of(1)), buffer)
     const x = await robe({})()
     assert.deepStrictEqual(x, [E.right(1)])
   })

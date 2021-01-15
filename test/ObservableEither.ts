@@ -108,15 +108,14 @@ describe('ObservableEither', () => {
 
   describe('Monad', () => {
     it('of', async () => {
-      const fea = _.observableEither.of(1)
+      const fea = _.of(1)
       const x = await fea.pipe(bufferTime(10)).toPromise()
       assert.deepStrictEqual(x, [E.right(1)])
     })
 
     it('map', async () => {
       const double = (n: number): number => n * 2
-      const x = await _.observableEither
-        .map(_.right(1), double)
+      const x = await pipe(_.right(1), _.map(double))
         .pipe(bufferTime(10))
         .toPromise()
       assert.deepStrictEqual(x, [E.right(2)])
@@ -126,8 +125,7 @@ describe('ObservableEither', () => {
       const double = (n: number): number => n * 2
       const mab = _.right(double)
       const ma = _.right(1)
-      const x = await _.observableEither
-        .ap(mab, ma)
+      const x = await pipe(mab, _.ap(ma))
         .pipe(bufferTime(10))
         .toPromise()
       assert.deepStrictEqual(x, [E.right(2)])
@@ -135,13 +133,11 @@ describe('ObservableEither', () => {
 
     it('chain', async () => {
       const f = (a: string): _.ObservableEither<string, number> => (a.length > 2 ? _.right(a.length) : _.left('text'))
-      const e1 = await _.observableEither
-        .chain(_.right('four'), f)
+      const e1 = await pipe(_.right('four'), _.chain(f))
         .pipe(bufferTime(10))
         .toPromise()
       assert.deepStrictEqual(e1, [E.right(4)])
-      const e2 = await _.observableEither
-        .chain(_.right('a'), f)
+      const e2 = await pipe(_.right('a'), _.chain(f))
         .pipe(bufferTime(10))
         .toPromise()
       assert.deepStrictEqual(e2, [E.left('text')])
@@ -150,8 +146,7 @@ describe('ObservableEither', () => {
     it('left identity', async () => {
       const f = (a: string): _.ObservableEither<string, number> => (a.length > 2 ? _.right(a.length) : _.left('text'))
       const a = 'text'
-      const e1 = await _.observableEither
-        .chain(_.observableEither.of(a), f)
+      const e1 = await pipe(_.of<string, string>(a), _.chain(f))
         .pipe(bufferTime(10))
         .toPromise()
       const e2 = await f(a)
@@ -161,9 +156,8 @@ describe('ObservableEither', () => {
     })
 
     it('right identity', async () => {
-      const fa = _.observableEither.of(1)
-      const e1 = await _.observableEither
-        .chain(fa, _.observableEither.of)
+      const fa = _.of(1)
+      const e1 = await pipe(fa, _.chain(_.of))
         .pipe(bufferTime(10))
         .toPromise()
       const e2 = await fa.pipe(bufferTime(10)).toPromise()
@@ -176,13 +170,11 @@ describe('ObservableEither', () => {
       const f = (s: string): number => s.length
       const g = (n: number): boolean => n > 2
 
-      const e1 = await _.observableEither
-        .bimap(_.right(1), f, g)
+      const e1 = await pipe(_.right(1), _.bimap(f, g))
         .pipe(bufferTime(10))
         .toPromise()
       assert.deepStrictEqual(e1, [E.right(false)])
-      const e2 = await _.observableEither
-        .bimap(_.left('foo'), f, g)
+      const e2 = await pipe(_.left('foo'), _.bimap(f, g))
         .pipe(bufferTime(10))
         .toPromise()
       assert.deepStrictEqual(e2, [E.left(3)])
@@ -190,8 +182,7 @@ describe('ObservableEither', () => {
 
     it('mapLeft', async () => {
       const double = (n: number): number => n * 2
-      const e = await _.observableEither
-        .mapLeft(_.left(1), double)
+      const e = await pipe(_.left(1), _.mapLeft(double))
         .pipe(bufferTime(10))
         .toPromise()
       assert.deepStrictEqual(e, [E.left(2)])
@@ -202,35 +193,34 @@ describe('ObservableEither', () => {
     it('alt right right', async () => {
       const fx = _.right(1)
       const fy = () => _.right(2)
-      const e1 = await _.observableEither
-        .alt(fx, fy)
+      const e1 = await pipe(fx, _.alt(fy))
         .pipe(bufferTime(10))
         .toPromise()
       assert.deepStrictEqual(e1, [E.right(1)])
     })
 
     it('alt left right', async () => {
-      const fx = _.left(1)
-      const fy = () => _.right(2)
-      const e1 = await _.observableEither
-        .alt(fx, fy)
+      const fx = _.left<number, number>(1)
+      const fy = () => _.right<number, number>(2)
+      const e1 = await pipe(fx, _.alt(fy))
         .pipe(bufferTime(10))
         .toPromise()
       assert.deepStrictEqual(e1, [E.right(2)])
     })
 
     it('associativity', async () => {
-      const fa = _.left(1)
-      const ga = () => _.right(2)
-      const ha = () => _.right(3)
+      const fa = _.left<number, number>(1)
+      const ga = () => _.right<number, number>(2)
+      const ha = () => _.right<number, number>(3)
 
-      const e1 = await _.observableEither
-        .alt(_.observableEither.alt(fa, ga), ha)
+      const e1 = await pipe(pipe(fa, _.alt(ga)), _.alt(ha))
         .pipe(bufferTime(10))
         .toPromise()
 
-      const e2 = await _.observableEither
-        .alt(fa, () => _.observableEither.alt(ga(), ha))
+      const e2 = await pipe(
+        fa,
+        _.alt(() => pipe(ga(), _.alt(ha)))
+      )
         .pipe(bufferTime(10))
         .toPromise()
 
@@ -239,16 +229,17 @@ describe('ObservableEither', () => {
 
     it('distributivity', async () => {
       const double = (n: number): number => n * 2
-      const fx = _.left('left')
-      const fy = () => _.right(1)
+      const fx = _.left<string, number>('left')
+      const fy = () => _.right<string, number>(1)
 
-      const e1 = await _.observableEither
-        .map(_.observableEither.alt(fx, fy), double)
+      const e1 = await pipe(fx, _.alt(fy), _.map(double))
         .pipe(bufferTime(10))
         .toPromise()
 
-      const e2 = await _.observableEither
-        .alt(_.observableEither.map(fx, double), () => _.observableEither.map(fy(), double))
+      const e2 = await pipe(
+        pipe(fx, _.map(double)),
+        _.alt(() => pipe(fy(), _.map(double)))
+      )
         .pipe(bufferTime(10))
         .toPromise()
 

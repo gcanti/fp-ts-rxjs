@@ -1,14 +1,22 @@
 /**
  * @since 0.6.10
  */
-import * as OBE from './ObservableEither'
-import { io as IO, reader as R, task as T } from 'fp-ts'
-import { MonadObservable3 } from './MonadObservable'
-import { MonadThrow3 } from 'fp-ts/lib/MonadThrow'
+import * as IO from 'fp-ts/lib/IO'
+import * as R from 'fp-ts/lib/Reader'
+import * as T from 'fp-ts/lib/Task'
+import { Applicative3 } from 'fp-ts/lib/Applicative'
+import { Apply3 } from 'fp-ts/lib/Apply'
 import { Bifunctor3 } from 'fp-ts/lib/Bifunctor'
-import { getReaderM } from 'fp-ts/lib/ReaderT'
+import { Functor3 } from 'fp-ts/lib/Functor'
+import { Monad3 } from 'fp-ts/lib/Monad'
+import { MonadThrow3 } from 'fp-ts/lib/MonadThrow'
 import { pipe, pipeable } from 'fp-ts/lib/pipeable'
+import { getReaderM } from 'fp-ts/lib/ReaderT'
 import { Observable } from 'rxjs'
+import { MonadObservable3 } from './MonadObservable'
+import * as OBE from './ObservableEither'
+import { MonadIO3 } from 'fp-ts/lib/MonadIO'
+import { MonadTask3 } from 'fp-ts/lib/MonadTask'
 
 /**
  * @since 0.6.10
@@ -33,7 +41,7 @@ declare module 'fp-ts/lib/HKT' {
   }
 }
 
-const M = getReaderM(OBE.observableEither)
+const M = getReaderM(OBE.Monad)
 
 /**
  * @since 0.6.10
@@ -83,21 +91,21 @@ export function of<R, E, A>(a: A): ReaderObservableEither<R, E, A> {
  * @since 0.6.10
  */
 export function fromIO<R, E, A>(a: IO.IO<A>): ReaderObservableEither<R, E, A> {
-  return () => OBE.observableEither.fromIO(a)
+  return () => OBE.rightIO(a)
 }
 
 /**
  * @since 0.6.10
  */
 export function fromTask<R, E, A>(a: T.Task<A>): ReaderObservableEither<R, E, A> {
-  return () => OBE.observableEither.fromTask(a)
+  return () => OBE.fromTask(a)
 }
 
 /**
  * @since 0.6.10
  */
 export function fromObservable<R, E, A>(a: Observable<A>): ReaderObservableEither<R, E, A> {
-  return () => OBE.observableEither.fromObservable(a)
+  return () => OBE.rightObservable(a)
 }
 
 /**
@@ -107,21 +115,127 @@ export function throwError<R, E, A>(e: E): ReaderObservableEither<R, E, A> {
   return () => OBE.left<E, A>(e)
 }
 
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+
+const bimap_: Bifunctor3<URI>['bimap'] = (fea, f, g) => r => OBE.bimap(f, g)(fea(r))
+const mapLeft_: Bifunctor3<URI>['mapLeft'] = (fea, f) => r => OBE.mapLeft(f)(fea(r))
+
+/**
+ * @since 0.6.12
+ */
+export const Functor: Functor3<URI> = {
+  URI,
+  map: M.map
+}
+
+/**
+ * @since 0.6.12
+ */
+export const Apply: Apply3<URI> = {
+  URI,
+  ap: M.ap,
+  map: M.map
+}
+
+/**
+ * @since 0.6.12
+ */
+export const Applicative: Applicative3<URI> = {
+  URI,
+  ap: M.ap,
+  map: M.map,
+  of
+}
+
+/**
+ * @since 0.6.12
+ */
+export const Monad: Monad3<URI> = {
+  URI,
+  ap: M.ap,
+  map: M.map,
+  of,
+  chain: M.chain
+}
+
+/**
+ * @since 0.6.12
+ */
+export const Bifunctor: Bifunctor3<URI> = {
+  URI,
+  bimap: bimap_,
+  mapLeft: mapLeft_
+}
+
+/**
+ * @since 0.6.12
+ */
+export const MonadIO: MonadIO3<URI> = {
+  URI,
+  map: M.map,
+  of,
+  ap: M.ap,
+  chain: M.chain,
+  fromIO
+}
+
+/**
+ * @since 0.6.12
+ */
+export const MonadTask: MonadTask3<URI> = {
+  URI,
+  map: M.map,
+  of,
+  ap: M.ap,
+  chain: M.chain,
+  fromIO,
+  fromTask
+}
+
+/**
+ * @since 0.6.12
+ */
+export const MonadObservable: MonadObservable3<URI> = {
+  URI,
+  map: M.map,
+  of,
+  ap: M.ap,
+  chain: M.chain,
+  fromIO,
+  fromObservable,
+  fromTask
+}
+
+/**
+ * @since 0.6.12
+ */
+export const MonadThrow: MonadThrow3<URI> = {
+  URI,
+  map: M.map,
+  of,
+  ap: M.ap,
+  chain: M.chain,
+  throwError
+}
+
 /**
  * @since 0.6.10
+ * @deprecated
  */
 export const readerObservableEither: MonadObservable3<URI> & MonadThrow3<URI> & Bifunctor3<URI> = {
   URI,
   ap: M.ap,
   map: M.map,
-  of: M.of,
+  of,
   chain: M.chain,
   fromIO,
   fromObservable,
   fromTask,
   throwError,
-  bimap: (fea, f, g) => r => OBE.bimap(f, g)(fea(r)),
-  mapLeft: (fea, f) => r => OBE.mapLeft(f)(fea(r))
+  bimap: bimap_,
+  mapLeft: mapLeft_
 }
 
 const {
@@ -138,6 +252,7 @@ const {
   fromPredicate,
   map,
   mapLeft
+  // tslint:disable-next-line: deprecation
 } = pipeable(readerObservableEither)
 
 export {
