@@ -30,7 +30,6 @@ Added in v0.6.12
 - [leftObservable](#leftobservable)
 - [map](#map)
 - [mapLeft](#mapleft)
-- [observableThese](#observablethese)
 - [of](#of)
 - [right](#right)
 - [rightIO](#rightio)
@@ -95,7 +94,10 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-<E, G, A, B>(f: (e: E) => G, g: (a: A) => B) => (fa: ObservableThese<E, A>) => ObservableThese<G, B>
+export const bimap: <E, G, A, B>(
+  f: (e: E) => G,
+  g: (a: A) => B
+) => (fa: ObservableThese<E, A>) => ObservableThese<G, B> = (f, g) => fa => ...
 ```
 
 Added in v0.6.12
@@ -209,7 +211,7 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-<A, B>(f: (a: A) => B) => <E>(fa: ObservableThese<E, A>) => ObservableThese<E, B>
+export const map: <A, B>(f: (a: A) => B) => <E>(fa: ObservableThese<E, A>) => ObservableThese<E, B> = f => fa => ...
 ```
 
 Added in v0.6.12
@@ -219,17 +221,7 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-<E, G>(f: (e: E) => G) => <A>(fa: ObservableThese<E, A>) => ObservableThese<G, A>
-```
-
-Added in v0.6.12
-
-# observableThese
-
-**Signature**
-
-```ts
-export const observableThese: Functor2<URI> & Bifunctor2<URI> = ...
+export const mapLeft: <E, G>(f: (e: E) => G) => <A>(fa: ObservableThese<E, A>) => ObservableThese<G, A> = f => fa => ...
 ```
 
 Added in v0.6.12

@@ -186,8 +186,18 @@ export {
   separate
 }
 
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
+
 /**
- * @category Do
+ * @since 0.6.12
+ */
+export const Do: Observable<{}> =
+  /*#__PURE__*/
+  of({})
+
+/**
  * @since 0.6.11
  */
 export function bindTo<K extends string, A>(name: K): (fa: Observable<A>) => Observable<{ [P in K]: A }> {
@@ -195,7 +205,6 @@ export function bindTo<K extends string, A>(name: K): (fa: Observable<A>) => Obs
 }
 
 /**
- * @category Do
  * @since 0.6.11
  */
 export function bind<K extends string, A, B>(

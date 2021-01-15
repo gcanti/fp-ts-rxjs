@@ -195,10 +195,18 @@ export {
   mapLeft
 }
 
-// DO
+// -------------------------------------------------------------------------------------
+// do notation
+// -------------------------------------------------------------------------------------
 
 /**
- * @category Do
+ * @since 0.6.12
+ */
+export const Do: ReaderObservableEither<unknown, never, {}> =
+  /*#__PURE__*/
+  of({})
+
+/**
  * @since 0.6.11
  */
 export function bindTo<K extends string, R, E, A>(
@@ -208,7 +216,6 @@ export function bindTo<K extends string, R, E, A>(
 }
 
 /**
- * @category Do
  * @since 0.6.11
  */
 export function bind<K extends string, R, E, A, B>(
@@ -224,3 +231,13 @@ export function bind<K extends string, R, E, A, B>(
     )
   )
 }
+
+/**
+ * @since 0.6.12
+ */
+export const bindW: <K extends string, R2, E2, A, B>(
+  name: Exclude<K, keyof A>,
+  f: (a: A) => ReaderObservableEither<R2, E2, B>
+) => <R1, E1>(
+  fa: ReaderObservableEither<R1, E1, A>
+) => ReaderObservableEither<R1 & R2, E1 | E2, { [P in keyof A | K]: P extends keyof A ? A[P] : B }> = bind as any

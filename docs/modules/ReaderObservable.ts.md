@@ -14,6 +14,7 @@ Added in v0.6.6
 
 - [ReaderObservable (interface)](#readerobservable-interface)
 - [URI (type alias)](#uri-type-alias)
+- [Do](#do)
 - [URI](#uri)
 - [alt](#alt)
 - [ap](#ap)
@@ -23,6 +24,7 @@ Added in v0.6.6
 - [asks](#asks)
 - [bind](#bind)
 - [bindTo](#bindto)
+- [bindW](#bindw)
 - [chain](#chain)
 - [chainFirst](#chainfirst)
 - [chainIOK](#chainiok)
@@ -73,6 +75,16 @@ export type URI = typeof URI
 ```
 
 Added in v0.6.6
+
+# Do
+
+**Signature**
+
+```ts
+export const : ReaderObservable<unknown, {}> = ...
+```
+
+Added in v0.6.12
 
 # URI
 
@@ -168,6 +180,21 @@ export function bindTo<K extends string, R, A>(
 ```
 
 Added in v0.6.11
+
+# bindW
+
+**Signature**
+
+```ts
+export const bindW: <K extends string, R2, A, B>(
+  name: Exclude<K, keyof A>,
+  f: (a: A) => ReaderObservable<R2, B>
+) => <R1>(
+  fa: ReaderObservable<R1, A>
+) => ReaderObservable<R1 & R2, { [P in keyof A | K]: P extends keyof A ? A[P] : B }> = ...
+```
+
+Added in v0.6.12
 
 # chain
 
