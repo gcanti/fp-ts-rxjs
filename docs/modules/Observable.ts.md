@@ -12,8 +12,12 @@ Added in v0.6.0
 
 <h2 class="text-delta">Table of contents</h2>
 
+- [Aletrnaitve](#aletrnaitve)
+  - [zero](#zero)
 - [Alt](#alt)
   - [alt](#alt)
+- [Applicative](#applicative)
+  - [of](#of)
 - [Apply](#apply)
   - [ap](#ap)
 - [Compactable](#compactable)
@@ -33,13 +37,16 @@ Added in v0.6.0
   - [apSecond](#apsecond)
   - [chainFirst](#chainfirst)
   - [flatten](#flatten)
-- [utils](#utils)
+- [constructors](#constructors)
+  - [fromIO](#fromio)
+  - [fromOption](#fromoption)
+  - [fromTask](#fromtask)
+- [instances](#instances)
   - [Alt](#alt-1)
   - [Alternative](#alternative)
-  - [Applicative](#applicative)
+  - [Applicative](#applicative-1)
   - [Apply](#apply-1)
   - [Compactable](#compactable-1)
-  - [Do](#do)
   - [Filterable](#filterable-1)
   - [Functor](#functor-1)
   - [Monad](#monad-1)
@@ -48,18 +55,27 @@ Added in v0.6.0
   - [MonadTask](#monadtask)
   - [URI](#uri)
   - [URI (type alias)](#uri-type-alias)
+  - [getMonoid](#getmonoid)
+  - [~~observable~~](#observable)
+- [utils](#utils)
+  - [Do](#do)
   - [bind](#bind)
   - [bindTo](#bindto)
-  - [fromIO](#fromio)
-  - [fromOption](#fromoption)
-  - [fromTask](#fromtask)
-  - [getMonoid](#getmonoid)
-  - [of](#of)
   - [toTask](#totask)
-  - [zero](#zero)
-  - [~~observable~~](#observable)
 
 ---
+
+# Aletrnaitve
+
+## zero
+
+**Signature**
+
+```ts
+export declare const zero: <A>() => Observable<A>
+```
+
+Added in v0.6.12
 
 # Alt
 
@@ -75,6 +91,18 @@ export declare const alt: <A>(that: () => Observable<A>) => (fa: Observable<A>) 
 ```
 
 Added in v0.6.0
+
+# Applicative
+
+## of
+
+**Signature**
+
+```ts
+export declare const of: <A>(a: A) => Observable<A>
+```
+
+Added in v0.6.6
 
 # Apply
 
@@ -248,7 +276,39 @@ export declare const flatten: <A>(mma: Observable<Observable<A>>) => Observable<
 
 Added in v0.6.0
 
-# utils
+# constructors
+
+## fromIO
+
+**Signature**
+
+```ts
+export declare function fromIO<A>(io: IO<A>): Observable<A>
+```
+
+Added in v0.6.5
+
+## fromOption
+
+**Signature**
+
+```ts
+export declare function fromOption<A>(o: O.Option<A>): Observable<A>
+```
+
+Added in v0.6.5
+
+## fromTask
+
+**Signature**
+
+```ts
+export declare function fromTask<A>(t: Task<A>): Observable<A>
+```
+
+Added in v0.6.5
+
+# instances
 
 ## Alt
 
@@ -296,16 +356,6 @@ Added in v0.6.12
 
 ```ts
 export declare const Compactable: Compactable1<'Observable'>
-```
-
-Added in v0.6.12
-
-## Do
-
-**Signature**
-
-```ts
-export declare const Do: Observable<{}>
 ```
 
 Added in v0.6.12
@@ -390,6 +440,41 @@ export type URI = typeof URI
 
 Added in v0.6.0
 
+## getMonoid
+
+**Signature**
+
+```ts
+export declare function getMonoid<A = never>(): Monoid<Observable<A>>
+```
+
+Added in v0.6.0
+
+## ~~observable~~
+
+**Signature**
+
+```ts
+export declare const observable: Monad1<'Observable'> &
+  Alternative1<'Observable'> &
+  Filterable1<'Observable'> &
+  MonadObservable1<'Observable'>
+```
+
+Added in v0.6.0
+
+# utils
+
+## Do
+
+**Signature**
+
+```ts
+export declare const Do: Observable<{}>
+```
+
+Added in v0.6.12
+
 ## bind
 
 **Signature**
@@ -413,56 +498,6 @@ export declare function bindTo<K extends string, A>(name: K): (fa: Observable<A>
 
 Added in v0.6.11
 
-## fromIO
-
-**Signature**
-
-```ts
-export declare function fromIO<A>(io: IO<A>): Observable<A>
-```
-
-Added in v0.6.5
-
-## fromOption
-
-**Signature**
-
-```ts
-export declare function fromOption<A>(o: O.Option<A>): Observable<A>
-```
-
-Added in v0.6.5
-
-## fromTask
-
-**Signature**
-
-```ts
-export declare function fromTask<A>(t: Task<A>): Observable<A>
-```
-
-Added in v0.6.5
-
-## getMonoid
-
-**Signature**
-
-```ts
-export declare function getMonoid<A = never>(): Monoid<Observable<A>>
-```
-
-Added in v0.6.0
-
-## of
-
-**Signature**
-
-```ts
-export declare const of: <A>(a: A) => Observable<A>
-```
-
-Added in v0.6.6
-
 ## toTask
 
 **Signature**
@@ -472,26 +507,3 @@ export declare function toTask<A>(o: Observable<A>): Task<A>
 ```
 
 Added in v0.6.5
-
-## zero
-
-**Signature**
-
-```ts
-export declare const zero: <A>() => Observable<A>
-```
-
-Added in v0.6.12
-
-## ~~observable~~
-
-**Signature**
-
-```ts
-export declare const observable: Monad1<'Observable'> &
-  Alternative1<'Observable'> &
-  Filterable1<'Observable'> &
-  MonadObservable1<'Observable'>
-```
-
-Added in v0.6.0

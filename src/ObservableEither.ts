@@ -6,7 +6,6 @@ import { Applicative2 } from 'fp-ts/lib/Applicative'
 import { Apply2 } from 'fp-ts/lib/Apply'
 import { Bifunctor2 } from 'fp-ts/lib/Bifunctor'
 import * as E from 'fp-ts/lib/Either'
-import { getEitherM } from 'fp-ts/lib/EitherT'
 import { flow, identity, Predicate, Refinement } from 'fp-ts/lib/function'
 import { Functor2 } from 'fp-ts/lib/Functor'
 import { IO } from 'fp-ts/lib/IO'
@@ -23,54 +22,60 @@ import { Observable } from 'rxjs'
 import { MonadObservable2 } from './MonadObservable'
 import * as R from './Observable'
 
-const T = getEitherM(R.Monad)
-
-declare module 'fp-ts/lib/HKT' {
-  interface URItoKind2<E, A> {
-    ObservableEither: ObservableEither<E, A>
-  }
-}
+// -------------------------------------------------------------------------------------
+// model
+// -------------------------------------------------------------------------------------
 
 /**
- * @since 0.6.8
- */
-export const URI = 'ObservableEither'
-/**
- * @since 0.6.8
- */
-export type URI = typeof URI
-
-/**
+ * @category model
  * @since 0.6.8
  */
 export interface ObservableEither<E, A> extends Observable<E.Either<E, A>> {}
 
-/**
- * @since 0.6.8
- */
-export const left: <E = never, A = never>(e: E) => ObservableEither<E, A> = T.left
+// -------------------------------------------------------------------------------------
+// constructors
+// -------------------------------------------------------------------------------------
 
 /**
+ * @category constructors
  * @since 0.6.8
  */
-export const right: <E = never, A = never>(a: A) => ObservableEither<E, A> = T.of
+export const left: <E = never, A = never>(e: E) => ObservableEither<E, A> =
+  /*#__PURE__*/
+  flow(E.left, R.of)
 
 /**
+ * @category constructors
  * @since 0.6.8
  */
-export const rightObservable: <E = never, A = never>(ma: Observable<A>) => ObservableEither<E, A> = T.rightM
+export const right: <E = never, A = never>(a: A) => ObservableEither<E, A> =
+  /*#__PURE__*/
+  flow(E.right, R.of)
 
 /**
+ * @category constructors
  * @since 0.6.8
  */
-export const leftObservable: <E = never, A = never>(ma: Observable<E>) => ObservableEither<E, A> = T.leftM
+export const rightObservable: <E = never, A = never>(ma: Observable<A>) => ObservableEither<E, A> =
+  /*#__PURE__*/
+  R.map(E.right)
 
 /**
+ * @category constructors
+ * @since 0.6.8
+ */
+export const leftObservable: <E = never, A = never>(ma: Observable<E>) => ObservableEither<E, A> =
+  /*#__PURE__*/
+  R.map(E.left)
+
+/**
+ * @category constructors
  * @since 0.6.8
  */
 export const fromIOEither: <E, A>(fa: IOEither<E, A>) => ObservableEither<E, A> = R.fromIO
 
 /**
+ * @category constructors
  * @since 0.6.8
  */
 export function rightIO<E, A>(ma: IO<A>): ObservableEither<E, A> {
@@ -78,6 +83,7 @@ export function rightIO<E, A>(ma: IO<A>): ObservableEither<E, A> {
 }
 
 /**
+ * @category constructors
  * @since 0.6.8
  */
 export function leftIO<E, A>(me: IO<E>): ObservableEither<E, A> {
@@ -85,6 +91,7 @@ export function leftIO<E, A>(me: IO<E>): ObservableEither<E, A> {
 }
 
 /**
+ * @category constructors
  * @since 0.6.8
  */
 export function fromTaskEither<E, A>(t: TE.TaskEither<E, A>): ObservableEither<E, A> {
@@ -92,49 +99,54 @@ export function fromTaskEither<E, A>(t: TE.TaskEither<E, A>): ObservableEither<E
 }
 
 /**
- * @since 0.6.8
- */
-export function toTaskEither<E, A>(o: ObservableEither<E, A>): TE.TaskEither<E, A> {
-  return () => o.toPromise()
-}
-
-/**
+ * @category constructors
  * @since 0.6.8
  */
 export function fromTask<E, A>(ma: Task<A>): ObservableEither<E, A> {
   return rightObservable(R.fromTask(ma))
 }
 
+// -------------------------------------------------------------------------------------
+// destructors
+// -------------------------------------------------------------------------------------
+
 /**
+ * @category destructors
  * @since 0.6.8
  */
-export function fold<E, A, B>(
+export const fold: <E, A, B>(
   onLeft: (e: E) => Observable<B>,
   onRight: (a: A) => Observable<B>
-): (ma: ObservableEither<E, A>) => Observable<B> {
-  return ma => T.fold(ma, onLeft, onRight)
-}
+) => (ma: ObservableEither<E, A>) => Observable<B> =
+  /*#__PURE__*/
+  flow(E.fold, R.chain)
 
 /**
+ * @category destructors
  * @since 0.6.8
  */
-export function getOrElse<E, A>(onLeft: (e: E) => Observable<A>): (ma: ObservableEither<E, A>) => Observable<A> {
-  return ma => T.getOrElse(ma, onLeft)
-}
+export const getOrElse = <E, A>(onLeft: (e: E) => Observable<A>) => (ma: ObservableEither<E, A>): Observable<A> =>
+  pipe(ma, R.chain(E.fold(onLeft, R.of)))
+
+// -------------------------------------------------------------------------------------
+// combinators
+// -------------------------------------------------------------------------------------
 
 /**
+ * @category combinators
  * @since 0.6.8
  */
-export function orElse<E, A, M>(
+export const orElse: <E, A, M>(
   onLeft: (e: E) => ObservableEither<M, A>
-): (ma: ObservableEither<E, A>) => ObservableEither<M, A> {
-  return ma => T.orElse(ma, onLeft)
-}
+) => (ma: ObservableEither<E, A>) => ObservableEither<M, A> = f => R.chain(E.fold(f, right))
 
 /**
+ * @category combinators
  * @since 0.6.8
  */
-export const swap: <E, A>(ma: ObservableEither<E, A>) => ObservableEither<A, E> = T.swap
+export const swap: <E, A>(ma: ObservableEither<E, A>) => ObservableEither<A, E> =
+  /*#__PURE__*/
+  R.map(E.swap)
 
 // -------------------------------------------------------------------------------------
 // type class members
@@ -147,8 +159,8 @@ export const swap: <E, A>(ma: ObservableEither<E, A>) => ObservableEither<A, E> 
  * @category Functor
  * @since 0.6.8
  */
-export const map: <A, B>(f: (a: A) => B) => <E>(fa: ObservableEither<E, A>) => ObservableEither<E, B> = f => fa =>
-  T.map(fa, f)
+export const map: <A, B>(f: (a: A) => B) => <E>(fa: ObservableEither<E, A>) => ObservableEither<E, B> = f =>
+  R.map(E.map(f))
 
 /**
  * Apply a function to an argument under a type constructor.
@@ -156,9 +168,13 @@ export const map: <A, B>(f: (a: A) => B) => <E>(fa: ObservableEither<E, A>) => O
  * @category Apply
  * @since 0.6.0
  */
-export const ap: <E, A>(
+export const ap = <E, A>(
   fa: ObservableEither<E, A>
-) => <B>(fab: ObservableEither<E, (a: A) => B>) => ObservableEither<E, B> = fa => fab => T.ap(fab, fa)
+): (<B>(fab: ObservableEither<E, (a: A) => B>) => ObservableEither<E, B>) =>
+  flow(
+    R.map(gab => (ga: E.Either<E, A>) => E.ap(ga)(gab)),
+    R.ap(fa)
+  )
 
 /**
  * Combine two effectful actions, keeping only the result of the first.
@@ -199,9 +215,9 @@ export const apSecond = <E, B>(
  * @category Alt
  * @since 0.6.8
  */
-export const alt: <E, A>(
+export const alt = <E, A>(
   that: () => ObservableEither<E, A>
-) => (fa: ObservableEither<E, A>) => ObservableEither<E, A> = that => fa => T.alt(fa, that)
+): ((fa: ObservableEither<E, A>) => ObservableEither<E, A>) => R.chain(E.fold(that, right))
 
 /**
  * @category Bifunctor
@@ -210,22 +226,24 @@ export const alt: <E, A>(
 export const bimap: <E, G, A, B>(
   f: (e: E) => G,
   g: (a: A) => B
-) => (fa: ObservableEither<E, A>) => ObservableEither<G, B> = (f, g) => fa => T.bimap(fa, f, g)
+) => (fa: ObservableEither<E, A>) => ObservableEither<G, B> =
+  /*#__PURE__*/
+  flow(E.bimap, R.map)
 
 /**
  * @category Bifunctor
  * @since 0.6.8
  */
-export const mapLeft: <E, G>(f: (e: E) => G) => <A>(fa: ObservableEither<E, A>) => ObservableEither<G, A> = f => fa =>
-  T.mapLeft(fa, f)
+export const mapLeft: <E, G>(f: (e: E) => G) => <A>(fa: ObservableEither<E, A>) => ObservableEither<G, A> = f =>
+  R.map(E.mapLeft(f))
 
 /**
  * @category Monad
  * @since 0.6.8
  */
-export const chain: <E, A, B>(
+export const chain = <E, A, B>(
   f: (a: A) => ObservableEither<E, B>
-) => (ma: ObservableEither<E, A>) => ObservableEither<E, B> = f => ma => T.chain(ma, f)
+): ((ma: ObservableEither<E, A>) => ObservableEither<E, B>) => R.chain(E.fold(left, f))
 
 /**
  * Derivable from `Monad`.
@@ -301,66 +319,6 @@ export const fromPredicate: {
 } = <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E) => (a: A): ObservableEither<E, A> =>
   predicate(a) ? of(a) : throwError(onFalse(a))
 
-// -------------------------------------------------------------------------------------
-// instances
-// -------------------------------------------------------------------------------------
-
-/**
- * @since 0.6.12
- */
-export const Functor: Functor2<URI> = {
-  URI,
-  map: T.map
-}
-
-/**
- * @since 0.6.12
- */
-export const Apply: Apply2<URI> = {
-  URI,
-  map: T.map,
-  ap: T.ap
-}
-
-/**
- * @since 0.6.12
- */
-export const Applicative: Applicative2<URI> = {
-  URI,
-  map: T.map,
-  ap: T.ap,
-  of
-}
-
-/**
- * @since 0.6.12
- */
-export const Monad: Monad2<URI> = {
-  URI,
-  map: T.map,
-  ap: T.ap,
-  of,
-  chain: T.chain
-}
-
-/**
- * @since 0.6.12
- */
-export const Bifunctor: Bifunctor2<URI> = {
-  URI,
-  bimap: T.bimap,
-  mapLeft: T.mapLeft
-}
-
-/**
- * @since 0.6.12
- */
-export const Alt: Alt2<URI> = {
-  URI,
-  map: T.map,
-  alt: T.alt
-}
-
 /**
  * @since 0.6.12
  */
@@ -369,77 +327,177 @@ export const fromIO: MonadTask2<URI>['fromIO'] = rightIO
 /**
  * @since 0.6.12
  */
+export const throwError: MonadThrow2<URI>['throwError'] = left
+
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+
+const map_: Functor2<URI>['map'] = (fa, f) => pipe(fa, map(f))
+const ap_: Apply2<URI>['ap'] = (fab, fa) => pipe(fab, ap(fa))
+const chain_: Monad2<URI>['chain'] = (ma, f) => pipe(ma, chain(f))
+/* istanbul ignore next */
+const bimap_: Bifunctor2<URI>['bimap'] = (fea, f, g) => pipe(fea, bimap(f, g))
+/* istanbul ignore next */
+const mapLeft_: Bifunctor2<URI>['mapLeft'] = (fea, f) => pipe(fea, mapLeft(f))
+/* istanbul ignore next */
+const alt_: Alt2<URI>['alt'] = (fx, fy) => pipe(fx, alt(fy))
+
+/**
+ * @category instances
+ * @since 0.6.8
+ */
+export const URI = 'ObservableEither'
+
+/**
+ * @category instances
+ * @since 0.6.8
+ */
+export type URI = typeof URI
+
+declare module 'fp-ts/lib/HKT' {
+  interface URItoKind2<E, A> {
+    ObservableEither: ObservableEither<E, A>
+  }
+}
+
+/**
+ * @category instances
+ * @since 0.6.12
+ */
+export const Functor: Functor2<URI> = {
+  URI,
+  map: map_
+}
+
+/**
+ * @category instances
+ * @since 0.6.12
+ */
+export const Apply: Apply2<URI> = {
+  URI,
+  map: map_,
+  ap: ap_
+}
+
+/**
+ * @category instances
+ * @since 0.6.12
+ */
+export const Applicative: Applicative2<URI> = {
+  URI,
+  map: map_,
+  ap: ap_,
+  of
+}
+
+/**
+ * @category instances
+ * @since 0.6.12
+ */
+export const Monad: Monad2<URI> = {
+  URI,
+  map: map_,
+  ap: ap_,
+  of,
+  chain: chain_
+}
+
+/**
+ * @category instances
+ * @since 0.6.12
+ */
+export const Bifunctor: Bifunctor2<URI> = {
+  URI,
+  bimap: bimap_,
+  mapLeft: mapLeft_
+}
+
+/**
+ * @category instances
+ * @since 0.6.12
+ */
+export const Alt: Alt2<URI> = {
+  URI,
+  map: map_,
+  alt: alt_
+}
+
+/**
+ * @category instances
+ * @since 0.6.12
+ */
 export const MonadIO: MonadIO2<URI> = {
   URI,
-  map: T.map,
-  ap: T.ap,
+  map: map_,
+  ap: ap_,
   of,
-  chain: T.chain,
+  chain: chain_,
   fromIO
 }
 
 /**
+ * @category instances
  * @since 0.6.12
  */
 export const MonadTask: MonadTask2<URI> = {
   URI,
-  map: T.map,
-  ap: T.ap,
+  map: map_,
+  ap: ap_,
   of,
-  chain: T.chain,
+  chain: chain_,
   fromIO,
   fromTask
 }
 
 /**
+ * @category instances
  * @since 0.6.12
  */
 export const fromObservable: MonadObservable2<URI>['fromObservable'] = rightObservable
 
 /**
+ * @category instances
  * @since 0.6.12
  */
 export const MonadObservable: MonadObservable2<URI> = {
   URI,
-  map: T.map,
-  ap: T.ap,
+  map: map_,
+  ap: ap_,
   of,
-  chain: T.chain,
+  chain: chain_,
   fromIO,
   fromTask,
   fromObservable
 }
 
 /**
- * @since 0.6.12
- */
-export const throwError: MonadThrow2<URI>['throwError'] = left
-
-/**
+ * @category instances
  * @since 0.6.12
  */
 export const MonadThrow: MonadThrow2<URI> = {
   URI,
-  map: T.map,
-  ap: T.ap,
+  map: map_,
+  ap: ap_,
   of,
-  chain: T.chain,
+  chain: chain_,
   throwError
 }
 
 /**
+ * @category instances
  * @deprecated
  * @since 0.6.8
  */
 export const observableEither: Monad2<URI> & Bifunctor2<URI> & Alt2<URI> & MonadObservable2<URI> & MonadThrow2<URI> = {
   URI,
-  map: T.map,
+  map: map_,
   of,
-  ap: T.ap,
-  chain: T.chain,
-  bimap: T.bimap,
-  mapLeft: T.mapLeft,
-  alt: T.alt,
+  ap: ap_,
+  chain: chain_,
+  bimap: bimap_,
+  mapLeft: mapLeft_,
+  alt: alt_,
   fromIO: rightIO,
   fromTask,
   fromObservable: rightObservable,
@@ -447,7 +505,7 @@ export const observableEither: Monad2<URI> & Bifunctor2<URI> & Alt2<URI> & Monad
 }
 
 // -------------------------------------------------------------------------------------
-// do notation
+// utils
 // -------------------------------------------------------------------------------------
 
 /**
@@ -490,3 +548,10 @@ export const bindW: <K extends string, E2, A, B>(
 ) => <E1>(
   fa: ObservableEither<E1, A>
 ) => ObservableEither<E1 | E2, { [P in keyof A | K]: P extends keyof A ? A[P] : B }> = bind as any
+
+/**
+ * @since 0.6.8
+ */
+export function toTaskEither<E, A>(o: ObservableEither<E, A>): TE.TaskEither<E, A> {
+  return () => o.toPromise()
+}
