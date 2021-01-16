@@ -338,8 +338,11 @@ export const throwError: MonadThrow2<URI>['throwError'] = left
 // instances
 // -------------------------------------------------------------------------------------
 
+/* istanbul ignore next */
 const map_: Functor2<URI>['map'] = (fa, f) => pipe(fa, map(f))
+/* istanbul ignore next */
 const ap_: Apply2<URI>['ap'] = (fab, fa) => pipe(fab, ap(fa))
+/* istanbul ignore next */
 const chain_: Monad2<URI>['chain'] = (ma, f) => pipe(ma, chain(f))
 /* istanbul ignore next */
 const bimap_: Bifunctor2<URI>['bimap'] = (fea, f, g) => pipe(fea, bimap(f, g))
