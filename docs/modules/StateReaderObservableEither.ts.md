@@ -246,7 +246,7 @@ Added in v0.6.10
 
 ```ts
 export declare const fromReaderObservableEither: <S, R, E, A>(
-  ma: ROBE.ReaderObservableEither<R, E, A>
+  ma: ROE.ReaderObservableEither<R, E, A>
 ) => StateReaderObservableEither<S, R, E, A>
 ```
 
@@ -330,7 +330,7 @@ Added in v0.6.10
 
 ```ts
 export interface StateReaderObservableEither<S, R, E, A> {
-  (s: S): ROBE.ReaderObservableEither<R, E, [A, S]>
+  (s: S): ROE.ReaderObservableEither<R, E, [A, S]>
 }
 ```
 
@@ -497,7 +497,7 @@ Added in v0.6.12
 ```ts
 export declare const evaluate: <S>(
   s: S
-) => <R, E, A>(fa: StateReaderObservableEither<S, R, E, A>) => ROBE.ReaderObservableEither<R, E, A>
+) => <R, E, A>(ma: StateReaderObservableEither<S, R, E, A>) => ROE.ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10
@@ -509,7 +509,7 @@ Added in v0.6.10
 ```ts
 export declare const execute: <S>(
   s: S
-) => <R, E, A>(fa: StateReaderObservableEither<S, R, E, A>) => ROBE.ReaderObservableEither<R, E, S>
+) => <R, E, A>(ma: StateReaderObservableEither<S, R, E, A>) => ROE.ReaderObservableEither<R, E, S>
 ```
 
 Added in v0.6.10

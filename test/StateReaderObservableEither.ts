@@ -7,6 +7,7 @@ import * as T from 'fp-ts/lib/Task'
 import { bufferTime } from 'rxjs/operators'
 import { observable as OB, stateReaderObservableEither as _ } from '../src'
 import { buffer as _buffer } from './ReaderObservableEither'
+import * as ROE from '../src/ReaderObservableEither'
 
 function buffer<S, R, E, A>(
   srobe: _.StateReaderObservableEither<S, R, E, A>
@@ -214,6 +215,51 @@ describe('stateReaderObservableEither', () => {
         .pipe(bufferTime(10))
         .toPromise(),
       [E.left('a')]
+    )
+  })
+
+  it('fromReaderObservableEither', async () => {
+    assert.deepStrictEqual(
+      await _.fromReaderObservableEither(ROE.right(1))({})({})
+        .pipe(bufferTime(10))
+        .toPromise(),
+      [E.right([1, {}])]
+    )
+  })
+
+  it('get', async () => {
+    assert.deepStrictEqual(
+      await _.get()(1)(undefined)
+        .pipe(bufferTime(10))
+        .toPromise(),
+      [E.right([1, 1])]
+    )
+  })
+
+  it('gets', async () => {
+    assert.deepStrictEqual(
+      await _.gets((n: number) => n * 2)(1)(undefined)
+        .pipe(bufferTime(10))
+        .toPromise(),
+      [E.right([2, 1])]
+    )
+  })
+
+  it('modify', async () => {
+    assert.deepStrictEqual(
+      await _.modify((n: number) => n * 2)(1)(undefined)
+        .pipe(bufferTime(10))
+        .toPromise(),
+      [E.right([undefined, 2])]
+    )
+  })
+
+  it('put', async () => {
+    assert.deepStrictEqual(
+      await _.put(2)(1)(undefined)
+        .pipe(bufferTime(10))
+        .toPromise(),
+      [E.right([undefined, 2])]
     )
   })
 })
