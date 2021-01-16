@@ -283,7 +283,7 @@ Added in v0.6.0
 **Signature**
 
 ```ts
-export declare function fromIO<A>(io: IO<A>): Observable<A>
+export declare const fromIO: <A>(fa: IO<A>) => Observable<A>
 ```
 
 Added in v0.6.5
@@ -293,7 +293,7 @@ Added in v0.6.5
 **Signature**
 
 ```ts
-export declare function fromOption<A>(o: O.Option<A>): Observable<A>
+export declare const fromOption: <A>(o: O.Option<A>) => Observable<A>
 ```
 
 Added in v0.6.5
@@ -303,7 +303,7 @@ Added in v0.6.5
 **Signature**
 
 ```ts
-export declare function fromTask<A>(t: Task<A>): Observable<A>
+export declare const fromTask: <A>(fa: Task<A>) => Observable<A>
 ```
 
 Added in v0.6.5
@@ -445,7 +445,7 @@ Added in v0.6.0
 **Signature**
 
 ```ts
-export declare function getMonoid<A = never>(): Monoid<Observable<A>>
+export declare const getMonoid: <A = never>() => Monoid<Observable<A>>
 ```
 
 Added in v0.6.0
@@ -480,10 +480,10 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-export declare function bind<K extends string, A, B>(
+export declare const bind: <K extends string, A, B>(
   name: Exclude<K, keyof A>,
   f: (a: A) => Observable<B>
-): (fa: Observable<A>) => Observable<{ [P in keyof A | K]: P extends keyof A ? A[P] : B }>
+) => (fa: Observable<A>) => Observable<{ [P in K | keyof A]: P extends keyof A ? A[P] : B }>
 ```
 
 Added in v0.6.11
@@ -493,7 +493,7 @@ Added in v0.6.11
 **Signature**
 
 ```ts
-export declare function bindTo<K extends string, A>(name: K): (fa: Observable<A>) => Observable<{ [P in K]: A }>
+export declare const bindTo: <K extends string, A>(name: K) => (fa: Observable<A>) => Observable<{ [P in K]: A }>
 ```
 
 Added in v0.6.11
@@ -503,7 +503,7 @@ Added in v0.6.11
 **Signature**
 
 ```ts
-export declare function toTask<A>(o: Observable<A>): Task<A>
+export declare const toTask: <A>(o: Observable<A>) => Task<A>
 ```
 
 Added in v0.6.5

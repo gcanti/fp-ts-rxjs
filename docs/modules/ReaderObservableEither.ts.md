@@ -34,8 +34,11 @@ Added in v0.6.10
 - [constructors](#constructors)
   - [ask](#ask)
   - [asks](#asks)
+  - [fromIO](#fromio)
+  - [fromObservable](#fromobservable)
   - [fromObservableEither](#fromobservableeither)
   - [fromReader](#fromreader)
+  - [fromTask](#fromtask)
 - [instances](#instances)
   - [Applicative](#applicative-1)
   - [Apply](#apply-1)
@@ -58,11 +61,8 @@ Added in v0.6.10
   - [bindW](#bindw)
   - [filterOrElse](#filterorelse)
   - [fromEither](#fromeither)
-  - [fromIO](#fromio)
-  - [fromObservable](#fromobservable)
   - [fromOption](#fromoption)
   - [fromPredicate](#frompredicate)
-  - [fromTask](#fromtask)
 
 ---
 
@@ -73,7 +73,7 @@ Added in v0.6.10
 **Signature**
 
 ```ts
-export declare function of<R, E, A>(a: A): ReaderObservableEither<R, E, A>
+export declare const of: <R, E, A>(a: A) => ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10
@@ -159,7 +159,7 @@ Added in v0.6.10
 **Signature**
 
 ```ts
-export declare function throwError<R, E, A = never>(e: E): ReaderObservableEither<R, E, A>
+export declare const throwError: <R, E, A>(e: E) => ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10
@@ -234,9 +234,9 @@ Added in v0.6.10
 **Signature**
 
 ```ts
-export declare function local<R, Q>(
-  f: (d: Q) => R
-): <E, A>(ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<Q, E, A>
+export declare const local: <R2, R1>(
+  f: (d: R2) => R1
+) => <E, A>(ma: ReaderObservableEither<R1, E, A>) => ReaderObservableEither<R2, E, A>
 ```
 
 Added in v0.6.10
@@ -248,7 +248,7 @@ Added in v0.6.10
 **Signature**
 
 ```ts
-export declare function ask<R, E>(): ReaderObservableEither<R, E, R>
+export declare const ask: <R, E>() => ReaderObservableEither<R, E, R>
 ```
 
 Added in v0.6.10
@@ -258,7 +258,27 @@ Added in v0.6.10
 **Signature**
 
 ```ts
-export declare function asks<R, E, A>(f: (r: R) => A): ReaderObservableEither<R, E, A>
+export declare const asks: <R, E, A>(f: (r: R) => A) => ReaderObservableEither<R, E, A>
+```
+
+Added in v0.6.10
+
+## fromIO
+
+**Signature**
+
+```ts
+export declare const fromIO: <R, E, A>(fa: IO<A>) => ReaderObservableEither<R, E, A>
+```
+
+Added in v0.6.10
+
+## fromObservable
+
+**Signature**
+
+```ts
+export declare const fromObservable: <R, E, A>(fa: Observable<A>) => ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10
@@ -268,7 +288,7 @@ Added in v0.6.10
 **Signature**
 
 ```ts
-export declare function fromObservableEither<R, E, A>(ma: OBE.ObservableEither<E, A>): ReaderObservableEither<R, E, A>
+export declare const fromObservableEither: <R, E, A>(ma: OBE.ObservableEither<E, A>) => ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10
@@ -278,7 +298,17 @@ Added in v0.6.10
 **Signature**
 
 ```ts
-export declare function fromReader<R, E, A>(ma: R.Reader<R, A>): ReaderObservableEither<R, E, A>
+export declare const fromReader: <R, E, A>(ma: R.Reader<R, A>) => ReaderObservableEither<R, E, A>
+```
+
+Added in v0.6.10
+
+## fromTask
+
+**Signature**
+
+```ts
+export declare const fromTask: <R, E, A>(fa: Task<A>) => ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10
@@ -438,12 +468,12 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-export declare function bind<K extends string, R, E, A, B>(
+export declare const bind: <K extends string, R, E, A, B>(
   name: Exclude<K, keyof A>,
   f: (a: A) => ReaderObservableEither<R, E, B>
-): (
+) => (
   fa: ReaderObservableEither<R, E, A>
-) => ReaderObservableEither<R, E, { [P in keyof A | K]: P extends keyof A ? A[P] : B }>
+) => ReaderObservableEither<R, E, { [P in K | keyof A]: P extends keyof A ? A[P] : B }>
 ```
 
 Added in v0.6.11
@@ -453,9 +483,9 @@ Added in v0.6.11
 **Signature**
 
 ```ts
-export declare function bindTo<K extends string, R, E, A>(
+export declare const bindTo: <K extends string, R, E, A>(
   name: K
-): (fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, { [P in K]: A }>
+) => (fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, { [P in K]: A }>
 ```
 
 Added in v0.6.11
@@ -506,26 +536,6 @@ export declare const fromEither: <R, E, A>(ma: Either<E, A>) => ReaderObservable
 
 Added in v0.6.10
 
-## fromIO
-
-**Signature**
-
-```ts
-export declare function fromIO<R, E, A>(a: IO.IO<A>): ReaderObservableEither<R, E, A>
-```
-
-Added in v0.6.10
-
-## fromObservable
-
-**Signature**
-
-```ts
-export declare function fromObservable<R, E, A>(a: Observable<A>): ReaderObservableEither<R, E, A>
-```
-
-Added in v0.6.10
-
 ## fromOption
 
 Derivable from `MonadThrow`.
@@ -549,16 +559,6 @@ export declare const fromPredicate: {
   <E, A, B extends A>(refinement: Refinement<A, B>, onFalse: (a: A) => E): <R>(a: A) => ReaderObservableEither<R, E, B>
   <E, A>(predicate: Predicate<A>, onFalse: (a: A) => E): <R>(a: A) => ReaderObservableEither<R, E, A>
 }
-```
-
-Added in v0.6.10
-
-## fromTask
-
-**Signature**
-
-```ts
-export declare function fromTask<R, E, A>(a: T.Task<A>): ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10
