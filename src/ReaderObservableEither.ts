@@ -284,9 +284,11 @@ export const fromPredicate: {
 // instances
 // -------------------------------------------------------------------------------------
 
+/* istanbul ignore next */
 const map_: Functor3<URI>['map'] = (fa, f) => pipe(fa, map(f))
 /* istanbul ignore next */
 const ap_: Apply3<URI>['ap'] = (fab, fa) => pipe(fab, ap(fa))
+/* istanbul ignore next */
 const chain_: Monad3<URI>['chain'] = (ma, f) => pipe(ma, chain(f))
 /* istanbul ignore next */
 const bimap_: Bifunctor3<URI>['bimap'] = (fea, f, g) => pipe(fea, bimap(f, g))

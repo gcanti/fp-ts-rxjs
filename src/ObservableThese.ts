@@ -18,8 +18,6 @@ import * as TH from 'fp-ts/lib/These'
 import { Observable } from 'rxjs'
 import * as R from './Observable'
 
-// const T = getTheseM(R.Monad)
-
 // -------------------------------------------------------------------------------------
 // model
 // -------------------------------------------------------------------------------------

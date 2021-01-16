@@ -13,12 +13,9 @@ import { MonadTask4 } from 'fp-ts/lib/MonadTask'
 import { MonadThrow4 } from 'fp-ts/lib/MonadThrow'
 import { Option } from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/pipeable'
-import { getStateM } from 'fp-ts/lib/StateT'
 import { MonadObservable4 } from './MonadObservable'
 import * as OB from './Observable'
-import * as ROBE from './ReaderObservableEither'
-
-const M = getStateM(ROBE.Monad)
+import * as ROE from './ReaderObservableEither'
 
 // -------------------------------------------------------------------------------------
 // model
@@ -29,7 +26,7 @@ const M = getStateM(ROBE.Monad)
  * @since 0.6.10
  */
 export interface StateReaderObservableEither<S, R, E, A> {
-  (s: S): ROBE.ReaderObservableEither<R, E, [A, S]>
+  (s: S): ROE.ReaderObservableEither<R, E, [A, S]>
 }
 
 // -------------------------------------------------------------------------------------
@@ -41,45 +38,52 @@ export interface StateReaderObservableEither<S, R, E, A> {
  * @since 0.6.10
  */
 export const fromReaderObservableEither: <S, R, E, A>(
-  ma: ROBE.ReaderObservableEither<R, E, A>
-) => StateReaderObservableEither<S, R, E, A> = M.fromM
+  ma: ROE.ReaderObservableEither<R, E, A>
+) => StateReaderObservableEither<S, R, E, A> = fa => s =>
+  pipe(
+    fa,
+    ROE.map(a => [a, s])
+  )
 
 /**
  * @category constructors
  * @since 0.6.10
  */
-export const get: <R, E, S>() => StateReaderObservableEither<S, R, E, S> = M.get
+export const get: <R, E, S>() => StateReaderObservableEither<S, R, E, S> = () => s => ROE.right([s, s])
 
 /**
  * @category constructors
  * @since 0.6.10
  */
-export const gets: <S, R, E, A>(f: (s: S) => A) => StateReaderObservableEither<S, R, E, A> = M.gets
+export const gets: <S, R, E, A>(f: (s: S) => A) => StateReaderObservableEither<S, R, E, A> = f => s =>
+  ROE.right([f(s), s])
 
 /**
  * @category constructors
  * @since 0.6.10
  */
-export const modify: <R, E, S>(f: (s: S) => S) => StateReaderObservableEither<S, R, E, void> = M.modify
+export const modify: <R, E, S>(f: (s: S) => S) => StateReaderObservableEither<S, R, E, void> = f => s =>
+  ROE.right([undefined, f(s)])
 
 /**
  * @category constructors
  * @since 0.6.10
  */
-export const put: <R, E, S>(s: S) => StateReaderObservableEither<S, R, E, void> = M.put
+export const put: <R, E, S>(s: S) => StateReaderObservableEither<S, R, E, void> = s => () => ROE.right([undefined, s])
 
 /**
  * @category constructors
  * @since 0.6.10
  */
-export const right: <S, R, E = never, A = never>(a: A) => StateReaderObservableEither<S, R, E, A> = M.of
+export const right: <S, R, E = never, A = never>(a: A) => StateReaderObservableEither<S, R, E, A> = a => s =>
+  ROE.right([a, s])
 
 /**
  * @category constructors
  * @since 0.6.10
  */
 export const left: <S, R, E = never, A = never>(e: E) => StateReaderObservableEither<S, R, E, A> = e => () =>
-  ROBE.throwError(e)
+  ROE.left(e)
 
 /**
  * @category constructors
@@ -107,6 +111,12 @@ export const fromObservable: MonadObservable4<URI>['fromObservable'] = ma => s =
 // type class members
 // -------------------------------------------------------------------------------------
 
+const map_: Functor4<URI>['map'] = (fa, f) => pipe(fa, map(f))
+/* istanbul ignore next */
+const ap_: Apply4<URI>['ap'] = (fab, fa) => pipe(fab, ap(fa))
+/* istanbul ignore next */
+const chain_: Monad4<URI>['chain'] = (ma, f) => pipe(ma, chain(f))
+
 /**
  * @category MonadThrow
  * @since 0.6.10
@@ -122,8 +132,13 @@ export const throwError: MonadThrow4<URI>['throwError'] = left
  */
 export const map: <A, B>(
   f: (a: A) => B
-) => <S, R, E>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, B> = f => fa =>
-  M.map(fa, f)
+) => <S, R, E>(
+  fa: StateReaderObservableEither<S, R, E, A>
+) => StateReaderObservableEither<S, R, E, B> = f => fa => s1 =>
+  pipe(
+    fa(s1),
+    ROE.map(([a, s2]) => [f(a), s2])
+  )
 
 /**
  * Apply a function to an argument under a type constructor.
@@ -135,7 +150,16 @@ export const ap: <S, R, E, A>(
   fa: StateReaderObservableEither<S, R, E, A>
 ) => <B>(
   fab: StateReaderObservableEither<S, R, E, (a: A) => B>
-) => StateReaderObservableEither<S, R, E, B> = fa => fab => M.ap(fab, fa)
+) => StateReaderObservableEither<S, R, E, B> = fa => fab => s1 =>
+  pipe(
+    fab(s1),
+    ROE.chain(([f, s2]) =>
+      pipe(
+        fa(s2),
+        ROE.map(([a, s3]) => [f(a), s3])
+      )
+    )
+  )
 
 /**
  * Combine two effectful actions, keeping only the result of the first.
@@ -177,7 +201,7 @@ export const bimap: <E, G, A, B>(
   f: (e: E) => G,
   g: (a: A) => B
 ) => <S, R>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, G, B> = (f, g) => fea =>
-  pipe(M.map(fea, g), mapLeft(f))
+  pipe(map_(fea, g), mapLeft(f))
 
 /**
  * @category Bifunctor
@@ -186,7 +210,7 @@ export const bimap: <E, G, A, B>(
 export const mapLeft: <E, G>(
   f: (e: E) => G
 ) => <S, R, A>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, G, A> = f => fea =>
-  flow(fea, ROBE.mapLeft(f))
+  flow(fea, ROE.mapLeft(f))
 
 /**
  * @category Monad
@@ -194,8 +218,11 @@ export const mapLeft: <E, G>(
  */
 export const chain: <S, R, E, A, B>(
   f: (a: A) => StateReaderObservableEither<S, R, E, B>
-) => (ma: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, B> = f => ma =>
-  M.chain(ma, f)
+) => (ma: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, B> = f => ma => s1 =>
+  pipe(
+    ma(s1),
+    ROE.chain(([a, s2]) => f(a)(s2))
+  )
 
 /**
  * Derivable from `Monad`.
@@ -278,7 +305,7 @@ export const fromPredicate: {
 /**
  * @since 0.6.12
  */
-export const of: Applicative4<URI>['of'] = M.of
+export const of: Applicative4<URI>['of'] = right
 
 // -------------------------------------------------------------------------------------
 // instances
@@ -310,7 +337,7 @@ declare module 'fp-ts/lib/HKT' {
  */
 export const Functor: Functor4<URI> = {
   URI,
-  map: M.map
+  map: map_
 }
 
 /**
@@ -318,8 +345,8 @@ export const Functor: Functor4<URI> = {
  */
 export const Apply: Apply4<URI> = {
   URI,
-  ap: M.ap,
-  map: M.map
+  map: map_,
+  ap: ap_
 }
 
 /**
@@ -327,8 +354,8 @@ export const Apply: Apply4<URI> = {
  */
 export const Applicative: Applicative4<URI> = {
   URI,
-  ap: M.ap,
-  map: M.map,
+  map: map_,
+  ap: ap_,
   of
 }
 
@@ -337,10 +364,10 @@ export const Applicative: Applicative4<URI> = {
  */
 export const Monad: Monad4<URI> = {
   URI,
-  ap: M.ap,
-  map: M.map,
+  map: map_,
+  ap: ap_,
   of,
-  chain: M.chain
+  chain: chain_
 }
 
 /**
@@ -357,10 +384,10 @@ export const Bifunctor: Bifunctor4<URI> = {
  */
 export const MonadIO: MonadIO4<URI> = {
   URI,
-  map: M.map,
+  map: map_,
   of,
-  ap: M.ap,
-  chain: M.chain,
+  ap: ap_,
+  chain: chain_,
   fromIO
 }
 
@@ -369,10 +396,10 @@ export const MonadIO: MonadIO4<URI> = {
  */
 export const MonadTask: MonadTask4<URI> = {
   URI,
-  map: M.map,
+  map: map_,
   of,
-  ap: M.ap,
-  chain: M.chain,
+  ap: ap_,
+  chain: chain_,
   fromIO,
   fromTask
 }
@@ -382,10 +409,10 @@ export const MonadTask: MonadTask4<URI> = {
  */
 export const MonadObservable: MonadObservable4<URI> = {
   URI,
-  map: M.map,
+  map: map_,
   of,
-  ap: M.ap,
-  chain: M.chain,
+  ap: ap_,
+  chain: chain_,
   fromIO,
   fromObservable,
   fromTask
@@ -396,10 +423,10 @@ export const MonadObservable: MonadObservable4<URI> = {
  */
 export const MonadThrow: MonadThrow4<URI> = {
   URI,
-  map: M.map,
+  map: map_,
   of,
-  ap: M.ap,
-  chain: M.chain,
+  ap: ap_,
+  chain: chain_,
   throwError
 }
 
@@ -409,9 +436,9 @@ export const MonadThrow: MonadThrow4<URI> = {
  */
 export const stateReaderObservableEither: MonadObservable4<URI> & Bifunctor4<URI> & MonadThrow4<URI> = {
   URI,
-  ap: M.ap,
-  chain: M.chain,
-  map: M.map,
+  ap: ap_,
+  chain: chain_,
+  map: map_,
   of,
   mapLeft: mapLeft_,
   bimap: bimap_,
@@ -471,12 +498,20 @@ export const bindW: <K extends string, S, R2, E2, A, B>(
  * @since 0.6.10
  */
 export const evaluate = <S>(s: S) => <R, E, A>(
-  fa: StateReaderObservableEither<S, R, E, A>
-): ROBE.ReaderObservableEither<R, E, A> => M.evalState(fa, s)
+  ma: StateReaderObservableEither<S, R, E, A>
+): ROE.ReaderObservableEither<R, E, A> =>
+  pipe(
+    ma(s),
+    ROE.map(([a]) => a)
+  )
 
 /**
  * @since 0.6.10
  */
 export const execute = <S>(s: S) => <R, E, A>(
-  fa: StateReaderObservableEither<S, R, E, A>
-): ROBE.ReaderObservableEither<R, E, S> => M.execState(fa, s)
+  ma: StateReaderObservableEither<S, R, E, A>
+): ROE.ReaderObservableEither<R, E, S> =>
+  pipe(
+    ma(s),
+    ROE.map(([_, s]) => s)
+  )
