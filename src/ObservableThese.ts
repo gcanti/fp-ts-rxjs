@@ -15,11 +15,10 @@ import { pipe } from 'fp-ts/lib/pipeable'
 import { Semigroup } from 'fp-ts/lib/Semigroup'
 import * as TT from 'fp-ts/lib/TaskThese'
 import * as TH from 'fp-ts/lib/These'
-import { getTheseM } from 'fp-ts/lib/TheseT'
 import { Observable } from 'rxjs'
 import * as R from './Observable'
 
-const T = getTheseM(R.Monad)
+// const T = getTheseM(R.Monad)
 
 // -------------------------------------------------------------------------------------
 // model
@@ -39,31 +38,41 @@ export interface ObservableThese<E, A> extends Observable<TH.These<E, A>> {}
  * @category constructors
  * @since 0.6.12
  */
-export const left: <E = never, A = never>(e: E) => ObservableThese<E, A> = T.left
+export const left: <E = never, A = never>(e: E) => ObservableThese<E, A> =
+  /*#__PURE__*/
+  flow(TH.left, R.of)
 
 /**
  * @category constructors
  * @since 0.6.12
  */
-export const both: <E = never, A = never>(e: E, a: A) => ObservableThese<E, A> = T.both
+export const both: <E = never, A = never>(e: E, a: A) => ObservableThese<E, A> =
+  /*#__PURE__*/
+  flow(TH.both, R.of)
 
 /**
  * @category constructors
  * @since 0.6.12
  */
-export const right: <E = never, A = never>(a: A) => ObservableThese<E, A> = T.right
+export const right: <E = never, A = never>(a: A) => ObservableThese<E, A> =
+  /*#__PURE__*/
+  flow(TH.right, R.of)
 
 /**
  * @category constructors
  * @since 0.6.12
  */
-export const rightObservable: <E = never, A = never>(ma: Observable<A>) => ObservableThese<E, A> = T.rightM
+export const rightObservable: <E = never, A = never>(ma: Observable<A>) => ObservableThese<E, A> =
+  /*#__PURE__*/
+  R.map(TH.right)
 
 /**
  * @category constructors
  * @since 0.6.12
  */
-export const leftObservable: <E = never, A = never>(ma: Observable<E>) => ObservableThese<E, A> = T.leftM
+export const leftObservable: <E = never, A = never>(ma: Observable<E>) => ObservableThese<E, A> =
+  /*#__PURE__*/
+  R.map(TH.left)
 
 /**
  * @category constructors
@@ -115,11 +124,13 @@ export const fromTask: MonadTask2<URI>['fromTask'] =
  * @category destructors
  * @since 0.6.12
  */
-export const fold = <E, A, B>(
+export const fold: <E, A, B>(
   onLeft: (e: E) => Observable<B>,
   onRight: (a: A) => Observable<B>,
   onBoth: (e: E, a: A) => Observable<B>
-) => (ma: ObservableThese<E, A>): Observable<B> => T.fold(ma, onLeft, onRight, onBoth)
+) => (ma: ObservableThese<E, A>) => Observable<B> =
+  /*#__PURE__*/
+  flow(TH.fold, R.chain)
 
 // -------------------------------------------------------------------------------------
 // combinators
@@ -129,7 +140,9 @@ export const fold = <E, A, B>(
  * @category combinators
  * @since 0.6.12
  */
-export const swap: <E, A>(ma: ObservableThese<E, A>) => ObservableThese<A, E> = T.swap
+export const swap: <E, A>(ma: ObservableThese<E, A>) => ObservableThese<A, E> =
+  /*#__PURE__*/
+  R.map(TH.swap)
 
 // -------------------------------------------------------------------------------------
 // type class members
@@ -142,8 +155,8 @@ export const swap: <E, A>(ma: ObservableThese<E, A>) => ObservableThese<A, E> = 
  * @category Functor
  * @since 0.6.12
  */
-export const map: <A, B>(f: (a: A) => B) => <E>(fa: ObservableThese<E, A>) => ObservableThese<E, B> = f => fa =>
-  T.map(fa, f)
+export const map: <A, B>(f: (a: A) => B) => <E>(fa: ObservableThese<E, A>) => ObservableThese<E, B> = f =>
+  R.map(TH.map(f))
 
 /**
  * @category Bifunctor
@@ -152,14 +165,14 @@ export const map: <A, B>(f: (a: A) => B) => <E>(fa: ObservableThese<E, A>) => Ob
 export const bimap: <E, G, A, B>(
   f: (e: E) => G,
   g: (a: A) => B
-) => (fa: ObservableThese<E, A>) => ObservableThese<G, B> = (f, g) => fa => T.bimap(fa, f, g)
+) => (fa: ObservableThese<E, A>) => ObservableThese<G, B> = (f, g) => R.map(TH.bimap(f, g))
 
 /**
  * @category Bifunctor
  * @since 0.6.12
  */
-export const mapLeft: <E, G>(f: (e: E) => G) => <A>(fa: ObservableThese<E, A>) => ObservableThese<G, A> = f => fa =>
-  T.mapLeft(fa, f)
+export const mapLeft: <E, G>(f: (e: E) => G) => <A>(fa: ObservableThese<E, A>) => ObservableThese<G, A> = f =>
+  R.map(TH.mapLeft(f))
 
 /**
  * @category Applicative
@@ -170,6 +183,13 @@ export const of: Applicative2<URI>['of'] = right
 // -------------------------------------------------------------------------------------
 // instances
 // -------------------------------------------------------------------------------------
+
+/* istanbul ignore next */
+const map_: Functor2<URI>['map'] = (fa, f) => pipe(fa, map(f))
+/* istanbul ignore next */
+const bimap_: Bifunctor2<URI>['bimap'] = (fea, f, g) => pipe(fea, bimap(f, g))
+/* istanbul ignore next */
+const mapLeft_: Bifunctor2<URI>['mapLeft'] = (fea, f) => pipe(fea, mapLeft(f))
 
 /**
  * @since 0.6.12
@@ -203,7 +223,7 @@ export const getApplicative = <E>(A: Apply1<R.URI>, S: Semigroup<E>): Applicativ
   return {
     URI,
     _E: undefined as any,
-    map: T.map,
+    map: map_,
     ap: (fab, fa) => pipe(fab, ap(fa)),
     of
   }
@@ -218,7 +238,7 @@ export const getMonad = <E>(S: Semigroup<E>): Monad2C<URI, E> => {
   return {
     URI,
     _E: undefined as any,
-    map: T.map,
+    map: map_,
     ap: A.ap,
     of,
     chain: (ma, f) =>
@@ -247,7 +267,7 @@ export const getMonad = <E>(S: Semigroup<E>): Monad2C<URI, E> => {
  */
 export const Functor: Functor2<URI> = {
   URI,
-  map: T.map
+  map: map_
 }
 
 /**
@@ -256,8 +276,8 @@ export const Functor: Functor2<URI> = {
  */
 export const Bifunctor: Bifunctor2<URI> = {
   URI,
-  bimap: T.bimap,
-  mapLeft: T.mapLeft
+  bimap: bimap_,
+  mapLeft: mapLeft_
 }
 
 // -------------------------------------------------------------------------------------
