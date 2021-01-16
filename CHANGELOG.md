@@ -90,6 +90,8 @@ high state of flux, you're at risk of it changing without notice.
     - add `MonadTask` instance (@gcanti)
     - add `MonadObservable` instance (@gcanti)
     - add `MonadThrow` instance (@gcanti)
+    - add `right` (@gcanti)
+    - add `left` (@gcanti)
   - `StateReaderObservableEither`
     - add `of` (@gcanti)
     - add `bindW` (@gcanti)

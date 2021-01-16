@@ -39,6 +39,8 @@ Added in v0.6.10
   - [fromObservableEither](#fromobservableeither)
   - [fromReader](#fromreader)
   - [fromTask](#fromtask)
+  - [left](#left)
+  - [right](#right)
 - [instances](#instances)
   - [Applicative](#applicative-1)
   - [Apply](#apply-1)
@@ -288,7 +290,7 @@ Added in v0.6.10
 **Signature**
 
 ```ts
-export declare const fromObservableEither: <R, E, A>(ma: OBE.ObservableEither<E, A>) => ReaderObservableEither<R, E, A>
+export declare const fromObservableEither: <R, E, A>(ma: OE.ObservableEither<E, A>) => ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10
@@ -312,6 +314,26 @@ export declare const fromTask: <R, E, A>(fa: Task<A>) => ReaderObservableEither<
 ```
 
 Added in v0.6.10
+
+## left
+
+**Signature**
+
+```ts
+export declare const left: <R, E = never, A = never>(e: E) => ReaderObservableEither<R, E, A>
+```
+
+Added in v2.0.0
+
+## right
+
+**Signature**
+
+```ts
+export declare const right: <R, E = never, A = never>(a: A) => ReaderObservableEither<R, E, A>
+```
+
+Added in v2.0.0
 
 # instances
 
@@ -445,7 +467,7 @@ Added in v0.6.10
 
 ```ts
 export interface ReaderObservableEither<R, E, A> {
-  (r: R): OBE.ObservableEither<E, A>
+  (r: R): OE.ObservableEither<E, A>
 }
 ```
 

@@ -14,11 +14,8 @@ import { MonadThrow3 } from 'fp-ts/lib/MonadThrow'
 import { Option } from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/pipeable'
 import * as R from 'fp-ts/lib/Reader'
-import { getReaderM } from 'fp-ts/lib/ReaderT'
 import { MonadObservable3 } from './MonadObservable'
-import * as OBE from './ObservableEither'
-
-const M = getReaderM(OBE.Monad)
+import * as OE from './ObservableEither'
 
 // -------------------------------------------------------------------------------------
 // model
@@ -29,7 +26,7 @@ const M = getReaderM(OBE.Monad)
  * @since 0.6.10
  */
 export interface ReaderObservableEither<R, E, A> {
-  (r: R): OBE.ObservableEither<E, A>
+  (r: R): OE.ObservableEither<E, A>
 }
 
 // -------------------------------------------------------------------------------------
@@ -40,44 +37,59 @@ export interface ReaderObservableEither<R, E, A> {
  * @category constructors
  * @since 0.6.10
  */
-export const ask: <R, E>() => ReaderObservableEither<R, E, R> = M.ask
+export const fromObservableEither: <R, E, A>(ma: OE.ObservableEither<E, A>) => ReaderObservableEither<R, E, A> = R.of
+
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+export const right: <R, E = never, A = never>(a: A) => ReaderObservableEither<R, E, A> =
+  /*#__PURE__*/
+  flow(OE.right, fromObservableEither)
+
+/**
+ * @category constructors
+ * @since 2.0.0
+ */
+export const left: <R, E = never, A = never>(e: E) => ReaderObservableEither<R, E, A> =
+  /*#__PURE__*/
+  flow(OE.left, fromObservableEither)
 
 /**
  * @category constructors
  * @since 0.6.10
  */
-export const asks: <R, E, A>(f: (r: R) => A) => ReaderObservableEither<R, E, A> = M.asks
+export const ask: <R, E>() => ReaderObservableEither<R, E, R> = () => OE.right
 
 /**
  * @category constructors
  * @since 0.6.10
  */
-export const fromObservableEither: <R, E, A>(ma: OBE.ObservableEither<E, A>) => ReaderObservableEither<R, E, A> =
-  M.fromM
+export const asks: <R, E, A>(f: (r: R) => A) => ReaderObservableEither<R, E, A> = f => flow(OE.right, OE.map(f))
 
 /**
  * @category constructors
  * @since 0.6.10
  */
-export const fromReader: <R, E, A>(ma: R.Reader<R, A>) => ReaderObservableEither<R, E, A> = M.fromReader
+export const fromReader: <R, E, A>(ma: R.Reader<R, A>) => ReaderObservableEither<R, E, A> = ma => flow(ma, OE.right)
 
 /**
  * @category constructors
  * @since 0.6.10
  */
-export const fromIO: MonadIO3<URI>['fromIO'] = ma => () => OBE.rightIO(ma)
+export const fromIO: MonadIO3<URI>['fromIO'] = ma => () => OE.rightIO(ma)
 
 /**
  * @category constructors
  * @since 0.6.10
  */
-export const fromTask: MonadTask3<URI>['fromTask'] = ma => () => OBE.fromTask(ma)
+export const fromTask: MonadTask3<URI>['fromTask'] = ma => () => OE.fromTask(ma)
 
 /**
  * @category constructors
  * @since 0.6.10
  */
-export const fromObservable: MonadObservable3<URI>['fromObservable'] = ma => () => OBE.rightObservable(ma)
+export const fromObservable: MonadObservable3<URI>['fromObservable'] = ma => () => OE.rightObservable(ma)
 
 // -------------------------------------------------------------------------------------
 // combinators
@@ -99,7 +111,7 @@ export const local: <R2, R1>(
  * @category MonadThrow
  * @since 0.6.10
  */
-export const throwError: MonadThrow3<URI>['throwError'] = e => () => OBE.left(e)
+export const throwError: MonadThrow3<URI>['throwError'] = e => () => OE.left(e)
 
 /**
  * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
@@ -110,7 +122,7 @@ export const throwError: MonadThrow3<URI>['throwError'] = e => () => OBE.left(e)
  */
 export const map: <A, B>(
   f: (a: A) => B
-) => <R, E>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, B> = f => fa => M.map(fa, f)
+) => <R, E>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, B> = f => fa => flow(fa, OE.map(f))
 
 /**
  * Apply a function to an argument under a type constructor.
@@ -120,7 +132,8 @@ export const map: <A, B>(
  */
 export const ap: <R, E, A>(
   fa: ReaderObservableEither<R, E, A>
-) => <B>(fab: ReaderObservableEither<R, E, (a: A) => B>) => ReaderObservableEither<R, E, B> = fa => fab => M.ap(fab, fa)
+) => <B>(fab: ReaderObservableEither<R, E, (a: A) => B>) => ReaderObservableEither<R, E, B> = fa => fab => r =>
+  pipe(fab(r), OE.ap(fa(r)))
 
 /**
  * Combine two effectful actions, keeping only the result of the first.
@@ -158,7 +171,7 @@ export const apSecond = <R, E, B>(
  * @category Applicative
  * @since 0.6.10
  */
-export const of: Applicative3<URI>['of'] = M.of
+export const of: Applicative3<URI>['of'] = right
 
 /**
  * @category Bifunctor
@@ -168,7 +181,7 @@ export const bimap: <E, G, A, B>(
   f: (e: E) => G,
   g: (a: A) => B
 ) => <R>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, G, B> = (f, g) => fea => r =>
-  OBE.bimap(f, g)(fea(r))
+  OE.bimap(f, g)(fea(r))
 
 /**
  * @category Bifunctor
@@ -177,7 +190,7 @@ export const bimap: <E, G, A, B>(
 export const mapLeft: <E, G>(
   f: (e: E) => G
 ) => <R, A>(fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, G, A> = f => fea => r =>
-  OBE.mapLeft(f)(fea(r))
+  OE.mapLeft(f)(fea(r))
 
 /**
  * @category Monad
@@ -185,7 +198,11 @@ export const mapLeft: <E, G>(
  */
 export const chain: <R, E, A, B>(
   f: (a: A) => ReaderObservableEither<R, E, B>
-) => (ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, B> = f => ma => M.chain(ma, f)
+) => (ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, B> = f => fa => r =>
+  pipe(
+    fa(r),
+    OE.chain(a => f(a)(r))
+  )
 
 /**
  * Derivable from `Monad`.
@@ -267,6 +284,10 @@ export const fromPredicate: {
 // instances
 // -------------------------------------------------------------------------------------
 
+const map_: Functor3<URI>['map'] = (fa, f) => pipe(fa, map(f))
+/* istanbul ignore next */
+const ap_: Apply3<URI>['ap'] = (fab, fa) => pipe(fab, ap(fa))
+const chain_: Monad3<URI>['chain'] = (ma, f) => pipe(ma, chain(f))
 /* istanbul ignore next */
 const bimap_: Bifunctor3<URI>['bimap'] = (fea, f, g) => pipe(fea, bimap(f, g))
 /* istanbul ignore next */
@@ -296,7 +317,7 @@ declare module 'fp-ts/lib/HKT' {
  */
 export const Functor: Functor3<URI> = {
   URI,
-  map: M.map
+  map: map_
 }
 
 /**
@@ -305,8 +326,8 @@ export const Functor: Functor3<URI> = {
  */
 export const Apply: Apply3<URI> = {
   URI,
-  ap: M.ap,
-  map: M.map
+  map: map_,
+  ap: ap_
 }
 
 /**
@@ -315,8 +336,8 @@ export const Apply: Apply3<URI> = {
  */
 export const Applicative: Applicative3<URI> = {
   URI,
-  ap: M.ap,
-  map: M.map,
+  map: map_,
+  ap: ap_,
   of
 }
 
@@ -326,10 +347,10 @@ export const Applicative: Applicative3<URI> = {
  */
 export const Monad: Monad3<URI> = {
   URI,
-  ap: M.ap,
-  map: M.map,
+  map: map_,
+  ap: ap_,
   of,
-  chain: M.chain
+  chain: chain_
 }
 
 /**
@@ -348,10 +369,10 @@ export const Bifunctor: Bifunctor3<URI> = {
  */
 export const MonadIO: MonadIO3<URI> = {
   URI,
-  map: M.map,
+  map: map_,
+  ap: ap_,
   of,
-  ap: M.ap,
-  chain: M.chain,
+  chain: chain_,
   fromIO
 }
 
@@ -361,10 +382,10 @@ export const MonadIO: MonadIO3<URI> = {
  */
 export const MonadTask: MonadTask3<URI> = {
   URI,
-  map: M.map,
+  map: map_,
   of,
-  ap: M.ap,
-  chain: M.chain,
+  ap: ap_,
+  chain: chain_,
   fromIO,
   fromTask
 }
@@ -375,10 +396,10 @@ export const MonadTask: MonadTask3<URI> = {
  */
 export const MonadObservable: MonadObservable3<URI> = {
   URI,
-  map: M.map,
+  map: map_,
   of,
-  ap: M.ap,
-  chain: M.chain,
+  ap: ap_,
+  chain: chain_,
   fromIO,
   fromObservable,
   fromTask
@@ -390,10 +411,10 @@ export const MonadObservable: MonadObservable3<URI> = {
  */
 export const MonadThrow: MonadThrow3<URI> = {
   URI,
-  map: M.map,
+  map: map_,
   of,
-  ap: M.ap,
-  chain: M.chain,
+  ap: ap_,
+  chain: chain_,
   throwError
 }
 
@@ -404,10 +425,10 @@ export const MonadThrow: MonadThrow3<URI> = {
  */
 export const readerObservableEither: MonadObservable3<URI> & MonadThrow3<URI> & Bifunctor3<URI> = {
   URI,
-  ap: M.ap,
-  map: M.map,
+  ap: ap_,
+  map: map_,
   of,
-  chain: M.chain,
+  chain: chain_,
   fromIO,
   fromObservable,
   fromTask,
