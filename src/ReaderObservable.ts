@@ -20,7 +20,6 @@ import { pipe } from 'fp-ts/lib/pipeable'
 import { getMonoid as getReaderMonoid, Reader } from 'fp-ts/lib/Reader'
 import { getReaderM } from 'fp-ts/lib/ReaderT'
 import { ReaderTask } from 'fp-ts/lib/ReaderTask'
-import { Task } from 'fp-ts/lib/Task'
 import { Observable } from 'rxjs'
 import { MonadObservable2 } from './MonadObservable'
 import * as R from './Observable'
@@ -47,7 +46,7 @@ export interface ReaderObservable<R, A> {
  * @category constructors
  * @since 0.6.6
  */
-export const fromObservable: <R, A>(ma: Observable<A>) => ReaderObservable<R, A> = T.fromM
+export const fromObservable: MonadObservable2<URI>['fromObservable'] = T.fromM
 
 /**
  * @category constructors
@@ -59,33 +58,29 @@ export const fromReader: <R, A = never>(ma: Reader<R, A>) => ReaderObservable<R,
  * @category constructors
  * @since 0.6.6
  */
-export function fromOption<R, A>(o: O.Option<A>): ReaderObservable<R, A> {
-  return fromObservable(R.fromOption(o))
-}
+export const fromOption = <R, A>(o: O.Option<A>): ReaderObservable<R, A> => fromObservable(R.fromOption(o))
 
 /**
  * @category constructors
  * @since 0.6.6
  */
-export function fromIO<R, A>(ma: IO<A>): ReaderObservable<R, A> {
-  return fromObservable(R.fromIO(ma))
-}
+export const fromIO: MonadIO2<URI>['fromIO'] =
+  /*#__PURE__*/
+  flow(R.fromIO, fromObservable)
 
 /**
  * @category constructors
  * @since 0.6.6
  */
-export function fromTask<R, A>(ma: Task<A>): ReaderObservable<R, A> {
-  return fromObservable(R.fromTask(ma))
-}
+export const fromTask: MonadTask2<URI>['fromTask'] =
+  /*#__PURE__*/
+  flow(R.fromTask, fromObservable)
 
 /**
  * @category constructors
  * @since 0.6.9
  */
-export function fromReaderTask<R, A>(ma: ReaderTask<R, A>): ReaderObservable<R, A> {
-  return r => R.fromTask(ma(r))
-}
+export const fromReaderTask = <R, A>(ma: ReaderTask<R, A>): ReaderObservable<R, A> => flow(ma, R.fromTask)
 
 /**
  * @category constructors
@@ -107,45 +102,39 @@ export const asks: <R, A = never>(f: (r: R) => A) => ReaderObservable<R, A> = T.
  * @category combinators
  * @since 0.6.6
  */
-export function local<Q, R>(f: (f: Q) => R): <A>(ma: ReaderObservable<R, A>) => ReaderObservable<Q, A> {
-  return ma => T.local(ma, f)
-}
+export const local = <R2, R1>(f: (f: R2) => R1) => <A>(ma: ReaderObservable<R1, A>): ReaderObservable<R2, A> =>
+  T.local(ma, f)
 
 /**
  * @category combinators
  * @since 0.6.6
  */
-export function fromIOK<A extends Array<unknown>, B>(f: (...a: A) => IO<B>): <R>(...a: A) => ReaderObservable<R, B> {
-  return (...a) => fromIO(f(...a))
-}
+export const fromIOK = <A extends Array<unknown>, B>(
+  f: (...a: A) => IO<B>
+): (<R>(...a: A) => ReaderObservable<R, B>) => (...a) => fromIO(f(...a))
 
 /**
  * @category combinators
  * @since 0.6.6
  */
-export function chainIOK<A, B>(f: (a: A) => IO<B>): <R>(ma: ReaderObservable<R, A>) => ReaderObservable<R, B> {
-  return chain<any, A, B>(fromIOK(f))
-}
+export const chainIOK = <A, B>(f: (a: A) => IO<B>): (<R>(ma: ReaderObservable<R, A>) => ReaderObservable<R, B>) =>
+  chain(a => fromIOK(f)(a))
 
 /**
  * @category combinators
  * @since 0.6.6
  */
-export function fromObservableK<A extends Array<unknown>, B>(
+export const fromObservableK = <A extends Array<unknown>, B>(
   f: (...a: A) => Observable<B>
-): <R>(...a: A) => ReaderObservable<R, B> {
-  return (...a) => fromObservable(f(...a))
-}
+): (<R>(...a: A) => ReaderObservable<R, B>) => (...a) => fromObservable(f(...a))
 
 /**
  * @category combinators
  * @since 0.6.6
  */
-export function chainTaskK<A, B>(
+export const chainTaskK = <A, B>(
   f: (a: A) => Observable<B>
-): <R>(ma: ReaderObservable<R, A>) => ReaderObservable<R, B> {
-  return chain<any, A, B>(fromObservableK(f))
-}
+): (<R>(ma: ReaderObservable<R, A>) => ReaderObservable<R, B>) => chain(a => fromObservableK(f)(a))
 
 // -------------------------------------------------------------------------------------
 // type class members
@@ -369,9 +358,7 @@ declare module 'fp-ts/lib/HKT' {
  * @category instances
  * @since 0.6.6
  */
-export function getMonoid<R, A>(): Monoid<ReaderObservable<R, A>> {
-  return getReaderMonoid(R.getMonoid())
-}
+export const getMonoid = <R, A>(): Monoid<ReaderObservable<R, A>> => getReaderMonoid(R.getMonoid())
 
 /**
  * @category instances
@@ -543,26 +530,24 @@ export const Do: ReaderObservable<unknown, {}> =
 /**
  * @since 0.6.11
  */
-export function bindTo<K extends string, R, A>(
+export const bindTo = <K extends string, R, A>(
   name: K
-): (fa: ReaderObservable<R, A>) => ReaderObservable<R, { [P in K]: A }> {
-  return map(a => ({ [name]: a } as { [P in K]: A }))
-}
+): ((fa: ReaderObservable<R, A>) => ReaderObservable<R, { [P in K]: A }>) =>
+  map(a => ({ [name]: a } as { [P in K]: A }))
 
 /**
  * @since 0.6.11
  */
-export function bind<K extends string, R, A, B>(
+export const bind = <K extends string, R, A, B>(
   name: Exclude<K, keyof A>,
   f: (a: A) => ReaderObservable<R, B>
-): (fa: ReaderObservable<R, A>) => ReaderObservable<R, { [P in keyof A | K]: P extends keyof A ? A[P] : B }> {
-  return chain(a =>
+): ((fa: ReaderObservable<R, A>) => ReaderObservable<R, { [P in keyof A | K]: P extends keyof A ? A[P] : B }>) =>
+  chain(a =>
     pipe(
       f(a),
       map(b => ({ ...a, [name]: b } as any))
     )
   )
-}
 
 /**
  * @since 0.6.12
@@ -577,13 +562,9 @@ export const bindW: <K extends string, R2, A, B>(
 /**
  * @since 0.6.6
  */
-export function run<R, A>(ma: ReaderObservable<R, A>, r: R): Promise<A> {
-  return ma(r).toPromise()
-}
+export const run = <R, A>(ma: ReaderObservable<R, A>, r: R): Promise<A> => ma(r).toPromise()
 
 /**
  * @since 0.6.6
  */
-export function toReaderTask<R, A>(ma: ReaderObservable<R, A>): ReaderTask<R, A> {
-  return r => () => run(ma, r)
-}
+export const toReaderTask = <R, A>(ma: ReaderObservable<R, A>): ReaderTask<R, A> => r => () => run(ma, r)

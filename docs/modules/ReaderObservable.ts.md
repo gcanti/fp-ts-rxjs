@@ -288,7 +288,7 @@ Added in v0.6.6
 **Signature**
 
 ```ts
-export declare function chainIOK<A, B>(f: (a: A) => IO<B>): <R>(ma: ReaderObservable<R, A>) => ReaderObservable<R, B>
+export declare const chainIOK: <A, B>(f: (a: A) => IO<B>) => <R>(ma: ReaderObservable<R, A>) => ReaderObservable<R, B>
 ```
 
 Added in v0.6.6
@@ -298,9 +298,9 @@ Added in v0.6.6
 **Signature**
 
 ```ts
-export declare function chainTaskK<A, B>(
+export declare const chainTaskK: <A, B>(
   f: (a: A) => Observable<B>
-): <R>(ma: ReaderObservable<R, A>) => ReaderObservable<R, B>
+) => <R>(ma: ReaderObservable<R, A>) => ReaderObservable<R, B>
 ```
 
 Added in v0.6.6
@@ -322,9 +322,7 @@ Added in v0.6.6
 **Signature**
 
 ```ts
-export declare function fromIOK<A extends Array<unknown>, B>(
-  f: (...a: A) => IO<B>
-): <R>(...a: A) => ReaderObservable<R, B>
+export declare const fromIOK: <A extends unknown[], B>(f: (...a: A) => IO<B>) => <R>(...a: A) => ReaderObservable<R, B>
 ```
 
 Added in v0.6.6
@@ -334,9 +332,9 @@ Added in v0.6.6
 **Signature**
 
 ```ts
-export declare function fromObservableK<A extends Array<unknown>, B>(
+export declare const fromObservableK: <A extends unknown[], B>(
   f: (...a: A) => Observable<B>
-): <R>(...a: A) => ReaderObservable<R, B>
+) => <R>(...a: A) => ReaderObservable<R, B>
 ```
 
 Added in v0.6.6
@@ -346,7 +344,7 @@ Added in v0.6.6
 **Signature**
 
 ```ts
-export declare function local<Q, R>(f: (f: Q) => R): <A>(ma: ReaderObservable<R, A>) => ReaderObservable<Q, A>
+export declare const local: <R2, R1>(f: (f: R2) => R1) => <A>(ma: ReaderObservable<R1, A>) => ReaderObservable<R2, A>
 ```
 
 Added in v0.6.6
@@ -378,7 +376,7 @@ Added in v0.6.6
 **Signature**
 
 ```ts
-export declare function fromIO<R, A>(ma: IO<A>): ReaderObservable<R, A>
+export declare const fromIO: <E, A>(fa: IO<A>) => ReaderObservable<E, A>
 ```
 
 Added in v0.6.6
@@ -388,7 +386,7 @@ Added in v0.6.6
 **Signature**
 
 ```ts
-export declare const fromObservable: <R, A>(ma: Observable<A>) => ReaderObservable<R, A>
+export declare const fromObservable: <E, A>(fa: Observable<A>) => ReaderObservable<E, A>
 ```
 
 Added in v0.6.6
@@ -398,7 +396,7 @@ Added in v0.6.6
 **Signature**
 
 ```ts
-export declare function fromOption<R, A>(o: O.Option<A>): ReaderObservable<R, A>
+export declare const fromOption: <R, A>(o: O.Option<A>) => ReaderObservable<R, A>
 ```
 
 Added in v0.6.6
@@ -418,7 +416,7 @@ Added in v0.6.6
 **Signature**
 
 ```ts
-export declare function fromReaderTask<R, A>(ma: ReaderTask<R, A>): ReaderObservable<R, A>
+export declare const fromReaderTask: <R, A>(ma: ReaderTask<R, A>) => ReaderObservable<R, A>
 ```
 
 Added in v0.6.9
@@ -428,7 +426,7 @@ Added in v0.6.9
 **Signature**
 
 ```ts
-export declare function fromTask<R, A>(ma: Task<A>): ReaderObservable<R, A>
+export declare const fromTask: <E, A>(fa: Task<A>) => ReaderObservable<E, A>
 ```
 
 Added in v0.6.6
@@ -570,7 +568,7 @@ Added in v0.6.6
 **Signature**
 
 ```ts
-export declare function getMonoid<R, A>(): Monoid<ReaderObservable<R, A>>
+export declare const getMonoid: <R, A>() => Monoid<ReaderObservable<R, A>>
 ```
 
 Added in v0.6.6
@@ -619,10 +617,10 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-export declare function bind<K extends string, R, A, B>(
+export declare const bind: <K extends string, R, A, B>(
   name: Exclude<K, keyof A>,
   f: (a: A) => ReaderObservable<R, B>
-): (fa: ReaderObservable<R, A>) => ReaderObservable<R, { [P in keyof A | K]: P extends keyof A ? A[P] : B }>
+) => (fa: ReaderObservable<R, A>) => ReaderObservable<R, { [P in K | keyof A]: P extends keyof A ? A[P] : B }>
 ```
 
 Added in v0.6.11
@@ -632,9 +630,9 @@ Added in v0.6.11
 **Signature**
 
 ```ts
-export declare function bindTo<K extends string, R, A>(
+export declare const bindTo: <K extends string, R, A>(
   name: K
-): (fa: ReaderObservable<R, A>) => ReaderObservable<R, { [P in K]: A }>
+) => (fa: ReaderObservable<R, A>) => ReaderObservable<R, { [P in K]: A }>
 ```
 
 Added in v0.6.11
@@ -659,7 +657,7 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-export declare function run<R, A>(ma: ReaderObservable<R, A>, r: R): Promise<A>
+export declare const run: <R, A>(ma: ReaderObservable<R, A>, r: R) => Promise<A>
 ```
 
 Added in v0.6.6
@@ -669,7 +667,7 @@ Added in v0.6.6
 **Signature**
 
 ```ts
-export declare function toReaderTask<R, A>(ma: ReaderObservable<R, A>): ReaderTask<R, A>
+export declare const toReaderTask: <R, A>(ma: ReaderObservable<R, A>) => ReaderTask<R, A>
 ```
 
 Added in v0.6.6

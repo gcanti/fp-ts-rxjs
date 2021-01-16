@@ -7,7 +7,6 @@ import { Bifunctor3 } from 'fp-ts/lib/Bifunctor'
 import { Either } from 'fp-ts/lib/Either'
 import { flow, identity, Predicate, Refinement } from 'fp-ts/lib/function'
 import { Functor3 } from 'fp-ts/lib/Functor'
-import * as IO from 'fp-ts/lib/IO'
 import { Monad3 } from 'fp-ts/lib/Monad'
 import { MonadIO3 } from 'fp-ts/lib/MonadIO'
 import { MonadTask3 } from 'fp-ts/lib/MonadTask'
@@ -16,8 +15,6 @@ import { Option } from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/pipeable'
 import * as R from 'fp-ts/lib/Reader'
 import { getReaderM } from 'fp-ts/lib/ReaderT'
-import * as T from 'fp-ts/lib/Task'
-import { Observable } from 'rxjs'
 import { MonadObservable3 } from './MonadObservable'
 import * as OBE from './ObservableEither'
 
@@ -43,54 +40,44 @@ export interface ReaderObservableEither<R, E, A> {
  * @category constructors
  * @since 0.6.10
  */
-export function ask<R, E>(): ReaderObservableEither<R, E, R> {
-  return M.ask<R, E>()
-}
+export const ask: <R, E>() => ReaderObservableEither<R, E, R> = M.ask
 
 /**
  * @category constructors
  * @since 0.6.10
  */
-export function asks<R, E, A>(f: (r: R) => A): ReaderObservableEither<R, E, A> {
-  return M.asks<R, E, A>(f)
-}
+export const asks: <R, E, A>(f: (r: R) => A) => ReaderObservableEither<R, E, A> = M.asks
 
 /**
  * @category constructors
  * @since 0.6.10
  */
-export function fromObservableEither<R, E, A>(ma: OBE.ObservableEither<E, A>): ReaderObservableEither<R, E, A> {
-  return M.fromM(ma)
-}
+export const fromObservableEither: <R, E, A>(ma: OBE.ObservableEither<E, A>) => ReaderObservableEither<R, E, A> =
+  M.fromM
 
 /**
  * @category constructors
  * @since 0.6.10
  */
-export function fromReader<R, E, A>(ma: R.Reader<R, A>): ReaderObservableEither<R, E, A> {
-  return M.fromReader(ma)
-}
+export const fromReader: <R, E, A>(ma: R.Reader<R, A>) => ReaderObservableEither<R, E, A> = M.fromReader
 
 /**
+ * @category constructors
  * @since 0.6.10
  */
-export function fromIO<R, E, A>(a: IO.IO<A>): ReaderObservableEither<R, E, A> {
-  return () => OBE.rightIO(a)
-}
+export const fromIO: MonadIO3<URI>['fromIO'] = ma => () => OBE.rightIO(ma)
 
 /**
+ * @category constructors
  * @since 0.6.10
  */
-export function fromTask<R, E, A>(a: T.Task<A>): ReaderObservableEither<R, E, A> {
-  return () => OBE.fromTask(a)
-}
+export const fromTask: MonadTask3<URI>['fromTask'] = ma => () => OBE.fromTask(ma)
 
 /**
+ * @category constructors
  * @since 0.6.10
  */
-export function fromObservable<R, E, A>(a: Observable<A>): ReaderObservableEither<R, E, A> {
-  return () => OBE.rightObservable(a)
-}
+export const fromObservable: MonadObservable3<URI>['fromObservable'] = ma => () => OBE.rightObservable(ma)
 
 // -------------------------------------------------------------------------------------
 // combinators
@@ -100,11 +87,9 @@ export function fromObservable<R, E, A>(a: Observable<A>): ReaderObservableEithe
  * @category combinators
  * @since 0.6.10
  */
-export function local<R, Q>(
-  f: (d: Q) => R
-): <E, A>(ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<Q, E, A> {
-  return ma => M.local(ma, f)
-}
+export const local = <R2, R1>(f: (d: R2) => R1) => <E, A>(
+  ma: ReaderObservableEither<R1, E, A>
+): ReaderObservableEither<R2, E, A> => M.local(ma, f)
 
 // -------------------------------------------------------------------------------------
 // type class members
@@ -114,9 +99,7 @@ export function local<R, Q>(
  * @category MonadThrow
  * @since 0.6.10
  */
-export function throwError<R, E, A = never>(e: E): ReaderObservableEither<R, E, A> {
-  return () => OBE.left<E, A>(e)
-}
+export const throwError: MonadThrow3<URI>['throwError'] = e => () => OBE.left(e)
 
 /**
  * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
@@ -175,9 +158,7 @@ export const apSecond = <R, E, B>(
  * @category Applicative
  * @since 0.6.10
  */
-export function of<R, E, A>(a: A): ReaderObservableEither<R, E, A> {
-  return M.of(a)
-}
+export const of: Applicative3<URI>['of'] = M.of
 
 /**
  * @category Bifunctor
@@ -449,28 +430,26 @@ export const Do: ReaderObservableEither<unknown, never, {}> =
 /**
  * @since 0.6.11
  */
-export function bindTo<K extends string, R, E, A>(
+export const bindTo = <K extends string, R, E, A>(
   name: K
-): (fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, { [P in K]: A }> {
-  return map(a => ({ [name]: a } as { [P in K]: A }))
-}
+): ((fa: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, { [P in K]: A }>) =>
+  map(a => ({ [name]: a } as { [P in K]: A }))
 
 /**
  * @since 0.6.11
  */
-export function bind<K extends string, R, E, A, B>(
+export const bind = <K extends string, R, E, A, B>(
   name: Exclude<K, keyof A>,
   f: (a: A) => ReaderObservableEither<R, E, B>
-): (
+): ((
   fa: ReaderObservableEither<R, E, A>
-) => ReaderObservableEither<R, E, { [P in keyof A | K]: P extends keyof A ? A[P] : B }> {
-  return chain(a =>
+) => ReaderObservableEither<R, E, { [P in keyof A | K]: P extends keyof A ? A[P] : B }>) =>
+  chain(a =>
     pipe(
       f(a),
       map(b => ({ ...a, [name]: b } as any))
     )
   )
-}
 
 /**
  * @since 0.6.12

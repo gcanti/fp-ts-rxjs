@@ -33,7 +33,9 @@ Added in v0.6.8
   - [orElse](#orelse)
   - [swap](#swap)
 - [constructors](#constructors)
+  - [fromIO](#fromio)
   - [fromIOEither](#fromioeither)
+  - [fromObservable](#fromobservable)
   - [fromTask](#fromtask)
   - [fromTaskEither](#fromtaskeither)
   - [left](#left)
@@ -58,7 +60,6 @@ Added in v0.6.8
   - [MonadThrow](#monadthrow-1)
   - [URI](#uri)
   - [URI (type alias)](#uri-type-alias)
-  - [fromObservable](#fromobservable)
   - [~~observableEither~~](#observableeither)
 - [model](#model)
   - [ObservableEither (interface)](#observableeither-interface)
@@ -69,7 +70,6 @@ Added in v0.6.8
   - [bindW](#bindw)
   - [filterOrElse](#filterorelse)
   - [fromEither](#fromeither)
-  - [fromIO](#fromio)
   - [fromOption](#fromoption)
   - [fromPredicate](#frompredicate)
   - [of](#of)
@@ -263,6 +263,16 @@ Added in v0.6.8
 
 # constructors
 
+## fromIO
+
+**Signature**
+
+```ts
+export declare const fromIO: <E, A>(fa: IO<A>) => ObservableEither<E, A>
+```
+
+Added in v0.6.12
+
 ## fromIOEither
 
 **Signature**
@@ -273,12 +283,22 @@ export declare const fromIOEither: <E, A>(fa: IOEither<E, A>) => ObservableEithe
 
 Added in v0.6.8
 
+## fromObservable
+
+**Signature**
+
+```ts
+export declare const fromObservable: <E, A>(fa: Observable<A>) => ObservableEither<E, A>
+```
+
+Added in v0.6.12
+
 ## fromTask
 
 **Signature**
 
 ```ts
-export declare function fromTask<E, A>(ma: Task<A>): ObservableEither<E, A>
+export declare const fromTask: <E, A>(fa: Task<A>) => ObservableEither<E, A>
 ```
 
 Added in v0.6.8
@@ -288,7 +308,7 @@ Added in v0.6.8
 **Signature**
 
 ```ts
-export declare function fromTaskEither<E, A>(t: TE.TaskEither<E, A>): ObservableEither<E, A>
+export declare const fromTaskEither: <E, A>(t: TE.TaskEither<E, A>) => ObservableEither<E, A>
 ```
 
 Added in v0.6.8
@@ -308,7 +328,7 @@ Added in v0.6.8
 **Signature**
 
 ```ts
-export declare function leftIO<E, A>(me: IO<E>): ObservableEither<E, A>
+export declare const leftIO: <E = never, A = never>(me: IO<E>) => ObservableEither<E, A>
 ```
 
 Added in v0.6.8
@@ -338,7 +358,7 @@ Added in v0.6.8
 **Signature**
 
 ```ts
-export declare function rightIO<E, A>(ma: IO<A>): ObservableEither<E, A>
+export declare const rightIO: <E = never, A = never>(ma: IO<A>) => ObservableEither<E, A>
 ```
 
 Added in v0.6.8
@@ -500,16 +520,6 @@ export type URI = typeof URI
 
 Added in v0.6.8
 
-## fromObservable
-
-**Signature**
-
-```ts
-export declare const fromObservable: <E, A>(fa: Observable<A>) => ObservableEither<E, A>
-```
-
-Added in v0.6.12
-
 ## ~~observableEither~~
 
 **Signature**
@@ -553,10 +563,10 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-export declare function bind<K extends string, E, A, B>(
+export declare const bind: <K extends string, E, A, B>(
   name: Exclude<K, keyof A>,
   f: (a: A) => ObservableEither<E, B>
-): (fa: ObservableEither<E, A>) => ObservableEither<E, { [P in keyof A | K]: P extends keyof A ? A[P] : B }>
+) => (fa: ObservableEither<E, A>) => ObservableEither<E, { [P in K | keyof A]: P extends keyof A ? A[P] : B }>
 ```
 
 Added in v0.6.11
@@ -566,9 +576,9 @@ Added in v0.6.11
 **Signature**
 
 ```ts
-export declare function bindTo<K extends string, E, A>(
+export declare const bindTo: <K extends string, E, A>(
   name: K
-): (fa: ObservableEither<E, A>) => ObservableEither<E, { [P in K]: A }>
+) => (fa: ObservableEither<E, A>) => ObservableEither<E, { [P in K]: A }>
 ```
 
 Added in v0.6.11
@@ -617,16 +627,6 @@ export declare const fromEither: <E, A>(ma: E.Either<E, A>) => ObservableEither<
 
 Added in v0.6.10
 
-## fromIO
-
-**Signature**
-
-```ts
-export declare const fromIO: <E, A>(fa: IO<A>) => ObservableEither<E, A>
-```
-
-Added in v0.6.12
-
 ## fromOption
 
 Derivable from `MonadThrow`.
@@ -669,7 +669,7 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-export declare function toTaskEither<E, A>(o: ObservableEither<E, A>): TE.TaskEither<E, A>
+export declare const toTaskEither: <E, A>(o: ObservableEither<E, A>) => TE.TaskEither<E, A>
 ```
 
 Added in v0.6.8

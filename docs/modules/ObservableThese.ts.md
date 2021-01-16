@@ -23,6 +23,7 @@ Added in v0.6.12
   - [swap](#swap)
 - [constructors](#constructors)
   - [both](#both)
+  - [fromIO](#fromio)
   - [fromIOEither](#fromioeither)
   - [fromTask](#fromtask)
   - [fromTaskThese](#fromtaskthese)
@@ -124,6 +125,16 @@ export declare const both: <E = never, A = never>(e: E, a: A) => ObservableThese
 
 Added in v0.6.12
 
+## fromIO
+
+**Signature**
+
+```ts
+export declare const fromIO: <E, A>(fa: IO<A>) => ObservableThese<E, A>
+```
+
+Added in v0.6.12
+
 ## fromIOEither
 
 **Signature**
@@ -139,7 +150,7 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-export declare function fromTask<E, A>(ma: Task<A>): ObservableThese<E, A>
+export declare const fromTask: <E, A>(fa: Task<A>) => ObservableThese<E, A>
 ```
 
 Added in v0.6.12
@@ -149,7 +160,7 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-export declare function fromTaskThese<E, A>(t: TT.TaskThese<E, A>): ObservableThese<E, A>
+export declare const fromTaskThese: <E, A>(t: TT.TaskThese<E, A>) => ObservableThese<E, A>
 ```
 
 Added in v0.6.12
@@ -169,7 +180,7 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-export declare function leftIO<E, A>(me: IO<E>): ObservableThese<E, A>
+export declare const leftIO: <E = never, A = never>(me: IO<E>) => ObservableThese<E, A>
 ```
 
 Added in v0.6.12
@@ -199,7 +210,7 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-export declare function rightIO<E, A>(ma: IO<A>): ObservableThese<E, A>
+export declare const rightIO: <E = never, A = never>(ma: IO<A>) => ObservableThese<E, A>
 ```
 
 Added in v0.6.12
@@ -221,11 +232,11 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-export declare function fold<E, A, B>(
+export declare const fold: <E, A, B>(
   onLeft: (e: E) => Observable<B>,
   onRight: (a: A) => Observable<B>,
   onBoth: (e: E, a: A) => Observable<B>
-): (ma: ObservableThese<E, A>) => Observable<B>
+) => (ma: ObservableThese<E, A>) => Observable<B>
 ```
 
 Added in v0.6.12
@@ -247,7 +258,10 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-export declare function getApplicative<E>(A: Apply1<R.URI>, SE: Semigroup<E>): Applicative2C<URI, E>
+export declare const getApplicative: <E>(
+  A: Apply1<'Observable'>,
+  S: Semigroup<E>
+) => Applicative2C<'ObservableThese', E>
 ```
 
 Added in v0.6.12
@@ -257,7 +271,7 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-export declare function getMonad<E>(SE: Semigroup<E>): Monad2C<URI, E>
+export declare const getMonad: <E>(S: Semigroup<E>) => Monad2C<'ObservableThese', E>
 ```
 
 Added in v0.6.12
@@ -311,7 +325,7 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-export declare function toTaskThese<E, A>(o: ObservableThese<E, A>): TT.TaskThese<E, A>
+export declare const toTaskThese: <E, A>(o: ObservableThese<E, A>) => TT.TaskThese<E, A>
 ```
 
 Added in v0.6.12

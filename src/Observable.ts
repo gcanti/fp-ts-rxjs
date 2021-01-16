@@ -10,7 +10,6 @@ import * as E from 'fp-ts/lib/Either'
 import { Filterable1 } from 'fp-ts/lib/Filterable'
 import { flow, identity, Predicate, Refinement } from 'fp-ts/lib/function'
 import { Functor1 } from 'fp-ts/lib/Functor'
-import { IO } from 'fp-ts/lib/IO'
 import { Monad1 } from 'fp-ts/lib/Monad'
 import { MonadIO1 } from 'fp-ts/lib/MonadIO'
 import { MonadTask1 } from 'fp-ts/lib/MonadTask'
@@ -30,25 +29,19 @@ import { MonadObservable1 } from './MonadObservable'
  * @category constructors
  * @since 0.6.5
  */
-export function fromOption<A>(o: O.Option<A>): Observable<A> {
-  return O.isNone(o) ? EMPTY : of(o.value)
-}
+export const fromOption = <A>(o: O.Option<A>): Observable<A> => (O.isNone(o) ? EMPTY : of(o.value))
 
 /**
  * @category constructors
  * @since 0.6.5
  */
-export function fromIO<A>(io: IO<A>): Observable<A> {
-  return defer(() => rxOf(io()))
-}
+export const fromIO: MonadIO1<URI>['fromIO'] = ma => defer(() => rxOf(ma()))
 
 /**
  * @category constructors
  * @since 0.6.5
  */
-export function fromTask<A>(t: Task<A>): Observable<A> {
-  return defer(t)
-}
+export const fromTask: MonadTask1<URI>['fromTask'] = defer
 
 // -------------------------------------------------------------------------------------
 // type class members
@@ -264,12 +257,10 @@ declare module 'fp-ts/lib/HKT' {
  * @category instances
  * @since 0.6.0
  */
-export function getMonoid<A = never>(): Monoid<Observable<A>> {
-  return {
-    concat: (x, y) => merge(x, y),
-    empty: EMPTY
-  }
-}
+export const getMonoid = <A = never>(): Monoid<Observable<A>> => ({
+  concat: (x, y) => merge(x, y),
+  empty: EMPTY
+})
 
 /**
  * @category instances
@@ -441,28 +432,24 @@ export const Do: Observable<{}> =
 /**
  * @since 0.6.11
  */
-export function bindTo<K extends string, A>(name: K): (fa: Observable<A>) => Observable<{ [P in K]: A }> {
-  return map(a => ({ [name]: a } as { [P in K]: A }))
-}
+export const bindTo = <K extends string, A>(name: K): ((fa: Observable<A>) => Observable<{ [P in K]: A }>) =>
+  map(a => ({ [name]: a } as { [P in K]: A }))
 
 /**
  * @since 0.6.11
  */
-export function bind<K extends string, A, B>(
+export const bind = <K extends string, A, B>(
   name: Exclude<K, keyof A>,
   f: (a: A) => Observable<B>
-): (fa: Observable<A>) => Observable<{ [P in keyof A | K]: P extends keyof A ? A[P] : B }> {
-  return chain(a =>
+): ((fa: Observable<A>) => Observable<{ [P in keyof A | K]: P extends keyof A ? A[P] : B }>) =>
+  chain(a =>
     pipe(
       f(a),
       map(b => ({ ...a, [name]: b } as any))
     )
   )
-}
 
 /**
  * @since 0.6.5
  */
-export function toTask<A>(o: Observable<A>): Task<A> {
-  return () => o.toPromise()
-}
+export const toTask = <A>(o: Observable<A>): Task<A> => () => o.toPromise()

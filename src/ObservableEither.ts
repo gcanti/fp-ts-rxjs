@@ -16,7 +16,6 @@ import { MonadTask2 } from 'fp-ts/lib/MonadTask'
 import { MonadThrow2 } from 'fp-ts/lib/MonadThrow'
 import { Option } from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/pipeable'
-import { Task } from 'fp-ts/lib/Task'
 import * as TE from 'fp-ts/lib/TaskEither'
 import { Observable } from 'rxjs'
 import { MonadObservable2 } from './MonadObservable'
@@ -78,33 +77,43 @@ export const fromIOEither: <E, A>(fa: IOEither<E, A>) => ObservableEither<E, A> 
  * @category constructors
  * @since 0.6.8
  */
-export function rightIO<E, A>(ma: IO<A>): ObservableEither<E, A> {
-  return rightObservable(R.fromIO(ma))
-}
+export const rightIO: <E = never, A = never>(ma: IO<A>) => ObservableEither<E, A> =
+  /*#__PURE__*/
+  flow(R.fromIO, rightObservable)
 
 /**
  * @category constructors
  * @since 0.6.8
  */
-export function leftIO<E, A>(me: IO<E>): ObservableEither<E, A> {
-  return leftObservable(R.fromIO(me))
-}
+export const leftIO: <E = never, A = never>(me: IO<E>) => ObservableEither<E, A> =
+  /*#__PURE__*/
+  flow(R.fromIO, leftObservable)
 
 /**
  * @category constructors
  * @since 0.6.8
  */
-export function fromTaskEither<E, A>(t: TE.TaskEither<E, A>): ObservableEither<E, A> {
-  return R.fromTask(t)
-}
+export const fromTaskEither: <E, A>(t: TE.TaskEither<E, A>) => ObservableEither<E, A> = R.fromTask
+
+/**
+ * @category constructors
+ * @since 0.6.12
+ */
+export const fromIO: MonadIO2<URI>['fromIO'] = rightIO
 
 /**
  * @category constructors
  * @since 0.6.8
  */
-export function fromTask<E, A>(ma: Task<A>): ObservableEither<E, A> {
-  return rightObservable(R.fromTask(ma))
-}
+export const fromTask: MonadTask2<URI>['fromTask'] =
+  /*#__PURE__*/
+  flow(R.fromTask, rightObservable)
+
+/**
+ * @category constructors
+ * @since 0.6.12
+ */
+export const fromObservable: MonadObservable2<URI>['fromObservable'] = rightObservable
 
 // -------------------------------------------------------------------------------------
 // destructors
@@ -320,11 +329,6 @@ export const fromPredicate: {
   predicate(a) ? of(a) : throwError(onFalse(a))
 
 /**
- * @since 0.6.12
- */
-export const fromIO: MonadTask2<URI>['fromIO'] = rightIO
-
-/**
  * @category MonadThrow
  * @since 0.6.12
  */
@@ -455,12 +459,6 @@ export const MonadTask: MonadTask2<URI> = {
  * @category instances
  * @since 0.6.12
  */
-export const fromObservable: MonadObservable2<URI>['fromObservable'] = rightObservable
-
-/**
- * @category instances
- * @since 0.6.12
- */
 export const MonadObservable: MonadObservable2<URI> = {
   URI,
   map: map_,
@@ -519,26 +517,24 @@ export const Do: ObservableEither<never, {}> =
 /**
  * @since 0.6.11
  */
-export function bindTo<K extends string, E, A>(
+export const bindTo = <K extends string, E, A>(
   name: K
-): (fa: ObservableEither<E, A>) => ObservableEither<E, { [P in K]: A }> {
-  return map(a => ({ [name]: a } as { [P in K]: A }))
-}
+): ((fa: ObservableEither<E, A>) => ObservableEither<E, { [P in K]: A }>) =>
+  map(a => ({ [name]: a } as { [P in K]: A }))
 
 /**
  * @since 0.6.11
  */
-export function bind<K extends string, E, A, B>(
+export const bind = <K extends string, E, A, B>(
   name: Exclude<K, keyof A>,
   f: (a: A) => ObservableEither<E, B>
-): (fa: ObservableEither<E, A>) => ObservableEither<E, { [P in keyof A | K]: P extends keyof A ? A[P] : B }> {
-  return chain(a =>
+): ((fa: ObservableEither<E, A>) => ObservableEither<E, { [P in keyof A | K]: P extends keyof A ? A[P] : B }>) =>
+  chain(a =>
     pipe(
       f(a),
       map(b => ({ ...a, [name]: b } as any))
     )
   )
-}
 
 /**
  * @since 0.6.12
@@ -553,6 +549,4 @@ export const bindW: <K extends string, E2, A, B>(
 /**
  * @since 0.6.8
  */
-export function toTaskEither<E, A>(o: ObservableEither<E, A>): TE.TaskEither<E, A> {
-  return () => o.toPromise()
-}
+export const toTaskEither = <E, A>(o: ObservableEither<E, A>): TE.TaskEither<E, A> => () => o.toPromise()

@@ -148,7 +148,7 @@ Added in v0.6.10
 **Signature**
 
 ```ts
-export declare function throwError<S, R, E, A>(e: E): StateReaderObservableEither<S, R, E, A>
+export declare const throwError: <S, R, E, A>(e: E) => StateReaderObservableEither<S, R, E, A>
 ```
 
 Added in v0.6.10
@@ -225,7 +225,7 @@ Added in v0.6.10
 **Signature**
 
 ```ts
-export declare function fromIO<S, R, E, A>(io: IO.IO<A>): StateReaderObservableEither<S, R, E, A>
+export declare const fromIO: <S, R, E, A>(fa: IO<A>) => StateReaderObservableEither<S, R, E, A>
 ```
 
 Added in v0.6.10
@@ -235,7 +235,7 @@ Added in v0.6.10
 **Signature**
 
 ```ts
-export declare function fromObservable<S, R, E, A>(observable: Observable<A>): StateReaderObservableEither<S, R, E, A>
+export declare const fromObservable: <S, R, E, A>(fa: Observable<A>) => StateReaderObservableEither<S, R, E, A>
 ```
 
 Added in v0.6.10
@@ -257,7 +257,7 @@ Added in v0.6.10
 **Signature**
 
 ```ts
-export declare function fromTask<S, R, E, A>(task: T.Task<A>): StateReaderObservableEither<S, R, E, A>
+export declare const fromTask: <S, R, E, A>(fa: Task<A>) => StateReaderObservableEither<S, R, E, A>
 ```
 
 Added in v0.6.10
@@ -453,12 +453,12 @@ Added in v0.6.10
 **Signature**
 
 ```ts
-export declare function bind<K extends string, S, R, E, A, B>(
+export declare const bind: <K extends string, S, R, E, A, B>(
   name: Exclude<K, keyof A>,
   f: (a: A) => StateReaderObservableEither<S, R, E, B>
-): (
+) => (
   fa: StateReaderObservableEither<S, R, E, A>
-) => StateReaderObservableEither<S, R, E, { [P in keyof A | K]: P extends keyof A ? A[P] : B }>
+) => StateReaderObservableEither<S, R, E, { [P in K | keyof A]: P extends keyof A ? A[P] : B }>
 ```
 
 Added in v0.6.11
@@ -468,9 +468,9 @@ Added in v0.6.11
 **Signature**
 
 ```ts
-export declare function bindTo<K extends string>(
+export declare const bindTo: <K extends string>(
   name: K
-): <S, R, E, A>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, { [P in K]: A }>
+) => <S, R, E, A>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, { [P in K]: A }>
 ```
 
 Added in v0.6.11
@@ -495,9 +495,9 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-export declare function evaluate<S>(
+export declare const evaluate: <S>(
   s: S
-): <R, E, A>(fa: StateReaderObservableEither<S, R, E, A>) => ROBE.ReaderObservableEither<R, E, A>
+) => <R, E, A>(fa: StateReaderObservableEither<S, R, E, A>) => ROBE.ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10
@@ -507,9 +507,9 @@ Added in v0.6.10
 **Signature**
 
 ```ts
-export declare function execute<S>(
+export declare const execute: <S>(
   s: S
-): <R, E, A>(fa: StateReaderObservableEither<S, R, E, A>) => ROBE.ReaderObservableEither<R, E, S>
+) => <R, E, A>(fa: StateReaderObservableEither<S, R, E, A>) => ROBE.ReaderObservableEither<R, E, S>
 ```
 
 Added in v0.6.10
