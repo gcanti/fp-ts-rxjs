@@ -224,10 +224,13 @@ export const zero: Alternative1<URI>['zero'] = () => EMPTY
 
 const map_: Functor1<URI>['map'] = (fa, f) => pipe(fa, map(f))
 const ap_: Apply1<URI>['ap'] = (fab, fa) => pipe(fab, ap(fa))
+/* istanbul ignore next */
 const chain_: Monad1<URI>['chain'] = (fa, f) => pipe(fa, chain(f))
+/* istanbul ignore next */
 const alt_: Alt1<URI>['alt'] = (me, that) => pipe(me, alt(that))
 /* istanbul ignore next */
 const filter_: Filterable1<URI>['filter'] = <A>(fa: Observable<A>, p: Predicate<A>) => pipe(fa, filter(p))
+/* istanbul ignore next */
 const filterMap_: Filterable1<URI>['filterMap'] = <A, B>(fa: Observable<A>, f: (a: A) => O.Option<B>) =>
   pipe(fa, filterMap(f))
 /* istanbul ignore next */

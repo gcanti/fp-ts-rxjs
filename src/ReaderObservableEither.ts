@@ -87,9 +87,9 @@ export const fromObservable: MonadObservable3<URI>['fromObservable'] = ma => () 
  * @category combinators
  * @since 0.6.10
  */
-export const local = <R2, R1>(f: (d: R2) => R1) => <E, A>(
-  ma: ReaderObservableEither<R1, E, A>
-): ReaderObservableEither<R2, E, A> => M.local(ma, f)
+export const local: <R2, R1>(
+  f: (d: R2) => R1
+) => <E, A>(ma: ReaderObservableEither<R1, E, A>) => ReaderObservableEither<R2, E, A> = R.local
 
 // -------------------------------------------------------------------------------------
 // type class members

@@ -406,7 +406,7 @@ Added in v0.6.6
 **Signature**
 
 ```ts
-export declare const fromReader: <R, A = never>(ma: Reader<R, A>) => ReaderObservable<R, A>
+export declare const fromReader: <R, A = never>(ma: R.Reader<R, A>) => ReaderObservable<R, A>
 ```
 
 Added in v0.6.6
