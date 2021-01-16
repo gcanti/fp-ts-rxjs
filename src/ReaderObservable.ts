@@ -17,14 +17,11 @@ import { MonadTask2 } from 'fp-ts/lib/MonadTask'
 import { Monoid } from 'fp-ts/lib/Monoid'
 import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/pipeable'
-import { getMonoid as getReaderMonoid, Reader } from 'fp-ts/lib/Reader'
-import { getReaderM } from 'fp-ts/lib/ReaderT'
+import * as R from 'fp-ts/lib/Reader'
 import { ReaderTask } from 'fp-ts/lib/ReaderTask'
 import { Observable } from 'rxjs'
 import { MonadObservable2 } from './MonadObservable'
-import * as R from './Observable'
-
-const T = getReaderM(R.Monad)
+import * as T from './Observable'
 
 // -------------------------------------------------------------------------------------
 // model
@@ -46,19 +43,19 @@ export interface ReaderObservable<R, A> {
  * @category constructors
  * @since 0.6.6
  */
-export const fromObservable: MonadObservable2<URI>['fromObservable'] = T.fromM
+export const fromObservable: MonadObservable2<URI>['fromObservable'] = R.of
 
 /**
  * @category constructors
  * @since 0.6.6
  */
-export const fromReader: <R, A = never>(ma: Reader<R, A>) => ReaderObservable<R, A> = T.fromReader
+export const fromReader: <R, A = never>(ma: R.Reader<R, A>) => ReaderObservable<R, A> = ma => flow(ma, T.of)
 
 /**
  * @category constructors
  * @since 0.6.6
  */
-export const fromOption = <R, A>(o: O.Option<A>): ReaderObservable<R, A> => fromObservable(R.fromOption(o))
+export const fromOption = <R, A>(o: O.Option<A>): ReaderObservable<R, A> => fromObservable(T.fromOption(o))
 
 /**
  * @category constructors
@@ -66,7 +63,7 @@ export const fromOption = <R, A>(o: O.Option<A>): ReaderObservable<R, A> => from
  */
 export const fromIO: MonadIO2<URI>['fromIO'] =
   /*#__PURE__*/
-  flow(R.fromIO, fromObservable)
+  flow(T.fromIO, fromObservable)
 
 /**
  * @category constructors
@@ -74,25 +71,25 @@ export const fromIO: MonadIO2<URI>['fromIO'] =
  */
 export const fromTask: MonadTask2<URI>['fromTask'] =
   /*#__PURE__*/
-  flow(R.fromTask, fromObservable)
+  flow(T.fromTask, fromObservable)
 
 /**
  * @category constructors
  * @since 0.6.9
  */
-export const fromReaderTask = <R, A>(ma: ReaderTask<R, A>): ReaderObservable<R, A> => flow(ma, R.fromTask)
+export const fromReaderTask = <R, A>(ma: ReaderTask<R, A>): ReaderObservable<R, A> => flow(ma, T.fromTask)
 
 /**
  * @category constructors
  * @since 0.6.6
  */
-export const ask: <R>() => ReaderObservable<R, R> = T.ask
+export const ask: <R>() => ReaderObservable<R, R> = () => T.of
 
 /**
  * @category constructors
  * @since 0.6.6
  */
-export const asks: <R, A = never>(f: (r: R) => A) => ReaderObservable<R, A> = T.asks
+export const asks: <R, A = never>(f: (r: R) => A) => ReaderObservable<R, A> = f => flow(T.of, T.map(f))
 
 // -------------------------------------------------------------------------------------
 // combinators
@@ -102,8 +99,7 @@ export const asks: <R, A = never>(f: (r: R) => A) => ReaderObservable<R, A> = T.
  * @category combinators
  * @since 0.6.6
  */
-export const local = <R2, R1>(f: (f: R2) => R1) => <A>(ma: ReaderObservable<R1, A>): ReaderObservable<R2, A> =>
-  T.local(ma, f)
+export const local: <R2, R1>(f: (f: R2) => R1) => <A>(ma: ReaderObservable<R1, A>) => ReaderObservable<R2, A> = R.local
 
 /**
  * @category combinators
@@ -148,7 +144,7 @@ export const chainTaskK = <A, B>(
  * @since 0.6.6
  */
 export const map: <A, B>(f: (a: A) => B) => <E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, B> = f => fa =>
-  T.map(fa, f)
+  flow(fa, T.map(f))
 
 /**
  * Apply a function to an argument under a type constructor.
@@ -158,7 +154,7 @@ export const map: <A, B>(f: (a: A) => B) => <E>(fa: ReaderObservable<E, A>) => R
  */
 export const ap: <E, A>(
   fa: ReaderObservable<E, A>
-) => <B>(fab: ReaderObservable<E, (a: A) => B>) => ReaderObservable<E, B> = fa => fab => T.ap(fab, fa)
+) => <B>(fab: ReaderObservable<E, (a: A) => B>) => ReaderObservable<E, B> = fa => fab => r => pipe(fab(r), T.ap(fa(r)))
 
 /**
  * Combine two effectful actions, keeping only the result of the first.
@@ -196,7 +192,7 @@ export const apSecond = <E, B>(
  * @category Applicative
  * @since 0.6.6
  */
-export const of: <R, A>(a: A) => ReaderObservable<R, A> = T.of
+export const of: <R, A>(a: A) => ReaderObservable<R, A> = a => () => T.of(a)
 
 /**
  * @category Monad
@@ -204,7 +200,11 @@ export const of: <R, A>(a: A) => ReaderObservable<R, A> = T.of
  */
 export const chain: <E, A, B>(
   f: (a: A) => ReaderObservable<E, B>
-) => (ma: ReaderObservable<E, A>) => ReaderObservable<E, B> = f => ma => T.chain(ma, f)
+) => (ma: ReaderObservable<E, A>) => ReaderObservable<E, B> = f => fa => r =>
+  pipe(
+    fa(r),
+    T.chain(a => f(a)(r))
+  )
 
 /**
  * Derivable from `Monad`.
@@ -244,12 +244,16 @@ export const chainFirst: <E, A, B>(
  */
 export const alt: <E, A>(
   that: () => ReaderObservable<E, A>
-) => (fa: ReaderObservable<E, A>) => ReaderObservable<E, A> = that => me => r => R.Alt.alt(me(r), () => that()(r))
+) => (fa: ReaderObservable<E, A>) => ReaderObservable<E, A> = that => me => r =>
+  pipe(
+    me(r),
+    T.alt(() => that()(r))
+  )
 
 /**
  * @since 0.6.12
  */
-export const zero: Alternative2<URI>['zero'] = () => R.Alternative.zero
+export const zero: Alternative2<URI>['zero'] = () => T.Alternative.zero
 
 /**
  * @category Filterable
@@ -257,7 +261,7 @@ export const zero: Alternative2<URI>['zero'] = () => R.Alternative.zero
  */
 export const filterMap: <A, B>(
   f: (a: A) => O.Option<B>
-) => <E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, B> = f => fa => r => R.Filterable.filterMap(fa(r), f)
+) => <E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, B> = f => fa => r => pipe(fa(r), T.filterMap(f))
 
 /**
  * @category Compactable
@@ -324,6 +328,10 @@ export const partition: {
 // instances
 // -------------------------------------------------------------------------------------
 
+const map_: Functor2<URI>['map'] = (fa, f) => pipe(fa, map(f))
+const ap_: Apply2<URI>['ap'] = (fab, fa) => pipe(fab, ap(fa))
+/* istanbul ignore next */
+const chain_: Monad2<URI>['chain'] = (ma, f) => pipe(ma, chain(f))
 /* istanbul ignore next */
 const alt_: Alt2<URI>['alt'] = (fx, f) => pipe(fx, alt(f))
 /* istanbul ignore next */
@@ -358,7 +366,7 @@ declare module 'fp-ts/lib/HKT' {
  * @category instances
  * @since 0.6.6
  */
-export const getMonoid = <R, A>(): Monoid<ReaderObservable<R, A>> => getReaderMonoid(R.getMonoid())
+export const getMonoid = <R, A>(): Monoid<ReaderObservable<R, A>> => R.getMonoid(T.getMonoid())
 
 /**
  * @category instances
@@ -366,7 +374,7 @@ export const getMonoid = <R, A>(): Monoid<ReaderObservable<R, A>> => getReaderMo
  */
 export const Functor: Functor2<URI> = {
   URI,
-  map: T.map
+  map: map_
 }
 
 /**
@@ -375,8 +383,8 @@ export const Functor: Functor2<URI> = {
  */
 export const Apply: Apply2<URI> = {
   URI,
-  map: T.map,
-  ap: T.ap
+  map: map_,
+  ap: ap_
 }
 
 /**
@@ -385,8 +393,8 @@ export const Apply: Apply2<URI> = {
  */
 export const Applicative: Applicative2<URI> = {
   URI,
-  map: T.map,
-  ap: T.ap,
+  map: map_,
+  ap: ap_,
   of
 }
 
@@ -396,10 +404,10 @@ export const Applicative: Applicative2<URI> = {
  */
 export const Monad: Monad2<URI> = {
   URI,
-  map: T.map,
-  ap: T.ap,
+  map: map_,
+  ap: ap_,
   of,
-  chain: T.chain
+  chain: chain_
 }
 
 /**
@@ -408,7 +416,7 @@ export const Monad: Monad2<URI> = {
  */
 export const Alt: Alt2<URI> = {
   URI,
-  map: T.map,
+  map: map_,
   alt: alt_
 }
 
@@ -418,8 +426,8 @@ export const Alt: Alt2<URI> = {
  */
 export const Alternative: Alternative2<URI> = {
   URI,
-  map: T.map,
-  ap: T.ap,
+  map: map_,
+  ap: ap_,
   of,
   alt: alt_,
   zero
@@ -443,7 +451,7 @@ export const Filterable: Filterable2<URI> = {
   URI,
   compact,
   separate,
-  map: T.map,
+  map: map_,
   filter: filter_,
   filterMap: filterMap_,
   partition: partition_,
@@ -456,10 +464,10 @@ export const Filterable: Filterable2<URI> = {
  */
 export const MonadIO: MonadIO2<URI> = {
   URI,
-  map: T.map,
-  ap: T.ap,
+  map: map_,
+  ap: ap_,
   of,
-  chain: T.chain,
+  chain: chain_,
   fromIO
 }
 
@@ -469,10 +477,10 @@ export const MonadIO: MonadIO2<URI> = {
  */
 export const MonadTask: MonadTask2<URI> = {
   URI,
-  map: T.map,
-  ap: T.ap,
+  map: map_,
+  ap: ap_,
   of,
-  chain: T.chain,
+  chain: chain_,
   fromIO,
   fromTask
 }
@@ -483,10 +491,10 @@ export const MonadTask: MonadTask2<URI> = {
  */
 export const MonadObservable: MonadObservable2<URI> = {
   URI,
-  map: T.map,
-  ap: T.ap,
+  map: map_,
+  ap: ap_,
   of,
-  chain: T.chain,
+  chain: chain_,
   fromIO,
   fromTask,
   fromObservable
@@ -499,10 +507,10 @@ export const MonadObservable: MonadObservable2<URI> = {
  */
 export const readerObservable: Monad2<URI> & Alternative2<URI> & Filterable2<URI> & MonadObservable2<URI> = {
   URI,
-  map: T.map,
+  map: map_,
   of,
-  ap: T.ap,
-  chain: T.chain,
+  ap: ap_,
+  chain: chain_,
   zero,
   alt: alt_,
   compact,
