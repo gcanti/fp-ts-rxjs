@@ -4,7 +4,7 @@ nav_order: 2
 parent: Modules
 ---
 
-## MonadObservable overview
+# MonadObservable overview
 
 Lift a computation from the `Observable` monad
 
@@ -14,20 +14,17 @@ Added in v0.6.6
 
 <h2 class="text-delta">Table of contents</h2>
 
-- [utils](#utils)
-  - [MonadObservable (interface)](#monadobservable-interface)
-  - [MonadObservable1 (interface)](#monadobservable1-interface)
-  - [MonadObservable2 (interface)](#monadobservable2-interface)
-  - [MonadObservable2C (interface)](#monadobservable2c-interface)
-  - [MonadObservable3 (interface)](#monadobservable3-interface)
-  - [MonadObservable3C (interface)](#monadobservable3c-interface)
-  - [MonadObservable4 (interface)](#monadobservable4-interface)
+- [MonadObservable (interface)](#monadobservable-interface)
+- [MonadObservable1 (interface)](#monadobservable1-interface)
+- [MonadObservable2 (interface)](#monadobservable2-interface)
+- [MonadObservable2C (interface)](#monadobservable2c-interface)
+- [MonadObservable3 (interface)](#monadobservable3-interface)
+- [MonadObservable3C (interface)](#monadobservable3c-interface)
+- [MonadObservable4 (interface)](#monadobservable4-interface)
 
 ---
 
-# utils
-
-## MonadObservable (interface)
+# MonadObservable (interface)
 
 **Signature**
 
@@ -39,7 +36,7 @@ export interface MonadObservable<M> extends MonadTask<M> {
 
 Added in v0.6.6
 
-## MonadObservable1 (interface)
+# MonadObservable1 (interface)
 
 **Signature**
 
@@ -51,7 +48,7 @@ export interface MonadObservable1<M extends URIS> extends MonadTask1<M> {
 
 Added in v0.6.6
 
-## MonadObservable2 (interface)
+# MonadObservable2 (interface)
 
 **Signature**
 
@@ -63,7 +60,7 @@ export interface MonadObservable2<M extends URIS2> extends MonadTask2<M> {
 
 Added in v0.6.6
 
-## MonadObservable2C (interface)
+# MonadObservable2C (interface)
 
 **Signature**
 
@@ -75,7 +72,7 @@ export interface MonadObservable2C<M extends URIS2, E> extends MonadTask2C<M, E>
 
 Added in v0.6.6
 
-## MonadObservable3 (interface)
+# MonadObservable3 (interface)
 
 **Signature**
 
@@ -87,7 +84,7 @@ export interface MonadObservable3<M extends URIS3> extends MonadTask3<M> {
 
 Added in v0.6.6
 
-## MonadObservable3C (interface)
+# MonadObservable3C (interface)
 
 **Signature**
 
@@ -99,7 +96,7 @@ export interface MonadObservable3C<M extends URIS3, E> extends MonadTask3C<M, E>
 
 Added in v0.6.6
 
-## MonadObservable4 (interface)
+# MonadObservable4 (interface)
 
 **Signature**
 

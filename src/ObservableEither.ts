@@ -120,8 +120,9 @@ export const fromObservable: MonadObservable2<URI>['fromObservable'] = rightObse
  * @category constructors
  * @since 0.6.12
  */
-export const tryCatch = <E, A>(onRejected: (e: unknown) => E): ((a: Observable<A>) => ObservableEither<E, A>) =>
-  flow(R.map(E.right), catchError(flow(onRejected, E.left, R.of)))
+export const tryCatch: <A>(a: Observable<A>) => ObservableEither<unknown, A> =
+  /*#__PURE__*/
+  flow(R.map(E.right), catchError(flow(E.left, R.of)))
 
 // -------------------------------------------------------------------------------------
 // destructors

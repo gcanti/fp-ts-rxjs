@@ -43,10 +43,7 @@ describe('ObservableEither', () => {
   })
 
   it('tryCatch success', async () => {
-    const e = await pipe(
-      rxOf(1),
-      _.tryCatch(() => 'Error')
-    )
+    const e = await pipe(rxOf(1), _.tryCatch)
       .pipe(bufferTime(10))
       .toPromise()
     assert.deepStrictEqual(e, [E.right(1)])
@@ -55,24 +52,12 @@ describe('ObservableEither', () => {
   it('tryCatch failure', async () => {
     const e = await pipe(
       rxThrowError(new Error('Uncaught Error')),
-      _.tryCatch(() => 'Caught Error')
+      _.tryCatch,
+      _.mapLeft(() => 'Caught Error')
     )
       .pipe(bufferTime(10))
       .toPromise()
     assert.deepStrictEqual(e, [E.left('Caught Error')])
-  })
-
-  it('tryCatch onRejected throws', async () => {
-    const e = await pipe(
-      rxThrowError(new Error('Original Error')),
-      _.tryCatch(() => {
-        throw new Error('onRejected Error')
-      })
-    )
-      .pipe(bufferTime(10))
-      .toPromise()
-      .catch(() => 'Caught Error')
-    assert.deepStrictEqual(e, 'Caught Error')
   })
 
   it('fold left', async () => {
