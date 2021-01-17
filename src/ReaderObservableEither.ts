@@ -210,8 +210,7 @@ export const chainW = <R, A, E2, B>(
  */
 export const chain: <R, E, A, B>(
   f: (a: A) => ReaderObservableEither<R, E, B>
-) => (ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, B> = f => 
-  chainW(f)
+) => (ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, B> = chainW
 
 /**
  * Derivable from `Monad`.

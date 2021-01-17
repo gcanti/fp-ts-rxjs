@@ -254,9 +254,9 @@ export const chainW = <A, E2, B>(
   f: (a: A) => ObservableEither<E2, B>
 ) => <E1>(ma: ObservableEither<E1, A>): ObservableEither<E1 | E2, B> => pipe(ma, R.chain(E.fold(a => left<E1 | E2, B>(a), f)))
 
-export const chain = <A, E, B>(
+export const chain: <A, E, B>(
   f: (a: A) => ObservableEither<E, B>
-): ((ma: ObservableEither<E, A>) => ObservableEither<E, B>) => chainW(f)
+) => (ma: ObservableEither<E, A>) => ObservableEither<E, B> = chainW
 
 /**
  * Derivable from `Monad`.
