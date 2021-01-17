@@ -250,9 +250,13 @@ export const mapLeft: <E, G>(f: (e: E) => G) => <A>(fa: ObservableEither<E, A>) 
  * @category Monad
  * @since 0.6.8
  */
-export const chain = <E, A, B>(
+export const chainW = <A, E2, B>(
+  f: (a: A) => ObservableEither<E2, B>
+) => <E1>(ma: ObservableEither<E1, A>): ObservableEither<E1 | E2, B> => pipe(ma, R.chain(E.fold(a => left<E1 | E2, B>(a), f)))
+
+export const chain: <A, E, B>(
   f: (a: A) => ObservableEither<E, B>
-): ((ma: ObservableEither<E, A>) => ObservableEither<E, B>) => R.chain(E.fold(left, f))
+) => (ma: ObservableEither<E, A>) => ObservableEither<E, B> = chainW
 
 /**
  * Derivable from `Monad`.
