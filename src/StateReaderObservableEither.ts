@@ -13,8 +13,10 @@ import { MonadTask4 } from 'fp-ts/lib/MonadTask'
 import { MonadThrow4 } from 'fp-ts/lib/MonadThrow'
 import { Option } from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/pipeable'
+import { OperatorFunction } from 'rxjs'
 import { MonadObservable4 } from './MonadObservable'
 import * as OB from './Observable'
+import * as OE from './ObservableEither'
 import * as ROE from './ReaderObservableEither'
 
 // -------------------------------------------------------------------------------------
@@ -192,6 +194,19 @@ export const apSecond = <S, R, E, B>(
     map(() => (b: B) => b),
     ap(fb)
   )
+
+/**
+ * Lifts an OperatorFunction into a StateReaderObservableEither context
+ * Allows e.g. filter to be used on on StateReaderObservableEither
+ *
+ * @category combinators
+ * @since 0.6.12
+ */
+export function liftOperator<S, R, E, A, B>(
+  f: OperatorFunction<[A, S], [B, S]>
+): (obs: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, B> {
+  return obs => s => r => OE.liftOperator<E, [A, S], [B, S]>(f)(obs(s)(r))
+}
 
 /**
  * @category Bifunctor

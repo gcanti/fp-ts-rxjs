@@ -14,6 +14,7 @@ import { MonadThrow3 } from 'fp-ts/lib/MonadThrow'
 import { Option } from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/pipeable'
 import * as R from 'fp-ts/lib/Reader'
+import { OperatorFunction } from 'rxjs'
 import { MonadObservable3 } from './MonadObservable'
 import * as OE from './ObservableEither'
 
@@ -102,6 +103,19 @@ export const fromObservable: MonadObservable3<URI>['fromObservable'] = ma => () 
 export const local: <R2, R1>(
   f: (d: R2) => R1
 ) => <E, A>(ma: ReaderObservableEither<R1, E, A>) => ReaderObservableEither<R2, E, A> = R.local
+
+/**
+ * Lifts an OperatorFunction into a ReaderObservableEither context
+ * Allows e.g. filter to be used on on ReaderObservableEither
+ *
+ * @category combinators
+ * @since 0.6.12
+ */
+export function liftOperator<R, E, A, B>(
+  f: OperatorFunction<A, B>
+): (obs: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, B> {
+  return obs => r => OE.liftOperator<E, A, B>(f)(obs(r))
+}
 
 // -------------------------------------------------------------------------------------
 // type class members

@@ -8,6 +8,7 @@ import * as O from 'fp-ts/lib/Option'
 import * as E from 'fp-ts/lib/Either'
 import * as R from 'fp-ts/lib/Reader'
 import * as T from 'fp-ts/lib/Task'
+import { from } from 'rxjs'
 
 // test helper to dry up LOC.
 export const buffer = flow(R.map(bufferTime(10)), R.map(OB.toTask))
@@ -98,6 +99,30 @@ describe('ReaderObservable', () => {
     const e = await robe('foo')()
 
     assert.deepStrictEqual(e, [E.right(4)])
+  })
+
+  it('liftOperator (left)', async () => {
+    const robe = pipe(
+      from(['error1', 'error2']),
+      OBE.leftObservable,
+      _.fromObservableEither,
+      _.liftOperator(OB.filter(x => x % 2 === 0)),
+      buffer
+    )
+    const e = await robe({})()
+    assert.deepStrictEqual(e, [E.left('error1'), E.left('error2')])
+  })
+
+  it('liftOperator (right)', async () => {
+    const robe = pipe(
+      from([1, 2, 3, 4]),
+      OBE.rightObservable,
+      _.fromObservableEither,
+      _.liftOperator(OB.filter(x => x % 2 === 0)),
+      buffer
+    )
+    const e = await robe({})()
+    assert.deepStrictEqual(e, [E.right(2), E.right(4)])
   })
 
   it('fromTask', async () => {

@@ -7,7 +7,8 @@ import { pipe } from 'fp-ts/lib/pipeable'
 import { bufferTime } from 'rxjs/operators'
 import * as O from 'fp-ts/lib/Option'
 import * as _ from '../src/ObservableEither'
-import { of as rxOf, Observable } from 'rxjs'
+import { of as rxOf, Observable, from } from 'rxjs'
+import { filter } from '../src/Observable'
 
 describe('ObservableEither', () => {
   it('rightIO', async () => {
@@ -104,6 +105,20 @@ describe('ObservableEither', () => {
       .pipe(bufferTime(10))
       .toPromise()
     assert.deepStrictEqual(e, [E.left(1)])
+  })
+
+  it('liftOperator (left)', async () => {
+    const e = await pipe(from(['error1', 'error2']), _.leftObservable, _.liftOperator(filter(x => x % 2 === 0)))
+      .pipe(bufferTime(10))
+      .toPromise()
+    assert.deepStrictEqual(e, [E.left('error1'), E.left('error2')])
+  })
+
+  it('liftOperator (right)', async () => {
+    const e = await pipe(from([1, 2, 3, 4]), _.rightObservable, _.liftOperator(filter(x => x % 2 === 0)))
+      .pipe(bufferTime(10))
+      .toPromise()
+    assert.deepStrictEqual(e, [E.right(2), E.right(4)])
   })
 
   describe('Monad', () => {
