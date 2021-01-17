@@ -7,7 +7,7 @@ import { pipe } from 'fp-ts/lib/pipeable'
 import { bufferTime } from 'rxjs/operators'
 import * as O from 'fp-ts/lib/Option'
 import * as _ from '../src/ObservableEither'
-import { of as rxOf, Observable } from 'rxjs'
+import { of as rxOf, Observable, throwError as rxThrowError } from 'rxjs'
 
 describe('ObservableEither', () => {
   it('rightIO', async () => {
@@ -40,6 +40,39 @@ describe('ObservableEither', () => {
       .pipe(bufferTime(10))
       .toPromise()
     assert.deepStrictEqual(e, [E.right(1)])
+  })
+
+  it('tryCatch success', async () => {
+    const e = await pipe(
+      rxOf(1),
+      _.tryCatch(() => 'Error')
+    )
+      .pipe(bufferTime(10))
+      .toPromise()
+    assert.deepStrictEqual(e, [E.right(1)])
+  })
+
+  it('tryCatch failure', async () => {
+    const e = await pipe(
+      rxThrowError(new Error('Uncaught Error')),
+      _.tryCatch(() => 'Caught Error')
+    )
+      .pipe(bufferTime(10))
+      .toPromise()
+    assert.deepStrictEqual(e, [E.left('Caught Error')])
+  })
+
+  it('tryCatch onRejected throws', async () => {
+    const e = await pipe(
+      rxThrowError(new Error('Original Error')),
+      _.tryCatch(() => {
+        throw new Error('onRejected Error')
+      })
+    )
+      .pipe(bufferTime(10))
+      .toPromise()
+      .catch(() => 'Caught Error')
+    assert.deepStrictEqual(e, 'Caught Error')
   })
 
   it('fold left', async () => {
