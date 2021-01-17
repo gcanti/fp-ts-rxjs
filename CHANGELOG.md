@@ -64,6 +64,7 @@ high state of flux, you're at risk of it changing without notice.
     - add `fromOption` (@gcanti)
     - add `fromPredicate` (@gcanti)
     - add `chainW` (@anthonyjoeseph)
+    - add `tryCatch`, #48 (@anthonyjoeseph)
   - `ReaderObservable`
     - add `Do` (@gcanti)
     - add `bindW` (@gcanti)
