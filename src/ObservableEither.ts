@@ -17,8 +17,8 @@ import { MonadThrow2 } from 'fp-ts/lib/MonadThrow'
 import { Option } from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/pipeable'
 import * as TE from 'fp-ts/lib/TaskEither'
-import { Observable } from 'rxjs'
-import { catchError } from 'rxjs/operators'
+import { defer, merge, Observable, OperatorFunction, Subject } from 'rxjs'
+import { finalize, catchError } from 'rxjs/operators'
 import { MonadObservable2 } from './MonadObservable'
 import * as R from './Observable'
 
@@ -165,6 +165,27 @@ export const orElse: <E, A, M>(
 export const swap: <E, A>(ma: ObservableEither<E, A>) => ObservableEither<A, E> =
   /*#__PURE__*/
   R.map(E.swap)
+
+/**
+ * Lifts an OperatorFunction into an ObservableEither context
+ * Allows e.g. filter to be used on on ObservableEither
+ *
+ * @category combinators
+ * @since 0.6.12
+ */
+export function liftOperator<E, A, B>(
+  f: OperatorFunction<A, B>
+): (obs: ObservableEither<E, A>) => ObservableEither<E, B> {
+  return obs => {
+    const subj = new Subject<E.Either<E, A>>()
+    return merge(
+      pipe(subj, R.separate, ({ left, right }) => merge(pipe(left, R.map(E.left)), pipe(right, f, R.map(E.right)))),
+      defer(() => {
+        obs.pipe(finalize(() => subj.complete())).subscribe(subj)
+      })
+    )
+  }
+}
 
 // -------------------------------------------------------------------------------------
 // type class members

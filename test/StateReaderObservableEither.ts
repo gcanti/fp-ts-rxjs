@@ -8,6 +8,8 @@ import { bufferTime } from 'rxjs/operators'
 import { observable as OB, stateReaderObservableEither as _ } from '../src'
 import { buffer as _buffer } from './ReaderObservableEither'
 import * as ROE from '../src/ReaderObservableEither'
+import { from } from 'rxjs'
+import { leftObservable } from '../src/ObservableEither'
 
 function buffer<S, R, E, A>(
   srobe: _.StateReaderObservableEither<S, R, E, A>
@@ -133,6 +135,24 @@ describe('stateReaderObservableEither', () => {
       .then(events => {
         assert.deepStrictEqual(events, [E.right([2, undefined])])
       })
+  })
+
+  it('liftOperator (left)', async () => {
+    const srobe = pipe(
+      leftObservable<string, number>(from(['error1', 'error2'])),
+      ROE.fromObservableEither,
+      _.fromReaderObservableEither,
+      _.liftOperator(OB.filter(([x]) => x % 2 === 0)),
+      buffer
+    )
+    const e = await srobe(1)(2)()
+    assert.deepStrictEqual(e, [E.left('error1'), E.left('error2')])
+  })
+
+  it('liftOperator (right)', async () => {
+    const srobe = pipe(from([1, 2, 3, 4]), _.fromObservable, _.liftOperator(OB.filter(([x]) => x % 2 === 0)), buffer)
+    const e = await srobe(1)(2)()
+    assert.deepStrictEqual(e, [E.right([2, 1]), E.right([4, 1])])
   })
 
   it('chainFirst', async () => {
