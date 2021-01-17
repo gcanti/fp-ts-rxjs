@@ -45,6 +45,7 @@ Added in v0.6.8
   - [right](#right)
   - [rightIO](#rightio)
   - [rightObservable](#rightobservable)
+  - [tryCatch](#trycatch)
 - [destructors](#destructors)
   - [fold](#fold)
   - [getOrElse](#getorelse)
@@ -387,6 +388,16 @@ export declare const rightObservable: <E = never, A = never>(ma: Observable<A>) 
 ```
 
 Added in v0.6.8
+
+## tryCatch
+
+**Signature**
+
+```ts
+export declare const tryCatch: <A>(a: Observable<A>) => ObservableEither<unknown, A>
+```
+
+Added in v0.6.12
 
 # destructors
 
