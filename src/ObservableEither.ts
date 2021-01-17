@@ -18,6 +18,7 @@ import { Option } from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/pipeable'
 import * as TE from 'fp-ts/lib/TaskEither'
 import { Observable } from 'rxjs'
+import { catchError } from 'rxjs/operators'
 import { MonadObservable2 } from './MonadObservable'
 import * as R from './Observable'
 
@@ -114,6 +115,14 @@ export const fromTask: MonadTask2<URI>['fromTask'] =
  * @since 0.6.12
  */
 export const fromObservable: MonadObservable2<URI>['fromObservable'] = rightObservable
+
+/**
+ * @category constructors
+ * @since 0.6.12
+ */
+export const tryCatch: <A>(a: Observable<A>) => ObservableEither<unknown, A> =
+  /*#__PURE__*/
+  flow(R.map(E.right), catchError(flow(E.left, R.of)))
 
 // -------------------------------------------------------------------------------------
 // destructors
