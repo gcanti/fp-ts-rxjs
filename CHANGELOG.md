@@ -63,6 +63,7 @@ high state of flux, you're at risk of it changing without notice.
     - add `fromEither` (@gcanti)
     - add `fromOption` (@gcanti)
     - add `fromPredicate` (@gcanti)
+    - add `chainW` (@anthonyjoeseph)
   - `ReaderObservable`
     - add `Do` (@gcanti)
     - add `bindW` (@gcanti)
@@ -78,6 +79,7 @@ high state of flux, you're at risk of it changing without notice.
     - add `MonadIO` instance (@gcanti)
     - add `MonadTask` instance (@gcanti)
     - add `MonadObservable` instance (@gcanti)
+    - add `chainW` (@gcanti)
   - `ReaderObservableEither`
     - add `Do` (@gcanti)
     - add `bindW` (@gcanti)
@@ -92,6 +94,7 @@ high state of flux, you're at risk of it changing without notice.
     - add `MonadThrow` instance (@gcanti)
     - add `right` (@gcanti)
     - add `left` (@gcanti)
+    - add `chainW` (@anthonyjoeseph)
   - `StateReaderObservableEither`
     - add `of` (@gcanti)
     - add `bindW` (@gcanti)
@@ -104,6 +107,7 @@ high state of flux, you're at risk of it changing without notice.
     - add `MonadTask` instance (@gcanti)
     - add `MonadObservable` instance (@gcanti)
     - add `MonadThrow` instance (@gcanti)
+    - add `chainW` (@anthonyjoeseph)
 - **Polish**
   - export `MonadObservable` from `index.ts` (@canti)
 - **Internal**
