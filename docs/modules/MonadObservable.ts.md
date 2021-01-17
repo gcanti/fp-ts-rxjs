@@ -14,7 +14,7 @@ Added in v0.6.6
 
 <h2 class="text-delta">Table of contents</h2>
 
-- [utils](#utils)
+- [type classes](#type-classes)
   - [MonadObservable (interface)](#monadobservable-interface)
   - [MonadObservable1 (interface)](#monadobservable1-interface)
   - [MonadObservable2 (interface)](#monadobservable2-interface)
@@ -25,7 +25,7 @@ Added in v0.6.6
 
 ---
 
-# utils
+# type classes
 
 ## MonadObservable (interface)
 
