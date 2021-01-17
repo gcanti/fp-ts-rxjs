@@ -141,6 +141,10 @@ describe('ObservableEither', () => {
         .pipe(bufferTime(10))
         .toPromise()
       assert.deepStrictEqual(e2, [E.left('text')])
+      const e3 = await pipe(_.left('b'), _.chain(f))
+        .pipe(bufferTime(10))
+        .toPromise()
+      assert.deepStrictEqual(e3, [E.left('b')])
     })
 
     it('left identity', async () => {

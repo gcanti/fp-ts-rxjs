@@ -193,15 +193,17 @@ export const mapLeft: <E, G>(
   OE.mapLeft(f)(fea(r))
 
 /**
+ * Less strict version of [`chain`](#chain).
+ *
  * @category Monad
- * @since 0.6.10
+ * @since 0.6.12
  */
-export const chainW = <R, A, E2, B>(
-  f: (a: A) => ReaderObservableEither<R, E2, B>
-) => <E1>(ma: ReaderObservableEither<R, E1, A>): ReaderObservableEither<R, E1 | E2, B> => r =>
+export const chainW = <A, R2, E2, B>(f: (a: A) => ReaderObservableEither<R2, E2, B>) => <R1, E1>(
+  ma: ReaderObservableEither<R1, E1, A>
+): ReaderObservableEither<R1 & R2, E1 | E2, B> => r =>
   pipe(
     ma(r),
-    OE.chain<A, E1 | E2, B>((a) => f(a)(r))
+    OE.chainW(a => f(a)(r))
   )
 
 /**

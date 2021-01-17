@@ -30,6 +30,7 @@ Added in v0.6.6
   - [map](#map)
 - [Monad](#monad)
   - [chain](#chain)
+  - [chainW](#chainw)
 - [combinators](#combinators)
   - [apFirst](#apfirst)
   - [apSecond](#apsecond)
@@ -88,9 +89,9 @@ types of kind `* -> *`.
 **Signature**
 
 ```ts
-export declare const alt: <E, A>(
-  that: () => ReaderObservable<E, A>
-) => (fa: ReaderObservable<E, A>) => ReaderObservable<E, A>
+export declare const alt: <R, A>(
+  that: () => ReaderObservable<R, A>
+) => (fa: ReaderObservable<R, A>) => ReaderObservable<R, A>
 ```
 
 Added in v0.6.7
@@ -116,9 +117,9 @@ Apply a function to an argument under a type constructor.
 **Signature**
 
 ```ts
-export declare const ap: <E, A>(
-  fa: ReaderObservable<E, A>
-) => <B>(fab: ReaderObservable<E, (a: A) => B>) => ReaderObservable<E, B>
+export declare const ap: <R, A>(
+  fa: ReaderObservable<R, A>
+) => <B>(fab: ReaderObservable<R, (a: A) => B>) => ReaderObservable<R, B>
 ```
 
 Added in v0.6.6
@@ -130,7 +131,7 @@ Added in v0.6.6
 **Signature**
 
 ```ts
-export declare const compact: <E, A>(fa: ReaderObservable<E, O.Option<A>>) => ReaderObservable<E, A>
+export declare const compact: <R, A>(fa: ReaderObservable<R, O.Option<A>>) => ReaderObservable<R, A>
 ```
 
 Added in v0.6.7
@@ -140,9 +141,9 @@ Added in v0.6.7
 **Signature**
 
 ```ts
-export declare const separate: <E, A, B>(
-  fa: ReaderObservable<E, E.Either<A, B>>
-) => Separated<ReaderObservable<E, A>, ReaderObservable<E, B>>
+export declare const separate: <R, A, B>(
+  fa: ReaderObservable<R, E.Either<A, B>>
+) => Separated<ReaderObservable<R, A>, ReaderObservable<R, B>>
 ```
 
 Added in v0.6.7
@@ -155,8 +156,8 @@ Added in v0.6.7
 
 ```ts
 export declare const filter: {
-  <A, B extends A>(refinement: Refinement<A, B>): <E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, B>
-  <A>(predicate: Predicate<A>): <E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, A>
+  <A, B extends A>(refinement: Refinement<A, B>): <R>(fa: ReaderObservable<R, A>) => ReaderObservable<R, B>
+  <A>(predicate: Predicate<A>): <R>(fa: ReaderObservable<R, A>) => ReaderObservable<R, A>
 }
 ```
 
@@ -169,7 +170,7 @@ Added in v0.6.7
 ```ts
 export declare const filterMap: <A, B>(
   f: (a: A) => O.Option<B>
-) => <E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, B>
+) => <R>(fa: ReaderObservable<R, A>) => ReaderObservable<R, B>
 ```
 
 Added in v0.6.7
@@ -180,12 +181,12 @@ Added in v0.6.7
 
 ```ts
 export declare const partition: {
-  <A, B extends A>(refinement: Refinement<A, B>): <E>(
-    fa: ReaderObservable<E, A>
-  ) => Separated<ReaderObservable<E, A>, ReaderObservable<E, B>>
-  <A>(predicate: Predicate<A>): <E>(
-    fa: ReaderObservable<E, A>
-  ) => Separated<ReaderObservable<E, A>, ReaderObservable<E, A>>
+  <A, B extends A>(refinement: Refinement<A, B>): <R>(
+    fa: ReaderObservable<R, A>
+  ) => Separated<ReaderObservable<R, A>, ReaderObservable<R, B>>
+  <A>(predicate: Predicate<A>): <R>(
+    fa: ReaderObservable<R, A>
+  ) => Separated<ReaderObservable<R, A>, ReaderObservable<R, A>>
 }
 ```
 
@@ -198,7 +199,7 @@ Added in v0.6.7
 ```ts
 export declare const partitionMap: <A, B, C>(
   f: (a: A) => E.Either<B, C>
-) => <E>(fa: ReaderObservable<E, A>) => Separated<ReaderObservable<E, B>, ReaderObservable<E, C>>
+) => <R>(fa: ReaderObservable<R, A>) => Separated<ReaderObservable<R, B>, ReaderObservable<R, C>>
 ```
 
 Added in v0.6.7
@@ -213,7 +214,7 @@ use the type constructor `F` to represent some computational context.
 **Signature**
 
 ```ts
-export declare const map: <A, B>(f: (a: A) => B) => <E>(fa: ReaderObservable<E, A>) => ReaderObservable<E, B>
+export declare const map: <A, B>(f: (a: A) => B) => <R>(fa: ReaderObservable<R, A>) => ReaderObservable<R, B>
 ```
 
 Added in v0.6.6
@@ -225,12 +226,26 @@ Added in v0.6.6
 **Signature**
 
 ```ts
-export declare const chain: <E, A, B>(
-  f: (a: A) => ReaderObservable<E, B>
-) => (ma: ReaderObservable<E, A>) => ReaderObservable<E, B>
+export declare const chain: <R, A, B>(
+  f: (a: A) => ReaderObservable<R, B>
+) => (ma: ReaderObservable<R, A>) => ReaderObservable<R, B>
 ```
 
 Added in v0.6.6
+
+## chainW
+
+Less strict version of [`chain`](#chain).
+
+**Signature**
+
+```ts
+export declare const chainW: <A, R2, B>(
+  f: (a: A) => ReaderObservable<R2, B>
+) => <R1>(ma: ReaderObservable<R1, A>) => ReaderObservable<R1 & R2, B>
+```
+
+Added in v0.6.12
 
 # combinators
 
@@ -243,9 +258,9 @@ Derivable from `Apply`.
 **Signature**
 
 ```ts
-export declare const apFirst: <E, B>(
-  fb: ReaderObservable<E, B>
-) => <A>(fa: ReaderObservable<E, A>) => ReaderObservable<E, A>
+export declare const apFirst: <R, B>(
+  fb: ReaderObservable<R, B>
+) => <A>(fa: ReaderObservable<R, A>) => ReaderObservable<R, A>
 ```
 
 Added in v0.6.6
@@ -259,9 +274,9 @@ Derivable from `Apply`.
 **Signature**
 
 ```ts
-export declare const apSecond: <E, B>(
-  fb: ReaderObservable<E, B>
-) => <A>(fa: ReaderObservable<E, A>) => ReaderObservable<E, B>
+export declare const apSecond: <R, B>(
+  fb: ReaderObservable<R, B>
+) => <A>(fa: ReaderObservable<R, A>) => ReaderObservable<R, B>
 ```
 
 Added in v0.6.6
@@ -276,9 +291,9 @@ Derivable from `Monad`.
 **Signature**
 
 ```ts
-export declare const chainFirst: <E, A, B>(
-  f: (a: A) => ReaderObservable<E, B>
-) => (ma: ReaderObservable<E, A>) => ReaderObservable<E, A>
+export declare const chainFirst: <R, A, B>(
+  f: (a: A) => ReaderObservable<R, B>
+) => (ma: ReaderObservable<R, A>) => ReaderObservable<R, A>
 ```
 
 Added in v0.6.6
@@ -312,7 +327,7 @@ Derivable from `Monad`.
 **Signature**
 
 ```ts
-export declare const flatten: <E, A>(mma: ReaderObservable<E, ReaderObservable<E, A>>) => ReaderObservable<E, A>
+export declare const flatten: <R, A>(mma: ReaderObservable<R, ReaderObservable<R, A>>) => ReaderObservable<R, A>
 ```
 
 Added in v0.6.6

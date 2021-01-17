@@ -212,17 +212,18 @@ export const mapLeft: <E, G>(
 ) => <S, R, A>(fa: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, G, A> = f => fea =>
   flow(fea, ROE.mapLeft(f))
 
-
 /**
+ * Less strict version of [`chain`](#chain).
+ *
  * @category Monad
- * @since 0.6.10
+ * @since 0.6.12
  */
-export const chainW = <S, R, E2, A, B>(
-  f: (a: A) => StateReaderObservableEither<S, R, E2, B>
-) => <E1>(ma: StateReaderObservableEither<S, R, E1, A>): StateReaderObservableEither<S, R, E1 | E2, B> => s1 =>
+export const chainW = <A, S, R2, E2, B>(f: (a: A) => StateReaderObservableEither<S, R2, E2, B>) => <R1, E1>(
+  ma: StateReaderObservableEither<S, R1, E1, A>
+): StateReaderObservableEither<S, R1 & R2, E1 | E2, B> => s1 =>
   pipe(
     ma(s1),
-    ROE.chain<R, E1 | E2, [A, S], [B, S]>(([a, s2]) => f(a)(s2))
+    ROE.chainW(([a, s2]) => f(a)(s2))
   )
 
 /**

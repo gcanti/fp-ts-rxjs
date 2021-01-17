@@ -23,6 +23,7 @@ Added in v0.6.8
   - [map](#map)
 - [Monad](#monad)
   - [chain](#chain)
+  - [chainW](#chainw)
 - [MonadThrow](#monadthrow)
   - [throwError](#throwerror)
 - [combinators](#combinators)
@@ -157,12 +158,26 @@ Added in v0.6.8
 **Signature**
 
 ```ts
-export declare const chain: <E, A, B>(
+export declare const chain: <A, E, B>(
   f: (a: A) => ObservableEither<E, B>
 ) => (ma: ObservableEither<E, A>) => ObservableEither<E, B>
 ```
 
 Added in v0.6.8
+
+## chainW
+
+Less strict version of [`chain`](#chain).
+
+**Signature**
+
+```ts
+export declare const chainW: <A, E2, B>(
+  f: (a: A) => ObservableEither<E2, B>
+) => <E1>(ma: ObservableEither<E1, A>) => ObservableEither<E2 | E1, B>
+```
+
+Added in v0.6.12
 
 # MonadThrow
 
