@@ -196,13 +196,22 @@ export const mapLeft: <E, G>(
  * @category Monad
  * @since 0.6.10
  */
+export const chainW = <R, A, E2, B>(
+  f: (a: A) => ReaderObservableEither<R, E2, B>
+) => <E1>(ma: ReaderObservableEither<R, E1, A>): ReaderObservableEither<R, E1 | E2, B> => r =>
+  pipe(
+    ma(r),
+    OE.chain<A, E1 | E2, B>((a) => f(a)(r))
+  )
+
+/**
+ * @category Monad
+ * @since 0.6.10
+ */
 export const chain: <R, E, A, B>(
   f: (a: A) => ReaderObservableEither<R, E, B>
-) => (ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, B> = f => fa => r =>
-  pipe(
-    fa(r),
-    OE.chain(a => f(a)(r))
-  )
+) => (ma: ReaderObservableEither<R, E, A>) => ReaderObservableEither<R, E, B> = f => 
+  chainW(f)
 
 /**
  * Derivable from `Monad`.
