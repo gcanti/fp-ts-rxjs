@@ -521,8 +521,8 @@ export const observableEither: Monad2<URI> & Bifunctor2<URI> & Alt2<URI> & Monad
   alt: alt_,
   fromIO: rightIO,
   fromTask,
-  fromObservable: rightObservable,
-  throwError: left
+  fromObservable,
+  throwError
 }
 
 // -------------------------------------------------------------------------------------
