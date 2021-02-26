@@ -12,7 +12,7 @@ Added in v0.6.0
 
 <h2 class="text-delta">Table of contents</h2>
 
-- [Aletrnaitve](#aletrnaitve)
+- [Alternative](#alternative)
   - [zero](#zero)
 - [Alt](#alt)
   - [alt](#alt)
@@ -65,7 +65,7 @@ Added in v0.6.0
 
 ---
 
-# Aletrnaitve
+# Alternative
 
 ## zero
 
