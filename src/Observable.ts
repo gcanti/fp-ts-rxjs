@@ -213,7 +213,7 @@ export const partition: {
 } = <A>(p: Predicate<A>) => (fa: Observable<A>) => pipe(fa, partitionMap(E.fromPredicate(p, identity)))
 
 /**
- * @category Aletrnaitve
+ * @category Alternative
  * @since 0.6.12
  */
 export const zero: Alternative1<URI>['zero'] = () => EMPTY
