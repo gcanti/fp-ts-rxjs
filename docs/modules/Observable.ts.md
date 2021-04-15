@@ -12,10 +12,10 @@ Added in v0.6.0
 
 <h2 class="text-delta">Table of contents</h2>
 
-- [Alternative](#alternative)
-  - [zero](#zero)
 - [Alt](#alt)
   - [alt](#alt)
+- [Alternative](#alternative)
+  - [zero](#zero)
 - [Applicative](#applicative)
   - [of](#of)
 - [Apply](#apply)
@@ -43,7 +43,7 @@ Added in v0.6.0
   - [fromTask](#fromtask)
 - [instances](#instances)
   - [Alt](#alt-1)
-  - [Alternative](#alternative)
+  - [Alternative](#alternative-1)
   - [Applicative](#applicative-1)
   - [Apply](#apply-1)
   - [Compactable](#compactable-1)
@@ -65,18 +65,6 @@ Added in v0.6.0
 
 ---
 
-# Alternative
-
-## zero
-
-**Signature**
-
-```ts
-export declare const zero: <A>() => Observable<A>
-```
-
-Added in v0.6.12
-
 # Alt
 
 ## alt
@@ -91,6 +79,18 @@ export declare const alt: <A>(that: () => Observable<A>) => (fa: Observable<A>) 
 ```
 
 Added in v0.6.0
+
+# Alternative
+
+## zero
+
+**Signature**
+
+```ts
+export declare const zero: <A>() => Observable<A>
+```
+
+Added in v0.6.12
 
 # Applicative
 

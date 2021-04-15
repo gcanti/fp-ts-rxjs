@@ -16,6 +16,7 @@ Added in v0.6.0
   - [monadObservable](#monadobservable)
   - [observable](#observable)
   - [observableEither](#observableeither)
+  - [observableOption](#observableoption)
   - [observableThese](#observablethese)
   - [readerObservable](#readerobservable)
   - [readerObservableEither](#readerobservableeither)
@@ -54,6 +55,16 @@ export declare const observableEither: typeof observableEither
 ```
 
 Added in v0.6.8
+
+## observableOption
+
+**Signature**
+
+```ts
+export declare const observableOption: typeof observableOption
+```
+
+Added in v0.6.14
 
 ## observableThese
 

@@ -5,6 +5,7 @@ import * as monadObservable from './MonadObservable'
 import * as observable from './Observable'
 import * as readerObservable from './ReaderObservable'
 import * as observableEither from './ObservableEither'
+import * as observableOption from './ObservableOption'
 import * as observableThese from './ObservableThese'
 import * as readerObservableEither from './ReaderObservableEither'
 import * as stateReaderObservableEither from './StateReaderObservableEither'
@@ -26,6 +27,10 @@ export {
    * @since 0.6.8
    */
   observableEither,
+  /**
+   * @since 0.6.14
+   */
+  observableOption,
   /**
    * @since 0.6.12
    */
