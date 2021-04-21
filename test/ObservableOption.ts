@@ -8,8 +8,8 @@ import * as _ from '../src/ObservableOption'
 import { of as rxOf, Observable, throwError as rxThrowError } from 'rxjs'
 
 describe('ObservableOption', () => {
-  it('someIO', async () => {
-    const e = await _.someIO(io.of(1))
+  it('fromIO', async () => {
+    const e = await _.fromIO(io.of(1))
       .pipe(bufferTime(10))
       .toPromise()
     assert.deepStrictEqual(e, [O.some(1)])
