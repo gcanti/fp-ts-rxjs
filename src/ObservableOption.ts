@@ -43,7 +43,7 @@ export const none: ObservableOption<never> =
  * @category constructors
  * @since 0.6.14
  */
-export const some: <A = never>(a: A) => ObservableOption<A> =
+export const some: <A>(a: A) => ObservableOption<A> =
   /*#__PURE__*/
   flow(O.some, R.of)
 
