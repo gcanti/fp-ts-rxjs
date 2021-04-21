@@ -12,8 +12,6 @@ Added in v0.6.14
 
 <h2 class="text-delta">Table of contents</h2>
 
-- [Alt](#alt)
-  - [alt](#alt)
 - [Apply](#apply)
   - [ap](#ap)
 - [Functor](#functor)
@@ -21,25 +19,23 @@ Added in v0.6.14
 - [Monad](#monad)
   - [chain](#chain)
 - [combinators](#combinators)
+  - [alt](#alt)
   - [apFirst](#apfirst)
   - [apSecond](#apsecond)
   - [chainFirst](#chainfirst)
   - [flatten](#flatten)
-  - [orElse](#orelse)
 - [constructors](#constructors)
   - [fromIO](#fromio)
   - [fromObservable](#fromobservable)
   - [fromTask](#fromtask)
   - [none](#none)
   - [some](#some)
-  - [someIO](#someio)
-  - [someObservable](#someobservable)
   - [tryCatch](#trycatch)
 - [destructors](#destructors)
   - [fold](#fold)
   - [getOrElse](#getorelse)
 - [instances](#instances)
-  - [Alt](#alt-1)
+  - [Alt](#alt)
   - [Applicative](#applicative)
   - [Apply](#apply-1)
   - [Functor](#functor-1)
@@ -61,21 +57,6 @@ Added in v0.6.14
   - [of](#of)
 
 ---
-
-# Alt
-
-## alt
-
-Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
-types of kind `* -> *`.
-
-**Signature**
-
-```ts
-export declare const alt: <A>(that: () => ObservableOption<A>) => (fa: ObservableOption<A>) => ObservableOption<A>
-```
-
-Added in v0.6.14
 
 # Apply
 
@@ -119,6 +100,19 @@ export declare const chain: <A, B>(f: (a: A) => ObservableOption<B>) => (ma: Obs
 Added in v0.6.14
 
 # combinators
+
+## alt
+
+Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
+types of kind `* -> *`.
+
+**Signature**
+
+```ts
+export declare const alt: <A>(onNone: () => ObservableOption<A>) => (ma: ObservableOption<A>) => ObservableOption<A>
+```
+
+Added in v0.6.14
 
 ## apFirst
 
@@ -177,16 +171,6 @@ export declare const flatten: <A>(mma: ObservableOption<ObservableOption<A>>) =>
 
 Added in v0.6.14
 
-## orElse
-
-**Signature**
-
-```ts
-export declare const orElse: <A>(onNone: () => ObservableOption<A>) => (ma: ObservableOption<A>) => ObservableOption<A>
-```
-
-Added in v0.6.14
-
 # constructors
 
 ## fromIO
@@ -194,7 +178,7 @@ Added in v0.6.14
 **Signature**
 
 ```ts
-export declare const fromIO: <A>(fa: IO<A>) => ObservableOption<A>
+export declare const fromIO: <A = never>(ma: IO<A>) => ObservableOption<A>
 ```
 
 Added in v0.6.14
@@ -204,7 +188,7 @@ Added in v0.6.14
 **Signature**
 
 ```ts
-export declare const fromObservable: <A>(fa: Observable<A>) => ObservableOption<A>
+export declare const fromObservable: <A = never>(ma: Observable<A>) => ObservableOption<A>
 ```
 
 Added in v0.6.14
@@ -234,27 +218,7 @@ Added in v0.6.14
 **Signature**
 
 ```ts
-export declare const some: <A = never>(a: A) => ObservableOption<A>
-```
-
-Added in v0.6.14
-
-## someIO
-
-**Signature**
-
-```ts
-export declare const someIO: <A = never>(ma: IO<A>) => ObservableOption<A>
-```
-
-Added in v0.6.14
-
-## someObservable
-
-**Signature**
-
-```ts
-export declare const someObservable: <A = never>(ma: Observable<A>) => ObservableOption<A>
+export declare const some: <A>(a: A) => ObservableOption<A>
 ```
 
 Added in v0.6.14
