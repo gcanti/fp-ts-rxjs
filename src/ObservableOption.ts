@@ -59,15 +59,9 @@ export const fromObservable: <A = never>(ma: Observable<A>) => ObservableOption<
  * @category constructors
  * @since 0.6.14
  */
-export const someIO: <A = never>(ma: IO<A>) => ObservableOption<A> =
+export const fromIO: <A = never>(ma: IO<A>) => ObservableOption<A> =
   /*#__PURE__*/
   flow(R.fromIO, fromObservable)
-
-/**
- * @category constructors
- * @since 0.6.14
- */
-export const fromIO: MonadIO1<URI>['fromIO'] = someIO
 
 /**
  * @category constructors
