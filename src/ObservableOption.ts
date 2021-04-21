@@ -51,7 +51,7 @@ export const some: <A>(a: A) => ObservableOption<A> =
  * @category constructors
  * @since 0.6.14
  */
-export const someObservable: <A = never>(ma: Observable<A>) => ObservableOption<A> =
+export const fromObservable: <A = never>(ma: Observable<A>) => ObservableOption<A> =
   /*#__PURE__*/
   R.map(O.some)
 
@@ -61,7 +61,7 @@ export const someObservable: <A = never>(ma: Observable<A>) => ObservableOption<
  */
 export const someIO: <A = never>(ma: IO<A>) => ObservableOption<A> =
   /*#__PURE__*/
-  flow(R.fromIO, someObservable)
+  flow(R.fromIO, fromObservable)
 
 /**
  * @category constructors
@@ -75,13 +75,7 @@ export const fromIO: MonadIO1<URI>['fromIO'] = someIO
  */
 export const fromTask: MonadTask1<URI>['fromTask'] =
   /*#__PURE__*/
-  flow(R.fromTask, someObservable)
-
-/**
- * @category constructors
- * @since 0.6.14
- */
-export const fromObservable: MonadObservable1<URI>['fromObservable'] = someObservable
+  flow(R.fromTask, fromObservable)
 
 /**
  * @category constructors
