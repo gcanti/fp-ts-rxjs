@@ -49,7 +49,6 @@ Added in v0.6.14
   - [MonadTask](#monadtask)
   - [URI](#uri)
   - [URI (type alias)](#uri-type-alias)
-  - [~~observableOption~~](#observableoption)
 - [model](#model)
   - [ObservableOption (interface)](#observableoption-interface)
 - [utils](#utils)
@@ -393,18 +392,6 @@ Added in v0.6.14
 
 ```ts
 export type URI = typeof URI
-```
-
-Added in v0.6.14
-
-## ~~observableOption~~
-
-**Signature**
-
-```ts
-export declare const observableOption: Monad1<'ObservableOption'> &
-  Alt1<'ObservableOption'> &
-  MonadObservable1<'ObservableOption'>
 ```
 
 Added in v0.6.14
