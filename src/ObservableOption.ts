@@ -109,10 +109,13 @@ export const getOrElse = <A>(onNone: () => Observable<A>) => (ma: ObservableOpti
 // -------------------------------------------------------------------------------------
 
 /**
+ * Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
+ * types of kind `* -> *`.
+ *
  * @category combinators
  * @since 0.6.14
  */
-export const orElse: <A>(onNone: () => ObservableOption<A>) => (ma: ObservableOption<A>) => ObservableOption<A> = f =>
+export const alt: <A>(onNone: () => ObservableOption<A>) => (ma: ObservableOption<A>) => ObservableOption<A> = f =>
   R.chain(O.fold(f, some))
 
 // -------------------------------------------------------------------------------------
@@ -167,16 +170,6 @@ export const apSecond = <B>(fb: ObservableOption<B>): (<A>(fa: ObservableOption<
     map(() => (b: B) => b),
     ap(fb)
   )
-
-/**
- * Identifies an associative operation on a type constructor. It is similar to `Semigroup`, except that it applies to
- * types of kind `* -> *`.
- *
- * @category Alt
- * @since 0.6.14
- */
-export const alt = <A>(that: () => ObservableOption<A>): ((fa: ObservableOption<A>) => ObservableOption<A>) =>
-  R.chain(O.fold(that, some))
 
 /**
  * @category Monad
