@@ -71,17 +71,17 @@ describe('ObservableOption', () => {
     assert.deepStrictEqual(e, [1])
   })
 
-  it('orElse (left)', async () => {
+  it('alt (left)', async () => {
     const onLeft = (): _.ObservableOption<number> => _.some(4)
-    const e = await pipe(_.none, _.orElse(onLeft))
+    const e = await pipe(_.none, _.alt(onLeft))
       .pipe(bufferTime(10))
       .toPromise()
     assert.deepStrictEqual(e, [O.some(4)])
   })
 
-  it('orElse (some)', async () => {
+  it('alt (some)', async () => {
     const onLeft = (): _.ObservableOption<number> => _.none
-    const e = await pipe(_.some(1), _.orElse(onLeft))
+    const e = await pipe(_.some(1), _.alt(onLeft))
       .pipe(bufferTime(10))
       .toPromise()
     assert.deepStrictEqual(e, [O.some(1)])
