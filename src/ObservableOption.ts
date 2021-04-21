@@ -384,23 +384,6 @@ export const MonadObservable: MonadObservable1<URI> = {
   fromObservable
 }
 
-/**
- * @category instances
- * @deprecated
- * @since 0.6.14
- */
-export const observableOption: Monad1<URI> & Alt1<URI> & MonadObservable1<URI> = {
-  URI,
-  map: map_,
-  of,
-  ap: ap_,
-  chain: chain_,
-  alt: alt_,
-  fromIO: someIO,
-  fromTask,
-  fromObservable
-}
-
 // -------------------------------------------------------------------------------------
 // utils
 // -------------------------------------------------------------------------------------
