@@ -258,10 +258,7 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-export declare const getApplicative: <E>(
-  A: Apply1<'Observable'>,
-  S: Semigroup<E>
-) => Applicative2C<'ObservableThese', E>
+export declare const getApplicative: <E>(A: Apply1<R.URI>, S: Semigroup<E>) => Applicative2C<'ObservableThese', E>
 ```
 
 Added in v0.6.12

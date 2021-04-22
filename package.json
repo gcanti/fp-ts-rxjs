@@ -39,7 +39,7 @@
   "devDependencies": {
     "@types/mocha": "2.2.38",
     "@types/node": "^13.11.0",
-    "docs-ts": "^0.5.3",
+    "docs-ts": "^0.6.10",
     "fp-ts": "^2.4.4",
     "import-path-rewrite": "github:gcanti/import-path-rewrite",
     "jest": "^24.8.0",
