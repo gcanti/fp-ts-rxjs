@@ -18,7 +18,7 @@ import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/pipeable'
 import { Task } from 'fp-ts/lib/Task'
 import { combineLatest, defer, EMPTY, merge, Observable, of as rxOf } from 'rxjs'
-import { map as rxMap, mergeMap } from 'rxjs/operators'
+import { map as rxMap, switchMap } from 'rxjs/operators'
 import { MonadObservable1 } from './MonadObservable'
 
 // -------------------------------------------------------------------------------------
@@ -107,7 +107,7 @@ export const of: Applicative1<URI>['of'] = rxOf
  * @since 0.6.0
  */
 export const chain: <A, B>(f: (a: A) => Observable<B>) => (ma: Observable<A>) => Observable<B> = f => ma =>
-  ma.pipe(mergeMap(f))
+  ma.pipe(switchMap(f))
 
 /**
  * Derivable from `Monad`.
@@ -152,7 +152,7 @@ export const alt: <A>(that: () => Observable<A>) => (fa: Observable<A>) => Obser
  */
 export const filterMap = <A, B>(f: (a: A) => O.Option<B>) => (fa: Observable<A>): Observable<B> =>
   fa.pipe(
-    mergeMap(a =>
+    switchMap(a =>
       pipe(
         f(a),
         // tslint:disable-next-line: deprecation
