@@ -571,4 +571,4 @@ export const bindW: <K extends string, E2, A, B>(
 /**
  * @since 0.6.8
  */
-export const toTaskEither = <E, A>(o: ObservableEither<E, A>): TE.TaskEither<E, A> => () => o.toPromise()
+export const toTaskEither: <E, A>(o: ObservableEither<E, A>) => TE.TaskEither<E, A> = R.toTask

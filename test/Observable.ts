@@ -243,6 +243,13 @@ describe('Observable', () => {
     assert.deepStrictEqual(t, 1)
   })
 
+  it('toTaskOption', async () => {
+    const t1 = await _.toTaskOption(_.of(1))()
+    assert.deepStrictEqual(t1, O.some(1))
+    const t2 = await _.toTaskOption(_.zero())()
+    assert.deepStrictEqual(t2, O.none)
+  })
+
   it('do notation', async () => {
     const t = await pipe(
       _.of(1),

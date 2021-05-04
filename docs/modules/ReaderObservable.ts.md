@@ -75,6 +75,7 @@ Added in v0.6.6
   - [bindW](#bindw)
   - [run](#run)
   - [toReaderTask](#toreadertask)
+  - [toReaderTaskOption](#toreadertaskoption)
   - [zero](#zero)
 
 ---
@@ -686,6 +687,16 @@ export declare const toReaderTask: <R, A>(ma: ReaderObservable<R, A>) => ReaderT
 ```
 
 Added in v0.6.6
+
+## toReaderTaskOption
+
+**Signature**
+
+```ts
+export declare const toReaderTaskOption: <R, A>(ma: ReaderObservable<R, A>) => ReaderTask<R, O.Option<A>>
+```
+
+Added in v0.6.15
 
 ## zero
 

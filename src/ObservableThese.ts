@@ -285,4 +285,4 @@ export const Bifunctor: Bifunctor2<URI> = {
 /**
  * @since 0.6.12
  */
-export const toTaskThese = <E, A>(o: ObservableThese<E, A>): TT.TaskThese<E, A> => () => o.toPromise()
+export const toTaskThese: <E, A>(o: ObservableThese<E, A>) => TT.TaskThese<E, A> = R.toTask

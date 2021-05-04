@@ -580,9 +580,15 @@ export const bindW: <K extends string, R2, A, B>(
 /**
  * @since 0.6.6
  */
-export const run = <R, A>(ma: ReaderObservable<R, A>, r: R): Promise<A> => ma(r).toPromise()
+export const run = <R, A>(ma: ReaderObservable<R, A>, r: R): Promise<A> => T.toTask(ma(r))()
 
 /**
  * @since 0.6.6
  */
-export const toReaderTask = <R, A>(ma: ReaderObservable<R, A>): ReaderTask<R, A> => r => () => run(ma, r)
+export const toReaderTask = <R, A>(ma: ReaderObservable<R, A>): ReaderTask<R, A> => r => T.toTask(ma(r))
+
+/**
+ * @since 0.6.15
+ */
+export const toReaderTaskOption = <R, A>(ma: ReaderObservable<R, A>): ReaderTask<R, O.Option<A>> => r =>
+  T.toTaskOption(ma(r))
