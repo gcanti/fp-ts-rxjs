@@ -455,4 +455,26 @@ export const bind = <K extends string, A, B>(
 /**
  * @since 0.6.5
  */
-export const toTask = <A>(o: Observable<A>): Task<A> => () => o.toPromise()
+export const toTask = <A>(o: Observable<A>): Task<A> => () =>
+  new Promise<A>((resolve, reject) => {
+    let hasResult = false
+    let result: A
+    o.subscribe({
+      next: value => {
+        result = value
+        hasResult = true
+      },
+      error: reject,
+      complete: () => {
+        /* istanbul ignore next */
+        if (hasResult) {
+          resolve(result)
+        }
+      }
+    })
+  })
+
+/**
+ * @since 0.6.15
+ */
+export const toTaskOption = <A>(o: Observable<A>): Task<O.Option<A>> => () => o.toPromise().then(O.fromNullable)

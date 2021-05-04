@@ -62,6 +62,7 @@ Added in v0.6.0
   - [bind](#bind)
   - [bindTo](#bindto)
   - [toTask](#totask)
+  - [toTaskOption](#totaskoption)
 
 ---
 
@@ -507,3 +508,13 @@ export declare const toTask: <A>(o: Observable<A>) => Task<A>
 ```
 
 Added in v0.6.5
+
+## toTaskOption
+
+**Signature**
+
+```ts
+export declare const toTaskOption: <A>(o: Observable<A>) => Task<O.Option<A>>
+```
+
+Added in v0.6.15
