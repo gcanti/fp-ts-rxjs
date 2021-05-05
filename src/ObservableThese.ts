@@ -15,7 +15,8 @@ import { pipe } from 'fp-ts/lib/pipeable'
 import { Semigroup } from 'fp-ts/lib/Semigroup'
 import * as TT from 'fp-ts/lib/TaskThese'
 import * as TH from 'fp-ts/lib/These'
-import { Observable } from 'rxjs'
+import { defer, merge, Observable, OperatorFunction, Subject } from 'rxjs'
+import { finalize, withLatestFrom } from 'rxjs/operators'
 import * as R from './Observable'
 
 // -------------------------------------------------------------------------------------
@@ -141,6 +142,55 @@ export const fold: <E, A, B>(
 export const swap: <E, A>(ma: ObservableThese<E, A>) => ObservableThese<A, E> =
   /*#__PURE__*/
   R.map(TH.swap)
+
+/**
+ * Lifts an OperatorFunction into an ObservableThese context
+ * Allows e.g. filter to be used on on ObservableThese
+ *
+ * @category combinators
+ * @since 0.6.12
+ */
+export function liftOperator<E, A, B>(
+  f: OperatorFunction<A, B>
+): (obs: ObservableThese<E, A>) => ObservableThese<E, B> {
+  return obs => {
+    const subj = new Subject<TH.These<E, A>>()
+    return merge(
+      pipe(
+        merge(
+          pipe(subj, R.filter(TH.isLeft)),
+          pipe(
+            subj,
+            R.filter(TH.isRight),
+            R.map(({ right }) => right),
+            f,
+            R.map(TH.right)
+          ),
+          pipe(
+            subj,
+            R.filter(TH.isBoth),
+            a =>
+              pipe(
+                a,
+                R.map(({ right }) => right),
+                f,
+                withLatestFrom(
+                  pipe(
+                    a,
+                    R.map(({ left }) => left)
+                  )
+                )
+              ),
+            R.map(([b, e]) => TH.both(e, b))
+          )
+        )
+      ),
+      defer(() => {
+        obs.pipe(finalize(() => subj.complete())).subscribe(subj)
+      })
+    )
+  }
+}
 
 // -------------------------------------------------------------------------------------
 // type class members

@@ -7,7 +7,8 @@ import { pipe } from 'fp-ts/lib/pipeable'
 import { bufferTime } from 'rxjs/operators'
 import { monoidString } from 'fp-ts/lib/Monoid'
 import * as _ from '../src/ObservableThese'
-import { of as rxOf, Observable } from 'rxjs'
+import { of as rxOf, Observable, from } from 'rxjs'
+import { filter } from '../src/Observable'
 
 describe('ObservableThese', () => {
   it('rightIO', async () => {
@@ -91,6 +92,30 @@ describe('ObservableThese', () => {
       .pipe(bufferTime(10))
       .toPromise()
     assert.deepStrictEqual(e, [TH.both(2, 1)])
+  })
+
+  it('liftOperator (left)', async () => {
+    const e = await pipe(from(['error1', 'error2']), _.leftObservable, _.liftOperator(filter(x => x % 2 === 0)))
+      .pipe(bufferTime(10))
+      .toPromise()
+    assert.deepStrictEqual(e, [TH.left('error1'), TH.left('error2')])
+  })
+
+  it('liftOperator (right)', async () => {
+    const e = await pipe(from([1, 2, 3, 4]), _.rightObservable, _.liftOperator(filter(x => x % 2 === 0)))
+      .pipe(bufferTime(10))
+      .toPromise()
+    assert.deepStrictEqual(e, [TH.right(2), TH.right(4)])
+  })
+
+  it('liftOperator (both)', async () => {
+    const e = await pipe(
+      from([TH.both('error1', 1), TH.both('error2', 2), TH.both('error3', 3), TH.both('error4', 4)]),
+      _.liftOperator(filter(x => x % 2 === 0))
+    )
+      .pipe(bufferTime(10))
+      .toPromise()
+    assert.deepStrictEqual(e, [TH.both('error2', 2), TH.both('error4', 4)])
   })
 
   it('map', async () => {

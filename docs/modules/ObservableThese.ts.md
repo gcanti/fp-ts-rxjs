@@ -20,6 +20,7 @@ Added in v0.6.12
 - [Functor](#functor)
   - [map](#map)
 - [combinators](#combinators)
+  - [liftOperator](#liftoperator)
   - [swap](#swap)
 - [constructors](#constructors)
   - [both](#both)
@@ -102,6 +103,21 @@ export declare const map: <A, B>(f: (a: A) => B) => <E>(fa: ObservableThese<E, A
 Added in v0.6.12
 
 # combinators
+
+## liftOperator
+
+Lifts an OperatorFunction into an ObservableThese context
+Allows e.g. filter to be used on on ObservableThese
+
+**Signature**
+
+```ts
+export declare function liftOperator<E, A, B>(
+  f: OperatorFunction<A, B>
+): (obs: ObservableThese<E, A>) => ObservableThese<E, B>
+```
+
+Added in v0.6.12
 
 ## swap
 

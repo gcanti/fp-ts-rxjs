@@ -29,6 +29,7 @@ Added in v0.6.10
   - [apSecond](#apsecond)
   - [chainFirst](#chainfirst)
   - [flatten](#flatten)
+  - [liftOperator](#liftoperator)
 - [constructors](#constructors)
   - [fromIO](#fromio)
   - [fromObservable](#fromobservable)
@@ -232,6 +233,21 @@ export declare const flatten: <S, R, E, A>(
 ```
 
 Added in v0.6.10
+
+## liftOperator
+
+Lifts an OperatorFunction into a StateReaderObservableEither context
+Allows e.g. filter to be used on on StateReaderObservableEither
+
+**Signature**
+
+```ts
+export declare function liftOperator<S, R, E, A, B>(
+  f: OperatorFunction<[A, S], [B, S]>
+): (obs: StateReaderObservableEither<S, R, E, A>) => StateReaderObservableEither<S, R, E, B>
+```
+
+Added in v0.6.12
 
 # constructors
 

@@ -31,6 +31,7 @@ Added in v0.6.8
   - [apSecond](#apsecond)
   - [chainFirst](#chainfirst)
   - [flatten](#flatten)
+  - [liftOperator](#liftoperator)
   - [orElse](#orelse)
   - [swap](#swap)
 - [constructors](#constructors)
@@ -254,6 +255,21 @@ export declare const flatten: <E, A>(mma: ObservableEither<E, ObservableEither<E
 ```
 
 Added in v0.6.0
+
+## liftOperator
+
+Lifts an OperatorFunction into an ObservableEither context
+Allows e.g. filter to be used on on ObservableEither
+
+**Signature**
+
+```ts
+export declare function liftOperator<E, A, B>(
+  f: OperatorFunction<A, B>
+): (obs: ObservableEither<E, A>) => ObservableEither<E, B>
+```
+
+Added in v0.6.12
 
 ## orElse
 
