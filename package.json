@@ -1,6 +1,6 @@
 {
   "name": "fp-ts-rxjs",
-  "version": "0.6.14",
+  "version": "0.6.15",
   "description": "fp-ts bindings for RxJS",
   "main": "lib/index.js",
   "module": "es6/index.js",
