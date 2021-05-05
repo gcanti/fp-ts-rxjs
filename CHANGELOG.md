@@ -13,6 +13,23 @@
 **Note**: Gaps between patch versions are faulty/broken releases. **Note**: A feature tagged as Experimental is in a
 high state of flux, you're at risk of it changing without notice.
 
+# 0.6.15
+
+- **New Feature**
+  - `Observable`
+    - add `toTaskOption` (@mlegenhausen)
+  - `ReaderObservable`
+    - add `toReaderTaskOption` (@mlegenhausen)
+- **Bug Fix**
+  - `Observable`
+    - prevent `toTask` from resolving to `undefined` on an empty `Observable` (@mlegenhausen)
+  - `ObservableEither`
+    - prevent `toTask` from resolving to `undefined` on an empty `Observable` (@mlegenhausen)
+  - `ObservableThese`
+    - prevent `toTask` from resolving to `undefined` on an empty `Observable` (@mlegenhausen)
+  - `ReaderObservable`
+    - prevent `toReaderTask` from resolving to `undefined` on an empty `Observable` (@mlegenhausen)
+
 # 0.6.14
 
 - **New Feature**

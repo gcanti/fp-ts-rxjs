@@ -113,8 +113,10 @@ describe('ReaderObservable', () => {
   it('toReaderTaskOption', async () => {
     const e1 = await _.toReaderTaskOption(_.of(1))({})()
     assert.deepStrictEqual(e1, O.some(1))
-    const e2 = await _.toReaderTaskOption(_.zero())({})()
-    assert.deepStrictEqual(e2, O.none)
+    const e2 = await _.toReaderTaskOption(_.of(undefined))({})()
+    assert.deepStrictEqual(e2, O.some(undefined))
+    const e3 = await _.toReaderTaskOption(_.zero())({})()
+    assert.deepStrictEqual(e3, O.none)
   })
 
   it('filterMap', () => {
