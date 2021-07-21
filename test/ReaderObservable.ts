@@ -305,8 +305,14 @@ describe('ReaderObservable', () => {
     assert.deepStrictEqual(x, 1)
   })
 
-  it('chainTaskK', async () => {
+  it('chainObservableK', async () => {
     const f = (s: string) => R.of(s.length)
+    const x = await _.run(pipe(_.of('a'), _.chainObservableK(f)), undefined)
+    assert.deepStrictEqual(x, 1)
+  })
+
+  it('chainTaskK', async () => {
+    const f = (s: string) => T.of(s.length)
     const x = await _.run(pipe(_.of('a'), _.chainTaskK(f)), undefined)
     assert.deepStrictEqual(x, 1)
   })

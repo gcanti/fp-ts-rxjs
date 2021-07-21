@@ -11,6 +11,7 @@ import { Filterable2 } from 'fp-ts/lib/Filterable'
 import { flow, identity, Predicate, Refinement } from 'fp-ts/lib/function'
 import { Functor2 } from 'fp-ts/lib/Functor'
 import { IO } from 'fp-ts/lib/IO'
+import { Task } from 'fp-ts/lib/Task'
 import { Monad2 } from 'fp-ts/lib/Monad'
 import { MonadIO2 } from 'fp-ts/lib/MonadIO'
 import { MonadTask2 } from 'fp-ts/lib/MonadTask'
@@ -128,9 +129,24 @@ export const fromObservableK = <A extends Array<unknown>, B>(
  * @category combinators
  * @since 0.6.6
  */
-export const chainTaskK = <A, B>(
+export const chainObservableK = <A, B>(
   f: (a: A) => Observable<B>
 ): (<R>(ma: ReaderObservable<R, A>) => ReaderObservable<R, B>) => chain(a => fromObservableK(f)(a))
+
+/**
+ * @category combinators
+ * @since 0.6.6
+ */
+export const fromTaskK = <A extends Array<unknown>, B>(
+  f: (...a: A) => Task<B>
+): (<R>(...a: A) => ReaderObservable<R, B>) => (...a) => fromTask(f(...a))
+
+/**
+ * @category combinators
+ * @since 0.6.6
+ */
+export const chainTaskK = <A, B>(f: (a: A) => Task<B>): (<R>(ma: ReaderObservable<R, A>) => ReaderObservable<R, B>) =>
+  chain(a => fromTaskK(f)(a))
 
 // -------------------------------------------------------------------------------------
 // type class members

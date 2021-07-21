@@ -36,10 +36,12 @@ Added in v0.6.6
   - [apSecond](#apsecond)
   - [chainFirst](#chainfirst)
   - [chainIOK](#chainiok)
+  - [chainObservableK](#chainobservablek)
   - [chainTaskK](#chaintaskk)
   - [flatten](#flatten)
   - [fromIOK](#fromiok)
   - [fromObservableK](#fromobservablek)
+  - [fromTaskK](#fromtaskk)
   - [local](#local)
 - [constructors](#constructors)
   - [ask](#ask)
@@ -309,13 +311,25 @@ export declare const chainIOK: <A, B>(f: (a: A) => IO<B>) => <R>(ma: ReaderObser
 
 Added in v0.6.6
 
+## chainObservableK
+
+**Signature**
+
+```ts
+export declare const chainObservableK: <A, B>(
+  f: (a: A) => Observable<B>
+) => <R>(ma: ReaderObservable<R, A>) => ReaderObservable<R, B>
+```
+
+Added in v0.6.6
+
 ## chainTaskK
 
 **Signature**
 
 ```ts
 export declare const chainTaskK: <A, B>(
-  f: (a: A) => Observable<B>
+  f: (a: A) => Task<B>
 ) => <R>(ma: ReaderObservable<R, A>) => ReaderObservable<R, B>
 ```
 
@@ -350,6 +364,18 @@ Added in v0.6.6
 ```ts
 export declare const fromObservableK: <A extends unknown[], B>(
   f: (...a: A) => Observable<B>
+) => <R>(...a: A) => ReaderObservable<R, B>
+```
+
+Added in v0.6.6
+
+## fromTaskK
+
+**Signature**
+
+```ts
+export declare const fromTaskK: <A extends unknown[], B>(
+  f: (...a: A) => Task<B>
 ) => <R>(...a: A) => ReaderObservable<R, B>
 ```
 
