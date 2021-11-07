@@ -314,9 +314,7 @@ Added in v0.6.6
 **Signature**
 
 ```ts
-export declare const chainTaskK: <A, B>(
-  f: (a: A) => Observable<B>
-) => <R>(ma: ReaderObservable<R, A>) => ReaderObservable<R, B>
+export declare const chainTaskK: <A, B>(f: (a: A) => any) => <R>(ma: ReaderObservable<R, A>) => ReaderObservable<R, B>
 ```
 
 Added in v0.6.6
@@ -349,7 +347,7 @@ Added in v0.6.6
 
 ```ts
 export declare const fromObservableK: <A extends unknown[], B>(
-  f: (...a: A) => Observable<B>
+  f: (...a: A) => any
 ) => <R>(...a: A) => ReaderObservable<R, B>
 ```
 
@@ -402,7 +400,7 @@ Added in v0.6.6
 **Signature**
 
 ```ts
-export declare const fromObservable: <E, A>(fa: Observable<A>) => ReaderObservable<E, A>
+export declare const fromObservable: <E, A>(fa: any) => ReaderObservable<E, A>
 ```
 
 Added in v0.6.6

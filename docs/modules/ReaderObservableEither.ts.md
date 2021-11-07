@@ -295,7 +295,7 @@ Added in v0.6.10
 **Signature**
 
 ```ts
-export declare const fromObservable: <R, E, A>(fa: Observable<A>) => ReaderObservableEither<R, E, A>
+export declare const fromObservable: <R, E, A>(fa: any) => ReaderObservableEither<R, E, A>
 ```
 
 Added in v0.6.10

@@ -190,7 +190,7 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-export declare const leftObservable: <E = never, A = never>(ma: Observable<E>) => ObservableThese<E, A>
+export declare const leftObservable: <E = never, A = never>(ma: any) => ObservableThese<E, A>
 ```
 
 Added in v0.6.12
@@ -220,7 +220,7 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-export declare const rightObservable: <E = never, A = never>(ma: Observable<A>) => ObservableThese<E, A>
+export declare const rightObservable: <E = never, A = never>(ma: any) => ObservableThese<E, A>
 ```
 
 Added in v0.6.12
@@ -233,10 +233,10 @@ Added in v0.6.12
 
 ```ts
 export declare const fold: <E, A, B>(
-  onLeft: (e: E) => Observable<B>,
-  onRight: (a: A) => Observable<B>,
-  onBoth: (e: E, a: A) => Observable<B>
-) => (ma: ObservableThese<E, A>) => Observable<B>
+  onLeft: (e: E) => any,
+  onRight: (a: A) => any,
+  onBoth: (e: E, a: A) => any
+) => (ma: ObservableThese<E, A>) => any
 ```
 
 Added in v0.6.12

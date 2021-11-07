@@ -250,7 +250,7 @@ Added in v0.6.10
 **Signature**
 
 ```ts
-export declare const fromObservable: <S, R, E, A>(fa: Observable<A>) => StateReaderObservableEither<S, R, E, A>
+export declare const fromObservable: <S, R, E, A>(fa: any) => StateReaderObservableEither<S, R, E, A>
 ```
 
 Added in v0.6.10

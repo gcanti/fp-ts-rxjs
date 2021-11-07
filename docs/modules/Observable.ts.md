@@ -76,7 +76,7 @@ types of kind `* -> *`.
 **Signature**
 
 ```ts
-export declare const alt: <A>(that: () => Observable<A>) => (fa: Observable<A>) => Observable<A>
+export declare const alt: <A>(that: () => any) => (fa: any) => any
 ```
 
 Added in v0.6.0
@@ -88,7 +88,7 @@ Added in v0.6.0
 **Signature**
 
 ```ts
-export declare const zero: <A>() => Observable<A>
+export declare const zero: <A>() => any
 ```
 
 Added in v0.6.12
@@ -100,7 +100,7 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-export declare const of: <A>(a: A) => Observable<A>
+export declare const of: <A>(a: A) => any
 ```
 
 Added in v0.6.6
@@ -114,7 +114,7 @@ Apply a function to an argument under a type constructor.
 **Signature**
 
 ```ts
-export declare const ap: <A>(fa: Observable<A>) => <B>(fab: Observable<(a: A) => B>) => Observable<B>
+export declare const ap: <A>(fa: any) => <B>(fab: any) => any
 ```
 
 Added in v0.6.0
@@ -126,7 +126,7 @@ Added in v0.6.0
 **Signature**
 
 ```ts
-export declare const compact: <A>(fa: Observable<O.Option<A>>) => Observable<A>
+export declare const compact: <A>(fa: any) => any
 ```
 
 Added in v0.6.0
@@ -136,7 +136,7 @@ Added in v0.6.0
 **Signature**
 
 ```ts
-export declare const separate: <A, B>(fa: Observable<E.Either<A, B>>) => Separated<Observable<A>, Observable<B>>
+export declare const separate: <A, B>(fa: any) => Separated<any, any>
 ```
 
 Added in v0.6.0
@@ -149,8 +149,8 @@ Added in v0.6.0
 
 ```ts
 export declare const filter: {
-  <A, B extends A>(refinement: Refinement<A, B>): (fa: Observable<A>) => Observable<B>
-  <A>(predicate: Predicate<A>): (fa: Observable<A>) => Observable<A>
+  <A, B extends A>(refinement: Refinement<A, B>): (fa: any) => any
+  <A>(predicate: Predicate<A>): (fa: any) => any
 }
 ```
 
@@ -161,7 +161,7 @@ Added in v0.6.0
 **Signature**
 
 ```ts
-export declare const filterMap: <A, B>(f: (a: A) => O.Option<B>) => (fa: Observable<A>) => Observable<B>
+export declare const filterMap: <A, B>(f: (a: A) => O.Option<B>) => (fa: any) => any
 ```
 
 Added in v0.6.0
@@ -172,8 +172,8 @@ Added in v0.6.0
 
 ```ts
 export declare const partition: {
-  <A, B extends A>(refinement: Refinement<A, B>): (fa: Observable<A>) => Separated<Observable<A>, Observable<B>>
-  <A>(predicate: Predicate<A>): (fa: Observable<A>) => Separated<Observable<A>, Observable<A>>
+  <A, B extends A>(refinement: Refinement<A, B>): (fa: any) => Separated<any, any>
+  <A>(predicate: Predicate<A>): (fa: any) => Separated<any, any>
 }
 ```
 
@@ -184,9 +184,7 @@ Added in v0.6.0
 **Signature**
 
 ```ts
-export declare const partitionMap: <A, B, C>(
-  f: (a: A) => E.Either<B, C>
-) => (fa: Observable<A>) => Separated<Observable<B>, Observable<C>>
+export declare const partitionMap: <A, B, C>(f: (a: A) => E.Either<B, C>) => (fa: any) => Separated<any, any>
 ```
 
 Added in v0.6.0
@@ -201,7 +199,7 @@ use the type constructor `F` to represent some computational context.
 **Signature**
 
 ```ts
-export declare const map: <A, B>(f: (a: A) => B) => (fa: Observable<A>) => Observable<B>
+export declare const map: <A, B>(f: (a: A) => B) => (fa: any) => any
 ```
 
 Added in v0.6.0
@@ -215,7 +213,7 @@ Composes computations in sequence, using the return value of one computation to 
 **Signature**
 
 ```ts
-export declare const chain: <A, B>(f: (a: A) => Observable<B>) => (ma: Observable<A>) => Observable<B>
+export declare const chain: <A, B>(f: (a: A) => any) => (ma: any) => any
 ```
 
 Added in v0.6.0
@@ -231,7 +229,7 @@ Derivable from `Apply`.
 **Signature**
 
 ```ts
-export declare const apFirst: <B>(fb: Observable<B>) => <A>(fa: Observable<A>) => Observable<A>
+export declare const apFirst: <B>(fb: any) => <A>(fa: any) => any
 ```
 
 Added in v0.6.0
@@ -245,7 +243,7 @@ Derivable from `Apply`.
 **Signature**
 
 ```ts
-export declare const apSecond: <B>(fb: Observable<B>) => <A>(fa: Observable<A>) => Observable<B>
+export declare const apSecond: <B>(fb: any) => <A>(fa: any) => any
 ```
 
 Added in v0.6.0
@@ -260,7 +258,7 @@ Derivable from `Monad`.
 **Signature**
 
 ```ts
-export declare const chainFirst: <A, B>(f: (a: A) => Observable<B>) => (ma: Observable<A>) => Observable<A>
+export declare const chainFirst: <A, B>(f: (a: A) => any) => (ma: any) => any
 ```
 
 Added in v0.6.0
@@ -272,7 +270,7 @@ Derivable from `Monad`.
 **Signature**
 
 ```ts
-export declare const flatten: <A>(mma: Observable<Observable<A>>) => Observable<A>
+export declare const flatten: <A>(mma: any) => any
 ```
 
 Added in v0.6.0
@@ -284,7 +282,7 @@ Added in v0.6.0
 **Signature**
 
 ```ts
-export declare const fromIO: <A>(fa: IO<A>) => Observable<A>
+export declare const fromIO: <A>(fa: IO<A>) => any
 ```
 
 Added in v0.6.5
@@ -294,7 +292,7 @@ Added in v0.6.5
 **Signature**
 
 ```ts
-export declare const fromOption: <A>(o: O.Option<A>) => Observable<A>
+export declare const fromOption: <A>(o: O.Option<A>) => any
 ```
 
 Added in v0.6.5
@@ -304,7 +302,7 @@ Added in v0.6.5
 **Signature**
 
 ```ts
-export declare const fromTask: <A>(fa: Task<A>) => Observable<A>
+export declare const fromTask: <A>(fa: Task<A>) => any
 ```
 
 Added in v0.6.5
@@ -446,7 +444,7 @@ Added in v0.6.0
 **Signature**
 
 ```ts
-export declare const getMonoid: <A = never>() => Monoid<Observable<A>>
+export declare const getMonoid: <A = never>() => Monoid<any>
 ```
 
 Added in v0.6.0
@@ -471,7 +469,7 @@ Added in v0.6.0
 **Signature**
 
 ```ts
-export declare const Do: Observable<{}>
+export declare const Do: any
 ```
 
 Added in v0.6.12
@@ -481,10 +479,7 @@ Added in v0.6.12
 **Signature**
 
 ```ts
-export declare const bind: <K extends string, A, B>(
-  name: Exclude<K, keyof A>,
-  f: (a: A) => Observable<B>
-) => (fa: Observable<A>) => Observable<{ [P in K | keyof A]: P extends keyof A ? A[P] : B }>
+export declare const bind: <K extends string, A, B>(name: Exclude<K, keyof A>, f: (a: A) => any) => (fa: any) => any
 ```
 
 Added in v0.6.11
@@ -494,7 +489,7 @@ Added in v0.6.11
 **Signature**
 
 ```ts
-export declare const bindTo: <K extends string, A>(name: K) => (fa: Observable<A>) => Observable<{ [P in K]: A }>
+export declare const bindTo: <K extends string, A>(name: K) => (fa: any) => any
 ```
 
 Added in v0.6.11
@@ -504,7 +499,7 @@ Added in v0.6.11
 **Signature**
 
 ```ts
-export declare const toTask: <A>(o: Observable<A>) => Task<A>
+export declare const toTask: <A>(o: any) => Task<A>
 ```
 
 Added in v0.6.5
@@ -514,7 +509,7 @@ Added in v0.6.5
 **Signature**
 
 ```ts
-export declare const toTaskOption: <A>(o: Observable<A>) => Task<O.Option<A>>
+export declare const toTaskOption: <A>(o: any) => Task<O.Option<A>>
 ```
 
 Added in v0.6.15

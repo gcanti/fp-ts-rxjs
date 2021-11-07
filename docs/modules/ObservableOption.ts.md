@@ -188,7 +188,7 @@ Added in v0.6.14
 **Signature**
 
 ```ts
-export declare const fromObservable: <A = never>(ma: Observable<A>) => ObservableOption<A>
+export declare const fromObservable: <A = never>(ma: any) => ObservableOption<A>
 ```
 
 Added in v0.6.14
@@ -228,7 +228,7 @@ Added in v0.6.14
 **Signature**
 
 ```ts
-export declare const tryCatch: <A>(a: Observable<A>) => ObservableOption<A>
+export declare const tryCatch: <A>(a: any) => ObservableOption<A>
 ```
 
 Added in v0.6.14
@@ -240,10 +240,7 @@ Added in v0.6.14
 **Signature**
 
 ```ts
-export declare const fold: <A, B>(
-  onNone: () => Observable<B>,
-  onSome: (a: A) => Observable<B>
-) => (ma: ObservableOption<A>) => Observable<B>
+export declare const fold: <A, B>(onNone: () => any, onSome: (a: A) => any) => (ma: ObservableOption<A>) => any
 ```
 
 Added in v0.6.14
@@ -253,7 +250,7 @@ Added in v0.6.14
 **Signature**
 
 ```ts
-export declare const getOrElse: <A>(onNone: () => Observable<A>) => (ma: ObservableOption<A>) => Observable<A>
+export declare const getOrElse: <A>(onNone: () => any) => (ma: ObservableOption<A>) => any
 ```
 
 Added in v0.6.14

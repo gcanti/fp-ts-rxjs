@@ -304,7 +304,7 @@ Added in v0.6.8
 **Signature**
 
 ```ts
-export declare const fromObservable: <E, A>(fa: Observable<A>) => ObservableEither<E, A>
+export declare const fromObservable: <E, A>(fa: any) => ObservableEither<E, A>
 ```
 
 Added in v0.6.12
@@ -354,7 +354,7 @@ Added in v0.6.8
 **Signature**
 
 ```ts
-export declare const leftObservable: <E = never, A = never>(ma: Observable<E>) => ObservableEither<E, A>
+export declare const leftObservable: <E = never, A = never>(ma: any) => ObservableEither<E, A>
 ```
 
 Added in v0.6.8
@@ -384,7 +384,7 @@ Added in v0.6.8
 **Signature**
 
 ```ts
-export declare const rightObservable: <E = never, A = never>(ma: Observable<A>) => ObservableEither<E, A>
+export declare const rightObservable: <E = never, A = never>(ma: any) => ObservableEither<E, A>
 ```
 
 Added in v0.6.8
@@ -394,7 +394,7 @@ Added in v0.6.8
 **Signature**
 
 ```ts
-export declare const tryCatch: <A>(a: Observable<A>) => ObservableEither<unknown, A>
+export declare const tryCatch: <A>(a: any) => ObservableEither<unknown, A>
 ```
 
 Added in v0.6.12
@@ -407,9 +407,9 @@ Added in v0.6.12
 
 ```ts
 export declare const fold: <E, A, B>(
-  onLeft: (e: E) => Observable<B>,
-  onRight: (a: A) => Observable<B>
-) => (ma: ObservableEither<E, A>) => Observable<B>
+  onLeft: (e: E) => any,
+  onRight: (a: A) => any
+) => (ma: ObservableEither<E, A>) => any
 ```
 
 Added in v0.6.8
@@ -419,7 +419,7 @@ Added in v0.6.8
 **Signature**
 
 ```ts
-export declare const getOrElse: <E, A>(onLeft: (e: E) => Observable<A>) => (ma: ObservableEither<E, A>) => Observable<A>
+export declare const getOrElse: <E, A>(onLeft: (e: E) => any) => (ma: ObservableEither<E, A>) => any
 ```
 
 Added in v0.6.8
