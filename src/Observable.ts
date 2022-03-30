@@ -17,8 +17,8 @@ import { Monoid } from 'fp-ts/lib/Monoid'
 import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/pipeable'
 import { Task } from 'fp-ts/lib/Task'
-import { combineLatest, defer, EMPTY, merge, Observable, of as rxOf } from 'rxjs'
-import { map as rxMap, mergeMap, startWith } from 'rxjs/operators'
+import { combineLatest, defer, EMPTY, lastValueFrom, merge, Observable, of as rxOf } from 'rxjs'
+import { map as rxMap, mergeMap } from 'rxjs/operators'
 import { MonadObservable1 } from './MonadObservable'
 
 // -------------------------------------------------------------------------------------
@@ -478,4 +478,4 @@ export const toTask = <A>(o: Observable<A>): Task<A> => () =>
  * @since 0.6.15
  */
 export const toTaskOption = <A>(o: Observable<A>): Task<O.Option<A>> => () =>
-  pipe(o, map(O.some), startWith(O.none)).toPromise()
+  lastValueFrom(pipe(o, map(O.some)), { defaultValue: O.none })
