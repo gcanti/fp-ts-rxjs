@@ -1,20 +1,20 @@
 /**
  * @since 0.6.10
  */
-import { Applicative3 } from 'fp-ts/Applicative'
-import { Apply3 } from 'fp-ts/Apply'
-import { Bifunctor3 } from 'fp-ts/Bifunctor'
-import { Either } from 'fp-ts/Either'
-import { Functor3 } from 'fp-ts/Functor'
-import { Monad3 } from 'fp-ts/Monad'
-import { MonadIO3 } from 'fp-ts/MonadIO'
-import { MonadTask3 } from 'fp-ts/MonadTask'
-import { MonadThrow3 } from 'fp-ts/MonadThrow'
-import { Option } from 'fp-ts/Option'
+import type { Applicative3 } from 'fp-ts/Applicative'
+import type { Apply3 } from 'fp-ts/Apply'
+import type { Bifunctor3 } from 'fp-ts/Bifunctor'
+import type { Either } from 'fp-ts/Either'
+import type { Functor3 } from 'fp-ts/Functor'
+import type { Monad3 } from 'fp-ts/Monad'
+import type { MonadIO3 } from 'fp-ts/MonadIO'
+import type { MonadTask3 } from 'fp-ts/MonadTask'
+import type { MonadThrow3 } from 'fp-ts/MonadThrow'
+import type { Option } from 'fp-ts/Option'
 import * as R from 'fp-ts/Reader'
 import { flow, identity, Predicate, Refinement } from 'fp-ts/function'
 import { pipe } from 'fp-ts/function'
-import { MonadObservable3 } from './MonadObservable'
+import type { MonadObservable3 } from './MonadObservable'
 import * as OE from './ObservableEither'
 
 // -------------------------------------------------------------------------------------

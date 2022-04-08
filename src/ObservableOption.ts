@@ -1,20 +1,20 @@
 /**
  * @since 0.6.14
  */
-import { Alt1 } from 'fp-ts/Alt'
-import { Applicative1 } from 'fp-ts/Applicative'
-import { Apply1 } from 'fp-ts/Apply'
-import { Functor1 } from 'fp-ts/Functor'
-import { IO } from 'fp-ts/IO'
-import { Monad1 } from 'fp-ts/Monad'
-import { MonadIO1 } from 'fp-ts/MonadIO'
-import { MonadTask1 } from 'fp-ts/MonadTask'
+import type { Alt1 } from 'fp-ts/Alt'
+import type { Applicative1 } from 'fp-ts/Applicative'
+import type { Apply1 } from 'fp-ts/Apply'
+import type { Functor1 } from 'fp-ts/Functor'
+import type { IO } from 'fp-ts/IO'
+import type { Monad1 } from 'fp-ts/Monad'
+import type { MonadIO1 } from 'fp-ts/MonadIO'
+import type { MonadTask1 } from 'fp-ts/MonadTask'
 import * as O from 'fp-ts/Option'
 import { flow, identity, Predicate, Refinement } from 'fp-ts/function'
 import { pipe } from 'fp-ts/function'
-import { Observable } from 'rxjs'
+import type { Observable } from 'rxjs'
 import { catchError } from 'rxjs/operators'
-import { MonadObservable1 } from './MonadObservable'
+import type { MonadObservable1 } from './MonadObservable'
 import * as R from './Observable'
 
 // -------------------------------------------------------------------------------------

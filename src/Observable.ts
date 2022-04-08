@@ -1,25 +1,25 @@
 /**
  * @since 0.6.0
  */
-import { Alt1 } from 'fp-ts/Alt'
-import { Alternative1 } from 'fp-ts/Alternative'
-import { Applicative1 } from 'fp-ts/Applicative'
-import { Apply1 } from 'fp-ts/Apply'
-import { Compactable1, Separated } from 'fp-ts/Compactable'
+import type { Alt1 } from 'fp-ts/Alt'
+import type { Alternative1 } from 'fp-ts/Alternative'
+import type { Applicative1 } from 'fp-ts/Applicative'
+import type { Apply1 } from 'fp-ts/Apply'
+import type { Compactable1, Separated } from 'fp-ts/Compactable'
 import * as E from 'fp-ts/Either'
-import { Filterable1 } from 'fp-ts/Filterable'
-import { Functor1 } from 'fp-ts/Functor'
-import { Monad1 } from 'fp-ts/Monad'
-import { MonadIO1 } from 'fp-ts/MonadIO'
-import { MonadTask1 } from 'fp-ts/MonadTask'
-import { Monoid } from 'fp-ts/Monoid'
+import type { Filterable1 } from 'fp-ts/Filterable'
+import type { Functor1 } from 'fp-ts/Functor'
+import type { Monad1 } from 'fp-ts/Monad'
+import type { MonadIO1 } from 'fp-ts/MonadIO'
+import type { MonadTask1 } from 'fp-ts/MonadTask'
+import type { Monoid } from 'fp-ts/Monoid'
 import * as O from 'fp-ts/Option'
-import { Task } from 'fp-ts/Task'
+import type { Task } from 'fp-ts/Task'
 import { flow, identity, Predicate, Refinement } from 'fp-ts/function'
 import { pipe } from 'fp-ts/function'
 import { combineLatest, defer, EMPTY, lastValueFrom, merge, Observable, of as rxOf } from 'rxjs'
 import { map as rxMap, mergeMap } from 'rxjs/operators'
-import { MonadObservable1 } from './MonadObservable'
+import type { MonadObservable1 } from './MonadObservable'
 
 // -------------------------------------------------------------------------------------
 // constructors

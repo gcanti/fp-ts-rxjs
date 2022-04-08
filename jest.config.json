@@ -4,7 +4,7 @@
     "testRegex": "test\\/.*.tsx?$",
 
     "collectCoverage": true,
-    "collectCoverageFrom": ["src/**"], 
+    "collectCoverageFrom": ["src/**"],
 
     "coverageThreshold": {
         "global": {

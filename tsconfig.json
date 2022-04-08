@@ -7,7 +7,6 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "lib": ["es6", "dom"],
-    "sourceMap": false,
     "declaration": true,
     "strict": true,
     "noImplicitReturns": true,
@@ -15,7 +14,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
-    "stripInternal": true
+    "stripInternal": true,
+    "importsNotUsedAsValues": "error",
   },
   "include": ["./src", "./test", "./scripts"]
 }

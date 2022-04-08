@@ -1,21 +1,21 @@
 /**
  * @since 0.6.12
  */
-import { Applicative2, Applicative2C } from 'fp-ts/Applicative'
-import { Apply1 } from 'fp-ts/Apply'
-import { Bifunctor2 } from 'fp-ts/Bifunctor'
-import { Functor2 } from 'fp-ts/Functor'
-import { IO } from 'fp-ts/IO'
-import { IOEither } from 'fp-ts/IOEither'
-import { Monad2C } from 'fp-ts/Monad'
-import { MonadIO2 } from 'fp-ts/MonadIO'
-import { MonadTask2 } from 'fp-ts/MonadTask'
-import { Semigroup } from 'fp-ts/Semigroup'
-import * as TT from 'fp-ts/TaskThese'
+import type { Applicative2, Applicative2C } from 'fp-ts/Applicative'
+import type { Apply1 } from 'fp-ts/Apply'
+import type { Bifunctor2 } from 'fp-ts/Bifunctor'
+import type { Functor2 } from 'fp-ts/Functor'
+import type { IO } from 'fp-ts/IO'
+import type { IOEither } from 'fp-ts/IOEither'
+import type { Monad2C } from 'fp-ts/Monad'
+import type { MonadIO2 } from 'fp-ts/MonadIO'
+import type { MonadTask2 } from 'fp-ts/MonadTask'
+import type { Semigroup } from 'fp-ts/Semigroup'
+import type * as TT from 'fp-ts/TaskThese'
 import * as TH from 'fp-ts/These'
 import { flow } from 'fp-ts/function'
 import { pipe } from 'fp-ts/function'
-import { Observable } from 'rxjs'
+import type { Observable } from 'rxjs'
 import * as R from './Observable'
 
 // -------------------------------------------------------------------------------------
