@@ -1,5 +1,5 @@
 {
-  "name": "fp-ts-rxjs",
+  "name": "fp-ts-reactive",
   "version": "0.6.15",
   "description": "fp-ts bindings for RxJS",
   "main": "lib/index.js",
@@ -7,50 +7,46 @@
   "typings": "lib/index.d.ts",
   "sideEffects": false,
   "scripts": {
-    "lint": "tslint -p .",
-    "prettier": "prettier --no-semi --single-quote --print-width 120 --parser typescript --list-different \"{src,test}/**/*.ts\"",
-    "fix-prettier": "prettier --no-semi --single-quote --print-width 120 --parser typescript --write \"{src,test}/**/*.ts\"",
-    "jest": "jest --ci",
-    "test": "npm run prettier && npm run lint && npm run jest && npm run docs",
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint-fix": "eslint --fix . --ext .ts,.tsx",
+    "jest": "jest",
+    "test": "npm run lint && npm run jest",
     "clean": "rm -rf ./dist",
     "prebuild": "npm run clean",
     "build": "tsc -p ./tsconfig.build.json && tsc -p ./tsconfig.build-es6.json && npm run import-path-rewrite && ts-node scripts/build",
     "postbuild": "prettier --loglevel=silent --write \"./dist/**/*.ts\"",
     "prepublishOnly": "ts-node scripts/pre-publish",
-    "docs": "docs-ts",
     "prerelease": "npm run build",
     "release": "ts-node scripts/release",
     "import-path-rewrite": "import-path-rewrite"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gcanti/fp-ts-rxjs.git"
+    "url": "https://github.com/siuvdlec/fp-ts-reactive.git"
   },
   "author": "Giulio Canti <giulio.canti@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/gcanti/fp-ts-rxjs/issues"
+    "url": "https://github.com/siuvdlec/fp-ts-reactive/issues"
   },
-  "homepage": "https://github.com/gcanti/fp-ts-rxjs",
+  "homepage": "https://github.com/siuvdlec/fp-ts-reactive",
   "peerDependencies": {
     "fp-ts": "^2.4.4",
-    "rxjs": "^7.5.2"
+    "rxjs": "^7.5"
   },
   "devDependencies": {
     "@types/glob": "^7.1.3",
-    "@types/mocha": "2.2.38",
+    "@types/jest": "^27.4.1",
     "@types/node": "^13.11.0",
-    "docs-ts": "^0.6.10",
-    "fp-ts": "^2.4.4",
+    "eslint": "^8.12.0",
+    "eslint-config-facile": "^0.5.0",
+    "fp-ts": "^2.11.9",
     "import-path-rewrite": "github:gcanti/import-path-rewrite",
-    "jest": "^24.8.0",
-    "mocha": "^5.2.0",
-    "prettier": "^1.19.1",
+    "jest": "^27.5.1",
+    "prettier": "^2.6.2",
     "rxjs": "^7.5.5",
-    "ts-jest": "^24.0.2",
-    "ts-node": "3.2.0",
-    "tslint": "^5.18.0",
-    "tslint-config-standard": "^8.0.1",
+    "ts-jest": "^27.1.4",
+    "ts-node": "^10.7.0",
     "typescript": "^4.2.3"
   },
   "tags": [

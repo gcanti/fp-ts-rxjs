@@ -3,16 +3,8 @@
  *
  * @since 0.6.6
  */
-import { HKT, Kind, Kind2, Kind3, Kind4, URIS, URIS2, URIS3, URIS4 } from 'fp-ts/lib/HKT'
-import {
-  MonadTask,
-  MonadTask1,
-  MonadTask2,
-  MonadTask2C,
-  MonadTask3,
-  MonadTask3C,
-  MonadTask4
-} from 'fp-ts/lib/MonadTask'
+import { HKT, Kind, Kind2, Kind3, Kind4, URIS, URIS2, URIS3, URIS4 } from 'fp-ts/HKT'
+import { MonadTask, MonadTask1, MonadTask2, MonadTask2C, MonadTask3, MonadTask3C, MonadTask4 } from 'fp-ts/MonadTask'
 import { Observable } from 'rxjs'
 
 /**
@@ -20,7 +12,7 @@ import { Observable } from 'rxjs'
  * @since 0.6.6
  */
 export interface MonadObservable<M> extends MonadTask<M> {
-  readonly fromObservable: <A>(fa: Observable<A>) => HKT<M, A>
+    readonly fromObservable: <A>(fa: Observable<A>) => HKT<M, A>
 }
 
 /**
@@ -28,7 +20,7 @@ export interface MonadObservable<M> extends MonadTask<M> {
  * @since 0.6.6
  */
 export interface MonadObservable1<M extends URIS> extends MonadTask1<M> {
-  readonly fromObservable: <A>(fa: Observable<A>) => Kind<M, A>
+    readonly fromObservable: <A>(fa: Observable<A>) => Kind<M, A>
 }
 
 /**
@@ -36,7 +28,7 @@ export interface MonadObservable1<M extends URIS> extends MonadTask1<M> {
  * @since 0.6.6
  */
 export interface MonadObservable2<M extends URIS2> extends MonadTask2<M> {
-  readonly fromObservable: <E, A>(fa: Observable<A>) => Kind2<M, E, A>
+    readonly fromObservable: <E, A>(fa: Observable<A>) => Kind2<M, E, A>
 }
 
 /**
@@ -44,7 +36,7 @@ export interface MonadObservable2<M extends URIS2> extends MonadTask2<M> {
  * @since 0.6.6
  */
 export interface MonadObservable2C<M extends URIS2, E> extends MonadTask2C<M, E> {
-  readonly fromObservable: <A>(fa: Observable<A>) => Kind2<M, E, A>
+    readonly fromObservable: <A>(fa: Observable<A>) => Kind2<M, E, A>
 }
 
 /**
@@ -52,7 +44,7 @@ export interface MonadObservable2C<M extends URIS2, E> extends MonadTask2C<M, E>
  * @since 0.6.6
  */
 export interface MonadObservable3<M extends URIS3> extends MonadTask3<M> {
-  readonly fromObservable: <R, E, A>(fa: Observable<A>) => Kind3<M, R, E, A>
+    readonly fromObservable: <R, E, A>(fa: Observable<A>) => Kind3<M, R, E, A>
 }
 
 /**
@@ -60,7 +52,7 @@ export interface MonadObservable3<M extends URIS3> extends MonadTask3<M> {
  * @since 0.6.6
  */
 export interface MonadObservable3C<M extends URIS3, E> extends MonadTask3C<M, E> {
-  readonly fromObservable: <R, A>(fa: Observable<A>) => Kind3<M, R, E, A>
+    readonly fromObservable: <R, A>(fa: Observable<A>) => Kind3<M, R, E, A>
 }
 
 /**
@@ -68,5 +60,5 @@ export interface MonadObservable3C<M extends URIS3, E> extends MonadTask3C<M, E>
  * @since 0.6.7
  */
 export interface MonadObservable4<M extends URIS4> extends MonadTask4<M> {
-  readonly fromObservable: <S, R, E, A>(fa: Observable<A>) => Kind4<M, S, R, E, A>
+    readonly fromObservable: <S, R, E, A>(fa: Observable<A>) => Kind4<M, S, R, E, A>
 }

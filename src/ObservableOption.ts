@@ -1,17 +1,17 @@
 /**
  * @since 0.6.14
  */
-import { Alt1 } from 'fp-ts/lib/Alt'
-import { Applicative1 } from 'fp-ts/lib/Applicative'
-import { Apply1 } from 'fp-ts/lib/Apply'
-import { flow, identity, Predicate, Refinement } from 'fp-ts/lib/function'
-import { Functor1 } from 'fp-ts/lib/Functor'
-import { IO } from 'fp-ts/lib/IO'
-import { Monad1 } from 'fp-ts/lib/Monad'
-import { MonadIO1 } from 'fp-ts/lib/MonadIO'
-import { MonadTask1 } from 'fp-ts/lib/MonadTask'
-import * as O from 'fp-ts/lib/Option'
-import { pipe } from 'fp-ts/lib/pipeable'
+import { Alt1 } from 'fp-ts/Alt'
+import { Applicative1 } from 'fp-ts/Applicative'
+import { Apply1 } from 'fp-ts/Apply'
+import { Functor1 } from 'fp-ts/Functor'
+import { IO } from 'fp-ts/IO'
+import { Monad1 } from 'fp-ts/Monad'
+import { MonadIO1 } from 'fp-ts/MonadIO'
+import { MonadTask1 } from 'fp-ts/MonadTask'
+import * as O from 'fp-ts/Option'
+import { flow, identity, Predicate, Refinement } from 'fp-ts/function'
+import { pipe } from 'fp-ts/function'
 import { Observable } from 'rxjs'
 import { catchError } from 'rxjs/operators'
 import { MonadObservable1 } from './MonadObservable'
@@ -36,51 +36,51 @@ export interface ObservableOption<A> extends Observable<O.Option<A>> {}
  * @since 0.6.14
  */
 export const none: ObservableOption<never> =
-  /*#__PURE__*/
-  pipe(O.none, R.of)
+    /*#__PURE__*/
+    pipe(O.none, R.of)
 
 /**
  * @category constructors
  * @since 0.6.14
  */
 export const some: <A>(a: A) => ObservableOption<A> =
-  /*#__PURE__*/
-  flow(O.some, R.of)
+    /*#__PURE__*/
+    flow(O.some, R.of)
 
 /**
  * @category constructors
  * @since 0.6.14
  */
 export const fromObservable: <A = never>(ma: Observable<A>) => ObservableOption<A> =
-  /*#__PURE__*/
-  R.map(O.some)
+    /*#__PURE__*/
+    R.map(O.some)
 
 /**
  * @category constructors
  * @since 0.6.14
  */
 export const fromIO: <A = never>(ma: IO<A>) => ObservableOption<A> =
-  /*#__PURE__*/
-  flow(R.fromIO, fromObservable)
+    /*#__PURE__*/
+    flow(R.fromIO, fromObservable)
 
 /**
  * @category constructors
  * @since 0.6.14
  */
 export const fromTask: MonadTask1<URI>['fromTask'] =
-  /*#__PURE__*/
-  flow(R.fromTask, fromObservable)
+    /*#__PURE__*/
+    flow(R.fromTask, fromObservable)
 
 /**
  * @category constructors
  * @since 0.6.14
  */
 export const tryCatch: <A>(a: Observable<A>) => ObservableOption<A> =
-  /*#__PURE__*/
-  flow(
-    R.map(O.some),
-    catchError(() => none)
-  )
+    /*#__PURE__*/
+    flow(
+        R.map(O.some),
+        catchError(() => none)
+    )
 
 // -------------------------------------------------------------------------------------
 // destructors
@@ -91,18 +91,20 @@ export const tryCatch: <A>(a: Observable<A>) => ObservableOption<A> =
  * @since 0.6.14
  */
 export const fold: <A, B>(
-  onNone: () => Observable<B>,
-  onSome: (a: A) => Observable<B>
+    onNone: () => Observable<B>,
+    onSome: (a: A) => Observable<B>
 ) => (ma: ObservableOption<A>) => Observable<B> =
-  /*#__PURE__*/
-  flow(O.fold, R.chain)
+    /*#__PURE__*/
+    flow(O.fold, R.chain)
 
 /**
  * @category destructors
  * @since 0.6.14
  */
-export const getOrElse = <A>(onNone: () => Observable<A>) => (ma: ObservableOption<A>): Observable<A> =>
-  pipe(ma, R.chain(O.fold(onNone, R.of)))
+export const getOrElse =
+    <A>(onNone: () => Observable<A>) =>
+    (ma: ObservableOption<A>): Observable<A> =>
+        pipe(ma, R.chain(O.fold(onNone, R.of)))
 
 // -------------------------------------------------------------------------------------
 // combinators
@@ -116,7 +118,7 @@ export const getOrElse = <A>(onNone: () => Observable<A>) => (ma: ObservableOpti
  * @since 0.6.14
  */
 export const alt: <A>(onNone: () => ObservableOption<A>) => (ma: ObservableOption<A>) => ObservableOption<A> = f =>
-  R.chain(O.fold(f, some))
+    R.chain(O.fold(f, some))
 
 // -------------------------------------------------------------------------------------
 // type class members
@@ -138,10 +140,10 @@ export const map: <A, B>(f: (a: A) => B) => (fa: ObservableOption<A>) => Observa
  * @since 0.6.14
  */
 export const ap = <A>(fa: ObservableOption<A>): (<B>(fab: ObservableOption<(a: A) => B>) => ObservableOption<B>) =>
-  flow(
-    R.map(gab => (ga: O.Option<A>) => O.ap(ga)(gab)),
-    R.ap(fa)
-  )
+    flow(
+        R.map(gab => (ga: O.Option<A>) => O.ap(ga)(gab)),
+        R.ap(fa)
+    )
 
 /**
  * Combine two effectful actions, keeping only the result of the first.
@@ -152,10 +154,10 @@ export const ap = <A>(fa: ObservableOption<A>): (<B>(fab: ObservableOption<(a: A
  * @since 0.6.14
  */
 export const apFirst: <B>(fb: ObservableOption<B>) => <A>(fa: ObservableOption<A>) => ObservableOption<A> = fb =>
-  flow(
-    map(a => () => a),
-    ap(fb)
-  )
+    flow(
+        map(a => () => a),
+        ap(fb)
+    )
 
 /**
  * Combine two effectful actions, keeping only the result of the second.
@@ -166,17 +168,19 @@ export const apFirst: <B>(fb: ObservableOption<B>) => <A>(fa: ObservableOption<A
  * @since 0.6.14
  */
 export const apSecond = <B>(fb: ObservableOption<B>): (<A>(fa: ObservableOption<A>) => ObservableOption<B>) =>
-  flow(
-    map(() => (b: B) => b),
-    ap(fb)
-  )
+    flow(
+        map(() => (b: B) => b),
+        ap(fb)
+    )
 
 /**
  * @category Monad
  * @since 0.6.14
  */
-export const chain = <A, B>(f: (a: A) => ObservableOption<B>) => (ma: ObservableOption<A>): ObservableOption<B> =>
-  pipe(ma, R.chain(O.fold(() => none, f)))
+export const chain =
+    <A, B>(f: (a: A) => ObservableOption<B>) =>
+    (ma: ObservableOption<A>): ObservableOption<B> =>
+        pipe(ma, R.chain(O.fold(() => none, f)))
 
 /**
  * Derivable from `Monad`.
@@ -185,8 +189,8 @@ export const chain = <A, B>(f: (a: A) => ObservableOption<B>) => (ma: Observable
  * @since 0.6.14
  */
 export const flatten: <A>(mma: ObservableOption<ObservableOption<A>>) => ObservableOption<A> =
-  /*#__PURE__*/
-  chain(identity)
+    /*#__PURE__*/
+    chain(identity)
 
 /**
  * Composes computations in sequence, using the return value of one computation to determine the next computation and
@@ -198,14 +202,14 @@ export const flatten: <A>(mma: ObservableOption<ObservableOption<A>>) => Observa
  * @since 0.6.14
  */
 export const chainFirst: <A, B>(
-  f: (a: A) => ObservableOption<B>
+    f: (a: A) => ObservableOption<B>
 ) => (ma: ObservableOption<A>) => ObservableOption<A> = f =>
-  chain(a =>
-    pipe(
-      f(a),
-      map(() => a)
+    chain(a =>
+        pipe(
+            f(a),
+            map(() => a)
+        )
     )
-  )
 
 /**
  * @since 0.6.14
@@ -218,10 +222,10 @@ export const of: Applicative1<URI>['of'] = some
  * @since 0.6.14
  */
 export const filterOrElse: {
-  <A, B extends A>(refinement: Refinement<A, B>): (ma: ObservableOption<A>) => ObservableOption<B>
-  <A>(predicate: Predicate<A>): (ma: ObservableOption<A>) => ObservableOption<A>
+    <A, B extends A>(refinement: Refinement<A, B>): (ma: ObservableOption<A>) => ObservableOption<B>
+    <A>(predicate: Predicate<A>): (ma: ObservableOption<A>) => ObservableOption<A>
 } = <A>(predicate: Predicate<A>): ((ma: ObservableOption<A>) => ObservableOption<A>) =>
-  chain(a => (predicate(a) ? of(a) : none))
+    chain(a => (predicate(a) ? of(a) : none))
 
 /**
  * Derivable from `MonadThrow`.
@@ -236,9 +240,12 @@ export const fromOption = <A>(ma: O.Option<A>): ObservableOption<A> => (ma._tag 
  * @since 0.6.14
  */
 export const fromPredicate: {
-  <A, B extends A>(refinement: Refinement<A, B>): (a: A) => ObservableOption<B>
-  <A>(predicate: Predicate<A>): (a: A) => ObservableOption<A>
-} = <A>(predicate: Predicate<A>) => (a: A): ObservableOption<A> => (predicate(a) ? of(a) : none)
+    <A, B extends A>(refinement: Refinement<A, B>): (a: A) => ObservableOption<B>
+    <A>(predicate: Predicate<A>): (a: A) => ObservableOption<A>
+} =
+    <A>(predicate: Predicate<A>) =>
+    (a: A): ObservableOption<A> =>
+        predicate(a) ? of(a) : none
 
 // -------------------------------------------------------------------------------------
 // instances
@@ -266,9 +273,9 @@ export const URI = 'ObservableOption'
 export type URI = typeof URI
 
 declare module 'fp-ts/lib/HKT' {
-  interface URItoKind<A> {
-    readonly [URI]: ObservableOption<A>
-  }
+    interface URItoKind<A> {
+        readonly [URI]: ObservableOption<A>
+    }
 }
 
 /**
@@ -276,8 +283,8 @@ declare module 'fp-ts/lib/HKT' {
  * @since 0.6.14
  */
 export const Functor: Functor1<URI> = {
-  URI,
-  map: map_
+    URI,
+    map: map_,
 }
 
 /**
@@ -285,9 +292,9 @@ export const Functor: Functor1<URI> = {
  * @since 0.6.14
  */
 export const Apply: Apply1<URI> = {
-  URI,
-  map: map_,
-  ap: ap_
+    URI,
+    map: map_,
+    ap: ap_,
 }
 
 /**
@@ -295,10 +302,10 @@ export const Apply: Apply1<URI> = {
  * @since 0.6.14
  */
 export const Applicative: Applicative1<URI> = {
-  URI,
-  map: map_,
-  ap: ap_,
-  of
+    URI,
+    map: map_,
+    ap: ap_,
+    of,
 }
 
 /**
@@ -306,11 +313,11 @@ export const Applicative: Applicative1<URI> = {
  * @since 0.6.14
  */
 export const Monad: Monad1<URI> = {
-  URI,
-  map: map_,
-  ap: ap_,
-  of,
-  chain: chain_
+    URI,
+    map: map_,
+    ap: ap_,
+    of,
+    chain: chain_,
 }
 
 /**
@@ -318,9 +325,9 @@ export const Monad: Monad1<URI> = {
  * @since 0.6.14
  */
 export const Alt: Alt1<URI> = {
-  URI,
-  map: map_,
-  alt: alt_
+    URI,
+    map: map_,
+    alt: alt_,
 }
 
 /**
@@ -328,12 +335,12 @@ export const Alt: Alt1<URI> = {
  * @since 0.6.14
  */
 export const MonadIO: MonadIO1<URI> = {
-  URI,
-  map: map_,
-  ap: ap_,
-  of,
-  chain: chain_,
-  fromIO
+    URI,
+    map: map_,
+    ap: ap_,
+    of,
+    chain: chain_,
+    fromIO,
 }
 
 /**
@@ -341,13 +348,13 @@ export const MonadIO: MonadIO1<URI> = {
  * @since 0.6.14
  */
 export const MonadTask: MonadTask1<URI> = {
-  URI,
-  map: map_,
-  ap: ap_,
-  of,
-  chain: chain_,
-  fromIO,
-  fromTask
+    URI,
+    map: map_,
+    ap: ap_,
+    of,
+    chain: chain_,
+    fromIO,
+    fromTask,
 }
 
 /**
@@ -355,14 +362,14 @@ export const MonadTask: MonadTask1<URI> = {
  * @since 0.6.14
  */
 export const MonadObservable: MonadObservable1<URI> = {
-  URI,
-  map: map_,
-  ap: ap_,
-  of,
-  chain: chain_,
-  fromIO,
-  fromTask,
-  fromObservable
+    URI,
+    map: map_,
+    ap: ap_,
+    of,
+    chain: chain_,
+    fromIO,
+    fromTask,
+    fromObservable,
 }
 
 // -------------------------------------------------------------------------------------
@@ -373,26 +380,26 @@ export const MonadObservable: MonadObservable1<URI> = {
  * @since 0.6.14
  */
 export const Do: ObservableOption<{}> =
-  /*#__PURE__*/
-  of({})
+    /*#__PURE__*/
+    of({})
 
 /**
  * @since 0.6.14
  */
 export const bindTo = <K extends string, A>(
-  name: K
+    name: K
 ): ((fa: ObservableOption<A>) => ObservableOption<{ [P in K]: A }>) => map(a => ({ [name]: a } as { [P in K]: A }))
 
 /**
  * @since 0.6.14
  */
 export const bind = <K extends string, A, B>(
-  name: Exclude<K, keyof A>,
-  f: (a: A) => ObservableOption<B>
+    name: Exclude<K, keyof A>,
+    f: (a: A) => ObservableOption<B>
 ): ((fa: ObservableOption<A>) => ObservableOption<{ [P in keyof A | K]: P extends keyof A ? A[P] : B }>) =>
-  chain(a =>
-    pipe(
-      f(a),
-      map(b => ({ ...a, [name]: b } as any))
+    chain(a =>
+        pipe(
+            f(a),
+            map(b => ({ ...a, [name]: b } as any))
+        )
     )
-  )
