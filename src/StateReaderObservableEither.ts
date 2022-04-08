@@ -522,5 +522,5 @@ export const execute =
     <R, E, A>(ma: StateReaderObservableEither<S, R, E, A>): ROE.ReaderObservableEither<R, E, S> =>
         pipe(
             ma(s),
-            ROE.map(([_, s]) => s)
+            ROE.map(([_, ss]) => ss)
         )

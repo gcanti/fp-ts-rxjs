@@ -379,7 +379,7 @@ export const MonadObservable: MonadObservable1<URI> = {
 /**
  * @since 0.6.14
  */
-export const Do: ObservableOption<{}> =
+export const Do: ObservableOption<Record<string, never>> =
     /*#__PURE__*/
     of({})
 

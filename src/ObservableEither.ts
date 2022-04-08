@@ -539,7 +539,7 @@ export const observableEither: Monad2<URI> & Bifunctor2<URI> & Alt2<URI> & Monad
 /**
  * @since 0.6.12
  */
-export const Do: ObservableEither<never, {}> =
+export const Do: ObservableEither<never, Record<string, never>> =
     /*#__PURE__*/
     of({})
 

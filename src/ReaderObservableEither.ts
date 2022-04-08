@@ -463,7 +463,7 @@ export const readerObservableEither: MonadObservable3<URI> & MonadThrow3<URI> & 
 /**
  * @since 0.6.12
  */
-export const Do: ReaderObservableEither<unknown, never, {}> =
+export const Do: ReaderObservableEither<unknown, never, Record<string, never>> =
     /*#__PURE__*/
     of({})
 

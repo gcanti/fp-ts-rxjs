@@ -7,8 +7,8 @@
   "typings": "lib/index.d.ts",
   "sideEffects": false,
   "scripts": {
-    "lint": "eslint . --ext .ts,.tsx",
-    "lint-fix": "eslint --fix . --ext .ts,.tsx",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint-fix": "eslint --fix src --ext .ts,.tsx",
     "jest": "jest",
     "test": "npm run lint && npm run jest",
     "clean": "rm -rf ./dist",

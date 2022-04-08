@@ -544,7 +544,7 @@ export const readerObservable: Monad2<URI> & Alternative2<URI> & Filterable2<URI
 /**
  * @since 0.6.12
  */
-export const Do: ReaderObservable<unknown, {}> =
+export const Do: ReaderObservable<unknown, Record<string, never>> =
     /*#__PURE__*/
     of({})
 

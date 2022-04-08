@@ -436,7 +436,7 @@ export const observable: Monad1<URI> & Alternative1<URI> & Filterable1<URI> & Mo
 /**
  * @since 0.6.12
  */
-export const Do: Observable<{}> =
+export const Do: Observable<Record<string, never>> =
     /*#__PURE__*/
     of({})
 
