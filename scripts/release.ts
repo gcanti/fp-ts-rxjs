@@ -1,5 +1,5 @@
 import { left, right } from 'fp-ts/Either'
-import * as TE from 'fp-ts/TaskEither'
+import type * as TE from 'fp-ts/TaskEither'
 import * as child_process from 'child_process'
 import { run } from './run'
 
