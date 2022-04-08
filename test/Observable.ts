@@ -11,7 +11,7 @@ import * as _ from '../src/Observable'
 describe('Observable', () => {
     it('of', async () => {
         const fa = _.of(1)
-        const events = await fa.pipe(bufferTime(10)).toPromise()
+        const events = await lastValueFrom(fa.pipe(bufferTime(10)))
         assert.deepStrictEqual(events, [1])
     })
 
@@ -36,21 +36,15 @@ describe('Observable', () => {
     })
 
     it('apFirst', () => {
-        return pipe(from([1]), _.apFirst(from([2])))
-            .pipe(bufferTime(10))
-            .toPromise()
-            .then(events => {
-                assert.deepStrictEqual(events, [1])
-            })
+        return lastValueFrom(pipe(from([1]), _.apFirst(from([2]))).pipe(bufferTime(10))).then(events => {
+            assert.deepStrictEqual(events, [1])
+        })
     })
 
     it('apSecond', () => {
-        return pipe(from([1]), _.apSecond(from([2])))
-            .pipe(bufferTime(10))
-            .toPromise()
-            .then(events => {
-                assert.deepStrictEqual(events, [2])
-            })
+        return lastValueFrom(pipe(from([1]), _.apSecond(from([2]))).pipe(bufferTime(10))).then(events => {
+            assert.deepStrictEqual(events, [2])
+        })
     })
 
     it('chain', () => {
@@ -59,12 +53,9 @@ describe('Observable', () => {
             fa,
             _.chain(a => from([a, a + 1]))
         )
-        return fb
-            .pipe(bufferTime(10))
-            .toPromise()
-            .then(events => {
-                assert.deepStrictEqual(events, [1, 2, 2, 3, 3, 4])
-            })
+        return lastValueFrom(fb.pipe(bufferTime(10))).then(events => {
+            assert.deepStrictEqual(events, [1, 2, 2, 3, 3, 4])
+        })
     })
 
     it('chainFirst', () => {
@@ -73,34 +64,25 @@ describe('Observable', () => {
             fa,
             _.chainFirst(a => from([a, a + 1]))
         )
-        return fb
-            .pipe(bufferTime(10))
-            .toPromise()
-            .then(events => {
-                assert.deepStrictEqual(events, [1, 1, 2, 2, 3, 3])
-            })
+        return lastValueFrom(fb.pipe(bufferTime(10))).then(events => {
+            assert.deepStrictEqual(events, [1, 1, 2, 2, 3, 3])
+        })
     })
 
     it('filterMap', () => {
         const fa = from([1, 2, 3])
         const fb = pipe(fa, _.filterMap(O.fromPredicate(n => n > 1)))
-        return fb
-            .pipe(bufferTime(10))
-            .toPromise()
-            .then(events => {
-                assert.deepStrictEqual(events, [2, 3])
-            })
+        return lastValueFrom(fb.pipe(bufferTime(10))).then(events => {
+            assert.deepStrictEqual(events, [2, 3])
+        })
     })
 
     it('compact', () => {
         const fa = from([1, 2, 3].map(O.fromPredicate(n => n > 1)))
         const fb = _.compact(fa)
-        return fb
-            .pipe(bufferTime(10))
-            .toPromise()
-            .then(events => {
-                assert.deepStrictEqual(events, [2, 3])
-            })
+        return lastValueFrom(fb.pipe(bufferTime(10))).then(events => {
+            assert.deepStrictEqual(events, [2, 3])
+        })
     })
 
     it('filter', () => {
@@ -109,20 +91,15 @@ describe('Observable', () => {
             fa,
             _.filter(n => n > 1)
         )
-        return fb
-            .pipe(bufferTime(10))
-            .toPromise()
-            .then(events => {
-                assert.deepStrictEqual(events, [2, 3])
-            })
+        return lastValueFrom(fb.pipe(bufferTime(10))).then(events => {
+            assert.deepStrictEqual(events, [2, 3])
+        })
     })
 
     it('partitionMap', () => {
         const fa = from([1, 2, 3])
         const s = pipe(fa, _.partitionMap(E.fromPredicate(n => n > 1, identity)))
-        return s.left
-            .pipe(bufferTime(10))
-            .toPromise()
+        return lastValueFrom(s.left.pipe(bufferTime(10)))
             .then(events => {
                 assert.deepStrictEqual(events, [1])
             })
@@ -139,9 +116,7 @@ describe('Observable', () => {
     it('separate', () => {
         const fa = from([1, 2, 3].map(E.fromPredicate(n => n > 1, identity)))
         const s = _.separate(fa)
-        return s.left
-            .pipe(bufferTime(10))
-            .toPromise()
+        return lastValueFrom(s.left.pipe(bufferTime(10)))
             .then(events => {
                 assert.deepStrictEqual(events, [1])
             })
@@ -161,9 +136,7 @@ describe('Observable', () => {
             fa,
             _.partition(n => n > 1)
         )
-        return s.left
-            .pipe(bufferTime(10))
-            .toPromise()
+        return lastValueFrom(s.left.pipe(bufferTime(10)))
             .then(events => {
                 assert.deepStrictEqual(events, [1])
             })
@@ -183,38 +156,36 @@ describe('Observable', () => {
     })
 
     it('alt', async () => {
-        const events = await pipe(
-            _.of(1),
-            _.alt(() => _.of(2))
+        const events = await lastValueFrom(
+            pipe(
+                _.of(1),
+                _.alt(() => _.of(2))
+            ).pipe(bufferTime(10))
         )
-            .pipe(bufferTime(10))
-            .toPromise()
         assert.deepStrictEqual(events, [1, 2])
     })
 
     it('getMonoid', async () => {
         const M = _.getMonoid<number>()
-        const events = await M.concat(_.of(1), _.of(2)).pipe(bufferTime(10)).toPromise()
+        const events = await lastValueFrom(M.concat(_.of(1), _.of(2)).pipe(bufferTime(10)))
         assert.deepStrictEqual(events, [1, 2])
     })
 
     it('fromOption', async () => {
-        const events = await _.fromOption(O.some(1)).pipe(bufferTime(10)).toPromise()
+        const events = await lastValueFrom(_.fromOption(O.some(1)).pipe(bufferTime(10)))
         assert.deepStrictEqual(events, [1])
 
-        const noEvents = await _.fromOption(O.none).pipe(bufferTime(10)).toPromise()
+        const noEvents = await lastValueFrom(_.fromOption(O.none).pipe(bufferTime(10)))
         assert.deepStrictEqual(noEvents, [])
     })
 
     it('fromIO', async () => {
-        const events = await _.fromIO(() => 1)
-            .pipe(bufferTime(10))
-            .toPromise()
+        const events = await lastValueFrom(_.fromIO(() => 1).pipe(bufferTime(10)))
         assert.deepStrictEqual(events, [1])
     })
 
     it('fromTask', async () => {
-        const events = await _.fromTask(T.of(1)).pipe(bufferTime(10)).toPromise()
+        const events = await lastValueFrom(_.fromTask(T.of(1)).pipe(bufferTime(10)))
         assert.deepStrictEqual(events, [1])
     })
 
@@ -233,13 +204,13 @@ describe('Observable', () => {
     })
 
     it('do notation', async () => {
-        const t = await pipe(
-            _.of(1),
-            _.bindTo('a'),
-            _.bind('b', () => _.of('b'))
+        const t = await lastValueFrom(
+            pipe(
+                _.of(1),
+                _.bindTo('a'),
+                _.bind('b', () => _.of('b'))
+            ).pipe(bufferTime(10))
         )
-            .pipe(bufferTime(10))
-            .toPromise()
 
         assert.deepStrictEqual(t, [{ a: 1, b: 'b' }])
     })

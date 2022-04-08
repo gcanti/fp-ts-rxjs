@@ -5,6 +5,7 @@ import * as R from 'fp-ts/Reader'
 import * as T from 'fp-ts/Task'
 import { flow } from 'fp-ts/function'
 import { pipe } from 'fp-ts/function'
+import { lastValueFrom } from 'rxjs'
 import { bufferTime } from 'rxjs/operators'
 import * as assert from 'assert'
 import { observable as OB, observableEither as OBE, readerObservableEither as _ } from '../src'
@@ -132,105 +133,87 @@ describe('ReaderObservable', () => {
 
     // robe should expose right
     it('do notation', async () => {
-        const t = await pipe(
-            _.of(1),
-            _.bindTo('a'),
-            _.bind('b', () => _.of('b'))
-        )(undefined)
-            .pipe(bufferTime(10))
-            .toPromise()
+        const t = await lastValueFrom(
+            pipe(
+                _.of(1),
+                _.bindTo('a'),
+                _.bind('b', () => _.of('b'))
+            )(undefined).pipe(bufferTime(10))
+        )
 
         assert.deepStrictEqual(t, [E.right({ a: 1, b: 'b' })])
     })
 
     it('apFirst', () => {
-        return pipe(
-            _.of(1),
-            _.apFirst(_.of(2))
-        )(undefined)
-            .pipe(bufferTime(10))
-            .toPromise()
-            .then(events => {
-                assert.deepStrictEqual(events, [E.right(1)])
-            })
+        return lastValueFrom(pipe(_.of(1), _.apFirst(_.of(2)))(undefined).pipe(bufferTime(10))).then(events => {
+            assert.deepStrictEqual(events, [E.right(1)])
+        })
     })
 
     it('apFirst', () => {
-        return pipe(
-            _.of(1),
-            _.apSecond(_.of(2))
-        )(undefined)
-            .pipe(bufferTime(10))
-            .toPromise()
-            .then(events => {
-                assert.deepStrictEqual(events, [E.right(2)])
-            })
+        return lastValueFrom(pipe(_.of(1), _.apSecond(_.of(2)))(undefined).pipe(bufferTime(10))).then(events => {
+            assert.deepStrictEqual(events, [E.right(2)])
+        })
     })
 
     it('chainFirst', async () => {
         const f = (a: string) => _.of(a.length)
-        const e1 = await pipe(_.of('foo'), _.chainFirst(f))({}).pipe(bufferTime(10)).toPromise()
+        const e1 = await lastValueFrom(pipe(_.of('foo'), _.chainFirst(f))({}).pipe(bufferTime(10)))
         assert.deepStrictEqual(e1, [E.right('foo')])
     })
 
     it('fromOption', async () => {
-        assert.deepStrictEqual(
-            await _.fromOption(() => 'a')(O.some(1))({})
-                .pipe(bufferTime(10))
-                .toPromise(),
-            [E.right(1)]
-        )
-        assert.deepStrictEqual(
-            await _.fromOption(() => 'a')(O.none)({})
-                .pipe(bufferTime(10))
-                .toPromise(),
-            [E.left('a')]
-        )
+        assert.deepStrictEqual(await lastValueFrom(_.fromOption(() => 'a')(O.some(1))({}).pipe(bufferTime(10))), [
+            E.right(1),
+        ])
+        assert.deepStrictEqual(await lastValueFrom(_.fromOption(() => 'a')(O.none)({}).pipe(bufferTime(10))), [
+            E.left('a'),
+        ])
     })
 
     it('fromEither', async () => {
-        assert.deepStrictEqual(await _.fromEither(E.right(1))({}).pipe(bufferTime(10)).toPromise(), [E.right(1)])
-        assert.deepStrictEqual(await _.fromEither(E.left('a'))({}).pipe(bufferTime(10)).toPromise(), [E.left('a')])
+        assert.deepStrictEqual(await lastValueFrom(_.fromEither(E.right(1))({}).pipe(bufferTime(10))), [E.right(1)])
+        assert.deepStrictEqual(await lastValueFrom(_.fromEither(E.left('a'))({}).pipe(bufferTime(10))), [E.left('a')])
     })
 
     it('filterOrElse', async () => {
         assert.deepStrictEqual(
-            await _.filterOrElse(
-                (n: number) => n > 0,
-                () => 'a'
-            )(_.of(1))({})
-                .pipe(bufferTime(10))
-                .toPromise(),
+            await lastValueFrom(
+                _.filterOrElse(
+                    (n: number) => n > 0,
+                    () => 'a'
+                )(_.of(1))({}).pipe(bufferTime(10))
+            ),
             [E.right(1)]
         )
         assert.deepStrictEqual(
-            await _.filterOrElse(
-                (n: number) => n > 0,
-                () => 'a'
-            )(_.of(-1))({})
-                .pipe(bufferTime(10))
-                .toPromise(),
+            await lastValueFrom(
+                _.filterOrElse(
+                    (n: number) => n > 0,
+                    () => 'a'
+                )(_.of(-1))({}).pipe(bufferTime(10))
+            ),
             [E.left('a')]
         )
     })
 
     it('fromPredicate', async () => {
         assert.deepStrictEqual(
-            await _.fromPredicate(
-                (n: number) => n > 0,
-                () => 'a'
-            )(1)(undefined)
-                .pipe(bufferTime(10))
-                .toPromise(),
+            await lastValueFrom(
+                _.fromPredicate(
+                    (n: number) => n > 0,
+                    () => 'a'
+                )(1)(undefined).pipe(bufferTime(10))
+            ),
             [E.right(1)]
         )
         assert.deepStrictEqual(
-            await _.fromPredicate(
-                (n: number) => n > 0,
-                () => 'a'
-            )(-1)(undefined)
-                .pipe(bufferTime(10))
-                .toPromise(),
+            await lastValueFrom(
+                _.fromPredicate(
+                    (n: number) => n > 0,
+                    () => 'a'
+                )(-1)(undefined).pipe(bufferTime(10))
+            ),
             [E.left('a')]
         )
     })
